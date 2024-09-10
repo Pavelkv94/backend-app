@@ -150,4 +150,14 @@ describe("/videos", () => {
     expect(updatedVideo.minAgeRestriction).toEqual(getResponse.body.minAgeRestriction);
     expect(updatedVideo.publicationDate).toEqual(getResponse.body.publicationDate);
   });
+
+  it("should delete all data", async () => {
+    setDB();
+
+    const deleteResponse = await req.delete(`/testing/all-data`).expect(204);
+
+    const res = await req.get(SETTINGS.PATH.VIDEOS).expect(200); // проверяем наличие эндпоинта
+
+    expect(res.body.length).toBe(0); // проверяем ответ эндпоинта
+  });
 });

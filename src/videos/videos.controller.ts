@@ -16,15 +16,15 @@ const inputValidation = (video: InputVideoType) => {
       field: "availableResolution",
     });
   }
-  if (video.author.trim() === "") {
+  if (video.author.trim() === "" || !video.author) {
     errors.errorsMessages.push({
-      message: "Not be empty",
+      message: "Invalid value",
       field: "author",
     });
   }
-  if (video.title.trim() === "") {
+  if (video.title.trim() === "" || !video.title) {
     errors.errorsMessages.push({
-      message: "Not be empty!!!!",
+      message: "Invalid value",
       field: "title",
     });
   }
@@ -73,6 +73,13 @@ export const videosController = {
   updateVideo: async (req: Request<ParamVideoType, {}, InputUpdateVideoType>, res: Response) => {
     const video = db.videos.find((video) => video.id === +req.params.id); // получаем видео из базы данных
 
+    const errors = inputValidation(req.body);
+    if (errors.errorsMessages.length) {
+      // если есть ошибки - отправляем ошибки
+      res.status(400).json(errors);
+      return;
+    }
+    
     if (!video) {
       res.sendStatus(404);
       return;

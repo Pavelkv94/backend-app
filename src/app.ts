@@ -16,7 +16,7 @@ app.get("/", (req, res) => {
   res.status(200).json({ version: "1.0" });
 });
 
-app.get("/testing/all-data", (req, res) => {
+app.delete("/testing/all-data", (req, res) => {
   setDB();
   res.sendStatus(204);
 });
