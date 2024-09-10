@@ -12,6 +12,12 @@ describe("/videos", () => {
     setDB();
   });
 
+  it("should get object", async () => {
+
+    const res = await req.get("/").expect(200); // проверяем наличие эндпоинта
+
+  });
+
   it("should get empty array", async () => {
     setDB(); // очистка базы данных если нужно
 
@@ -36,20 +42,27 @@ describe("/videos", () => {
       availableResolutions: [Resolutions.P144],
     };
 
-    const res = await req
+    const createResponse = await req
       .post(SETTINGS.PATH.VIDEOS)
       .send(newVideo) // отправка данных
       .expect(201);
 
-    expect(res.body.availableResolutions).toEqual(newVideo.availableResolutions);
+    expect(createResponse.body.availableResolutions).toEqual(newVideo.availableResolutions);
+
+    const getVideosResponse = await req.get(SETTINGS.PATH.VIDEOS).expect(200); // проверка на ошибку
+
+    expect(getVideosResponse.body.length).toBe(1);
+
+    const getVideoResponse = await req.get(`${SETTINGS.PATH.VIDEOS}/${createResponse.body.id}`).expect(200); // проверка на ошибку
+
   });
 
   it("shouldn't create video", async () => {
     setDB();
-    const newVideo: InputVideoType = {
+    const newVideo = {
       title: "",
       author: "",
-      availableResolutions: [Resolutions.P144],
+      availableResolutions: null,
     };
 
     const res = await req
@@ -57,7 +70,7 @@ describe("/videos", () => {
       .send(newVideo) // отправка данных
       .expect(400);
 
-    expect(res.body.errorsMessages.length).toBe(2);
+    expect(res.body.errorsMessages.length).toBe(3);
   });
 
   it("shouldn't find", async () => {
@@ -141,6 +154,8 @@ describe("/videos", () => {
 
     const updateResponse = await req.put(`${SETTINGS.PATH.VIDEOS}/${videoId}`).send(updatedVideo).expect(204);
 
+    const updateResponseFailed = await req.put(`${SETTINGS.PATH.VIDEOS}/${videoId + 1}`).send(updatedVideo).expect(404);
+
     const getResponse = await req.get(`${SETTINGS.PATH.VIDEOS}/${videoId}`).expect(200);
 
     expect(updatedVideo.title).toEqual(getResponse.body.title);
@@ -149,6 +164,33 @@ describe("/videos", () => {
     expect(updatedVideo.canBeDownloaded).toEqual(getResponse.body.canBeDownloaded);
     expect(updatedVideo.minAgeRestriction).toEqual(getResponse.body.minAgeRestriction);
     expect(updatedVideo.publicationDate).toEqual(getResponse.body.publicationDate);
+  });
+
+  it("shouldn't update video by id", async () => {
+    setDB();
+
+    // Создаем новое видео
+    const newVideo = {
+      title: "t1",
+      author: "a1",
+      availableResolutions: [Resolutions.P144],
+    };
+
+    const createResponse = await req.post(SETTINGS.PATH.VIDEOS).send(newVideo).expect(201);
+
+    const videoId = createResponse.body.id; // Получаем ID созданного видео
+
+    const updatedVideo = {
+      title: null,
+      author: "a2",
+      availableResolutions: [Resolutions.P1080],
+      canBeDownloaded: false,
+      minAgeRestriction: 2,
+      publicationDate: new Date().toISOString(),
+    };
+
+    const updateResponse = await req.put(`${SETTINGS.PATH.VIDEOS}/${videoId}`).send(updatedVideo).expect(400);
+    expect(updateResponse.body.errorsMessages.length).toBe(1)
   });
 
   it("should delete all data", async () => {

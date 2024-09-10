@@ -16,13 +16,13 @@ const inputValidation = (video: InputVideoType) => {
       field: "availableResolution",
     });
   }
-  if (video.author.trim() === "" || !video.author) {
+  if (video.author?.trim() === "" || !video.author) {
     errors.errorsMessages.push({
       message: "Invalid value",
       field: "author",
     });
   }
-  if (video.title.trim() === "" || !video.title) {
+  if (video.title?.trim() === "" || !video.title) {
     errors.errorsMessages.push({
       message: "Invalid value",
       field: "title",
