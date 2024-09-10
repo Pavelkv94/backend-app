@@ -13,7 +13,7 @@ const inputValidation = (video: InputVideoType) => {
   if (!Array.isArray(video.availableResolutions) || video.availableResolutions.find((p) => !Resolutions[p])) {
     errors.errorsMessages.push({
       message: "error!!!!",
-      field: "availableResolution",
+      field: "availableResolutions",
     });
   }
   if (video.author?.trim() === "" || !video.author || video.author.length > 20) {
@@ -44,13 +44,13 @@ const inputUpdateValidation = (video: InputUpdateVideoType) => {
       field: "availableResolution",
     });
   }
-  if (video.author?.trim() === "" || !video.author) {
+  if (video.author?.trim() === "" || !video.author || video.author.length > 20) {
     errors.errorsMessages.push({
       message: "Invalid value",
       field: "author",
     });
   }
-  if (video.title?.trim() === "" || !video.title) {
+  if (video.title?.trim() === "" || !video.title || video.title.length > 40) {
     errors.errorsMessages.push({
       message: "Invalid value",
       field: "title",
@@ -61,6 +61,20 @@ const inputUpdateValidation = (video: InputUpdateVideoType) => {
     errors.errorsMessages.push({
       message: "Invalid value",
       field: "canBeDownloaded",
+    });
+  }
+
+  if (typeof video.publicationDate !== "string") {
+    errors.errorsMessages.push({
+      message: "Invalid value",
+      field: "publicationDate",
+    });
+  }
+
+  if (video.minAgeRestriction && (video.minAgeRestriction > 18 || video.minAgeRestriction < 1)) {
+    errors.errorsMessages.push({
+      message: "Invalid value",
+      field: "minAgeRestriction",
     });
   }
 
@@ -91,6 +105,9 @@ export const videosController = {
     }
     const payload = req.body;
 
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
     const newVideo: ViewVideoType = {
       id: +new Date() + Math.random(),
       title: payload.title,
@@ -98,7 +115,7 @@ export const videosController = {
       canBeDownloaded: false,
       minAgeRestriction: null,
       createdAt: new Date().toISOString(),
-      publicationDate: "new Date().toISOString()",
+      publicationDate: tomorrow.toISOString(),
       availableResolutions: payload.availableResolutions,
     };
 
