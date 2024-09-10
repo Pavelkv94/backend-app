@@ -16,7 +16,7 @@ const inputValidation = (video: InputVideoType) => {
       field: "availableResolution",
     });
   }
-  if (video.author?.trim() === "" || !video.author) {
+  if (video.author?.trim() === "" || !video.author || video.author.length > 20) {
     errors.errorsMessages.push({
       message: "Invalid value",
       field: "author",
@@ -64,13 +64,6 @@ const inputUpdateValidation = (video: InputUpdateVideoType) => {
     });
   }
 
-  if (typeof video.canBeDownloaded !== "boolean") {
-    errors.errorsMessages.push({
-      message: "Invalid value",
-      field: "canBeDownloaded",
-    });
-  }
-
   return errors;
 };
 
@@ -105,7 +98,7 @@ export const videosController = {
       canBeDownloaded: false,
       minAgeRestriction: null,
       createdAt: new Date().toISOString(),
-      publicationDate: new Date().toISOString(),
+      publicationDate: "new Date().toISOString()",
       availableResolutions: payload.availableResolutions,
     };
 
