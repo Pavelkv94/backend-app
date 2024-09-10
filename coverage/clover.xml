@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1725972473150" clover="3.2.0">
-  <project timestamp="1725972473150" name="All files">
-    <metrics statements="62" coveredstatements="60" conditionals="13" coveredconditionals="11" methods="9" coveredmethods="8" elements="84" coveredelements="79" complexity="0" loc="62" ncloc="62" packages="4" files="8" classes="8"/>
+<coverage generated="1725973888072" clover="3.2.0">
+  <project timestamp="1725973888072" name="All files">
+    <metrics statements="86" coveredstatements="76" conditionals="16" coveredconditionals="12" methods="20" coveredmethods="15" elements="122" coveredelements="103" complexity="0" loc="86" ncloc="86" packages="4" files="8" classes="8"/>
     <package name="__tests__">
       <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       <file name="datasets.ts" path="/home/pnkazlou/Programming/INCUBATOR/backend-app/__tests__/datasets.ts">
@@ -18,18 +18,23 @@
       </file>
     </package>
     <package name="src">
-      <metrics statements="12" coveredstatements="11" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="0"/>
+      <metrics statements="17" coveredstatements="14" conditionals="2" coveredconditionals="2" methods="2" coveredmethods="0"/>
       <file name="app.ts" path="/home/pnkazlou/Programming/INCUBATOR/backend-app/src/app.ts">
-        <metrics statements="9" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <metrics statements="14" coveredstatements="11" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
         <line num="5" count="1" type="stmt"/>
         <line num="7" count="1" type="stmt"/>
-        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
         <line num="10" count="1" type="stmt"/>
         <line num="12" count="1" type="stmt"/>
-        <line num="14" count="0" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+        <line num="20" count="0" type="stmt"/>
+        <line num="21" count="0" type="stmt"/>
       </file>
       <file name="settings.ts" path="/home/pnkazlou/Programming/INCUBATOR/backend-app/src/settings.ts">
         <metrics statements="3" coveredstatements="3" conditionals="2" coveredconditionals="2" methods="0" coveredmethods="0"/>
@@ -44,9 +49,9 @@
         <metrics statements="6" coveredstatements="6" conditionals="3" coveredconditionals="2" methods="1" coveredmethods="1"/>
         <line num="8" count="1" type="stmt"/>
         <line num="14" count="1" type="stmt"/>
-        <line num="15" count="6" type="cond" truecount="1" falsecount="0"/>
-        <line num="16" count="4" type="stmt"/>
-        <line num="18" count="4" type="stmt"/>
+        <line num="15" count="8" type="cond" truecount="1" falsecount="0"/>
+        <line num="16" count="6" type="stmt"/>
+        <line num="18" count="6" type="stmt"/>
         <line num="22" count="2" type="cond" truecount="1" falsecount="1"/>
       </file>
       <file name="video-db-type.ts" path="/home/pnkazlou/Programming/INCUBATOR/backend-app/src/db/video-db-type.ts">
@@ -63,41 +68,60 @@
       </file>
     </package>
     <package name="src.videos">
-      <metrics statements="29" coveredstatements="28" conditionals="6" coveredconditionals="5" methods="6" coveredmethods="6"/>
+      <metrics statements="48" coveredstatements="41" conditionals="9" coveredconditionals="6" methods="16" coveredmethods="13"/>
       <file name="videos.controller.ts" path="/home/pnkazlou/Programming/INCUBATOR/backend-app/src/videos/videos.controller.ts">
-        <metrics statements="24" coveredstatements="23" conditionals="6" coveredconditionals="5" methods="6" coveredmethods="6"/>
+        <metrics statements="40" coveredstatements="33" conditionals="9" coveredconditionals="6" methods="16" coveredmethods="13"/>
         <line num="2" count="1" type="stmt"/>
         <line num="5" count="1" type="stmt"/>
         <line num="7" count="1" type="stmt"/>
-        <line num="8" count="2" type="stmt"/>
-        <line num="13" count="2" type="cond" truecount="2" falsecount="1"/>
+        <line num="8" count="4" type="stmt"/>
+        <line num="13" count="4" type="cond" truecount="2" falsecount="1"/>
         <line num="14" count="0" type="stmt"/>
-        <line num="19" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="19" count="4" type="cond" truecount="1" falsecount="0"/>
         <line num="20" count="1" type="stmt"/>
-        <line num="25" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="25" count="4" type="cond" truecount="1" falsecount="0"/>
         <line num="26" count="1" type="stmt"/>
-        <line num="31" count="2" type="stmt"/>
+        <line num="31" count="4" type="stmt"/>
         <line num="34" count="1" type="stmt"/>
-        <line num="35" count="2" type="stmt"/>
-        <line num="36" count="2" type="stmt"/>
-        <line num="38" count="2" type="stmt"/>
+        <line num="35" count="3" type="stmt"/>
+        <line num="36" count="3" type="stmt"/>
+        <line num="38" count="3" type="stmt"/>
+        <line num="40" count="2" type="stmt"/>
         <line num="41" count="2" type="stmt"/>
-        <line num="42" count="2" type="stmt"/>
         <line num="43" count="2" type="cond" truecount="1" falsecount="0"/>
-        <line num="45" count="1" type="stmt"/>
-        <line num="46" count="1" type="stmt"/>
-        <line num="48" count="1" type="stmt"/>
-        <line num="50" count="1" type="stmt"/>
-        <line num="61" count="1" type="stmt"/>
-        <line num="63" count="1" type="stmt"/>
+        <line num="44" count="1" type="stmt"/>
+        <line num="47" count="2" type="stmt"/>
+        <line num="49" count="4" type="stmt"/>
+        <line num="50" count="4" type="stmt"/>
+        <line num="51" count="4" type="cond" truecount="1" falsecount="0"/>
+        <line num="53" count="1" type="stmt"/>
+        <line num="54" count="1" type="stmt"/>
+        <line num="56" count="3" type="stmt"/>
+        <line num="58" count="3" type="stmt"/>
+        <line num="69" count="3" type="stmt"/>
+        <line num="71" count="3" type="stmt"/>
+        <line num="73" count="0" type="stmt"/>
+        <line num="74" count="0" type="stmt"/>
+        <line num="76" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="77" count="0" type="stmt"/>
+        <line num="80" count="0" type="stmt"/>
+        <line num="82" count="1" type="stmt"/>
+        <line num="83" count="1" type="stmt"/>
+        <line num="85" count="1" type="cond" truecount="0" falsecount="1"/>
+        <line num="86" count="0" type="stmt"/>
+        <line num="89" count="1" type="stmt"/>
+        <line num="90" count="1" type="stmt"/>
       </file>
       <file name="videos.router.ts" path="/home/pnkazlou/Programming/INCUBATOR/backend-app/src/videos/videos.router.ts">
-        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="4" count="1" type="stmt"/>
         <line num="6" count="1" type="stmt"/>
         <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
       </file>
     </package>
   </project>

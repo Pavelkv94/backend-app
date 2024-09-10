@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { db } from "../db/db";
-import { InputVideoType, OutputVideoType, ViewVideoType } from "../input-output-types/video-types";
+import { InputUpdateVideoType, InputVideoType, OutputVideoType, ParamVideoType, ViewVideoType } from "../input-output-types/video-types";
 import { OutputErrorsType } from "../input-output-types/output-errors-types";
 import { Resolutions } from "../db/video-db-type";
 
@@ -37,20 +37,28 @@ export const videosController = {
 
     res.status(200).json(videos); // отдаём видео в качестве ответа
   },
+  getVideo: async (req: Request<ParamVideoType>, res: Response<OutputVideoType>) => {
+    const video = db.videos.find((video) => video.id === +req.params.id); // получаем видео из базы данных
 
-  createVideo: async (req: Request<{}, InputVideoType>, res: Response) => {
+    if (!video) {
+      res.sendStatus(404);
+    }
+
+    res.status(200).json(video); // отдаём видео в качестве ответа
+  },
+  createVideo: async (req: Request<{}, {}, InputVideoType>, res: Response) => {
     const errors = inputValidation(req.body);
     if (errors.errorsMessages.length) {
       // если есть ошибки - отправляем ошибки
       res.status(400).json(errors);
       return;
     }
-    const payload: InputVideoType = req.body;
+    const payload = req.body;
 
     const newVideo: ViewVideoType = {
       id: +new Date() + Math.random(),
       title: payload.title,
-      author: payload.title,
+      author: payload.author,
       canBeDownloaded: true,
       minAgeRestriction: null,
       createdAt: new Date().toISOString(),
@@ -61,5 +69,42 @@ export const videosController = {
     db.videos = [...db.videos, newVideo];
 
     res.status(201).json(newVideo);
+  },
+  updateVideo: async (req: Request<ParamVideoType, {}, InputUpdateVideoType>, res: Response) => {
+    const video = db.videos.find((video) => video.id === +req.params.id); // получаем видео из базы данных
+
+    if (!video) {
+      res.sendStatus(404);
+      return;
+    }
+
+    const payload = req.body;
+
+    db.videos = db.videos.map((video) =>
+      video.id === +req.params.id
+        ? {
+            ...video,
+            title: payload.title,
+            author: payload.author,
+            availableResolutions: payload.availableResolutions,
+            canBeDownloaded: payload.canBeDownloaded,
+            minAgeRestriction: payload.minAgeRestriction,
+            publicationDate: payload.publicationDate,
+          }
+        : video
+    );
+
+    res.sendStatus(204); // отдаём видео в качестве ответа
+  },
+  deleteVideo: async (req: Request<ParamVideoType>, res: Response) => {
+    const video = db.videos.find((video) => video.id === +req.params.id); // получаем видео из базы данных
+
+    if (!video) {
+      res.sendStatus(404);
+      return;
+    }
+
+    db.videos = db.videos.filter((video) => video.id !== +req.params.id);
+    res.sendStatus(204);
   },
 };

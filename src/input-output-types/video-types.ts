@@ -1,5 +1,8 @@
 import { ResolutionsType } from "../db/video-db-type";
 
+export type ParamVideoType = {
+  id: string;
+};
 export type OutputVideoType = {
   id: number;
   title: string;
@@ -15,6 +18,15 @@ export type InputVideoType = {
   title: string;
   author: string;
   availableResolutions: ResolutionsType;
+};
+
+export type InputUpdateVideoType = {
+  title: string;
+  author: string;
+  availableResolutions: ResolutionsType;
+  canBeDownloaded: boolean;
+  minAgeRestriction: number | null;
+  publicationDate: string;
 };
 
 export type ViewVideoType = {
