@@ -22,12 +22,55 @@ const inputValidation = (video: InputVideoType) => {
       field: "author",
     });
   }
+  if (video.title?.trim() === "" || !video.title || video.title.length > 40) {
+    errors.errorsMessages.push({
+      message: "Invalid value",
+      field: "title",
+    });
+  }
+
+  return errors;
+};
+
+const inputUpdateValidation = (video: InputUpdateVideoType) => {
+  const errors: OutputErrorsType = {
+    // объект для сбора ошибок
+    errorsMessages: [],
+  };
+  // ...
+  if (!Array.isArray(video.availableResolutions) || video.availableResolutions.find((p) => !Resolutions[p])) {
+    errors.errorsMessages.push({
+      message: "error!!!!",
+      field: "availableResolution",
+    });
+  }
+  if (video.author?.trim() === "" || !video.author) {
+    errors.errorsMessages.push({
+      message: "Invalid value",
+      field: "author",
+    });
+  }
   if (video.title?.trim() === "" || !video.title) {
     errors.errorsMessages.push({
       message: "Invalid value",
       field: "title",
     });
   }
+
+  if (typeof video.canBeDownloaded !== "boolean") {
+    errors.errorsMessages.push({
+      message: "Invalid value",
+      field: "canBeDownloaded",
+    });
+  }
+
+  if (typeof video.canBeDownloaded !== "boolean") {
+    errors.errorsMessages.push({
+      message: "Invalid value",
+      field: "canBeDownloaded",
+    });
+  }
+
   return errors;
 };
 
@@ -59,7 +102,7 @@ export const videosController = {
       id: +new Date() + Math.random(),
       title: payload.title,
       author: payload.author,
-      canBeDownloaded: true,
+      canBeDownloaded: false,
       minAgeRestriction: null,
       createdAt: new Date().toISOString(),
       publicationDate: new Date().toISOString(),
@@ -73,13 +116,13 @@ export const videosController = {
   updateVideo: async (req: Request<ParamVideoType, {}, InputUpdateVideoType>, res: Response) => {
     const video = db.videos.find((video) => video.id === +req.params.id); // получаем видео из базы данных
 
-    const errors = inputValidation(req.body);
+    const errors = inputUpdateValidation(req.body);
     if (errors.errorsMessages.length) {
       // если есть ошибки - отправляем ошибки
       res.status(400).json(errors);
       return;
     }
-    
+
     if (!video) {
       res.sendStatus(404);
       return;
