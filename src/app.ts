@@ -13,7 +13,7 @@ app.use(SETTINGS.PATH.VIDEOS, videoRouter);
 
 app.get("/", (req, res) => {
   // эндпоинт, который будет показывать на верселе какая версия бэкэнда сейчас залита
-  res.status(200).json({ version: "1.0" });
+  res.status(200).json({ version: "1.1" });
 });
 
 app.delete("/testing/all-data", (req, res) => {
