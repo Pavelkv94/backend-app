@@ -82,12 +82,12 @@ const inputUpdateValidation = (video: InputUpdateVideoType) => {
 };
 
 export const videosController = {
-  getVideos: async (req: Request, res: Response<OutputVideoType[]>) => {
+  async getVideos(req: Request, res: Response<OutputVideoType[]>) {
     const videos = db.videos; // получаем видео из базы данных
 
     res.status(200).json(videos); // отдаём видео в качестве ответа
   },
-  getVideo: async (req: Request<ParamVideoType>, res: Response<OutputVideoType>) => {
+  async getVideo(req: Request<ParamVideoType>, res: Response<OutputVideoType>) {
     const video = db.videos.find((video) => video.id === +req.params.id); // получаем видео из базы данных
 
     if (!video) {
@@ -96,7 +96,7 @@ export const videosController = {
 
     res.status(200).json(video); // отдаём видео в качестве ответа
   },
-  createVideo: async (req: Request<{}, {}, InputVideoType>, res: Response) => {
+  async createVideo(req: Request<{}, {}, InputVideoType>, res: Response) {
     const errors = inputValidation(req.body);
     if (errors.errorsMessages.length) {
       // если есть ошибки - отправляем ошибки
@@ -123,7 +123,7 @@ export const videosController = {
 
     res.status(201).json(newVideo);
   },
-  updateVideo: async (req: Request<ParamVideoType, {}, InputUpdateVideoType>, res: Response) => {
+  async updateVideo(req: Request<ParamVideoType, {}, InputUpdateVideoType>, res: Response) {
     const video = db.videos.find((video) => video.id === +req.params.id); // получаем видео из базы данных
 
     const errors = inputUpdateValidation(req.body);
@@ -156,7 +156,7 @@ export const videosController = {
 
     res.sendStatus(204); // отдаём видео в качестве ответа
   },
-  deleteVideo: async (req: Request<ParamVideoType>, res: Response) => {
+  async deleteVideo(req: Request<ParamVideoType>, res: Response) {
     const video = db.videos.find((video) => video.id === +req.params.id); // получаем видео из базы данных
 
     if (!video) {
