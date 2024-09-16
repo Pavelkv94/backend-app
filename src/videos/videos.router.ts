@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { videosController } from "./videos.controller";
 
-export const videoRouter = Router();
+export const videosRouter = Router();
 
-videoRouter.get("/", videosController.getVideos);
-videoRouter.get("/:id", videosController.getVideo);
-videoRouter.post("/", videosController.createVideo);
-videoRouter.put("/:id", videosController.updateVideo);
-videoRouter.delete("/:id", videosController.deleteVideo);
+videosRouter.get("/", videosController.getVideos);
+videosRouter.get("/:id", videosController.getVideo);
+videosRouter.post("/", videosController.createVideo);
+videosRouter.put("/:id", videosController.updateVideo);
+videosRouter.delete("/:id", videosController.deleteVideo);

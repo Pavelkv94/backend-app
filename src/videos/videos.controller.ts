@@ -9,23 +9,25 @@ const inputValidation = (video: InputVideoType) => {
     // объект для сбора ошибок
     errorsMessages: [],
   };
-  // ...
-  if (!Array.isArray(video.availableResolutions) || video.availableResolutions.find((p) => !Resolutions[p])) {
+
+  if (video.title?.trim() === "" || !video.title || video.title.length > 40) {
     errors.errorsMessages.push({
-      message: "error!!!!",
-      field: "availableResolutions",
+      message: "Invalid value",
+      field: "title",
     });
   }
+
   if (video.author?.trim() === "" || !video.author || video.author.length > 20) {
     errors.errorsMessages.push({
       message: "Invalid value",
       field: "author",
     });
   }
-  if (video.title?.trim() === "" || !video.title || video.title.length > 40) {
+
+  if (!Array.isArray(video.availableResolutions) || video.availableResolutions.find((p) => !Resolutions[p])) {
     errors.errorsMessages.push({
-      message: "Invalid value",
-      field: "title",
+      message: "error!!!!",
+      field: "availableResolutions",
     });
   }
 
@@ -38,12 +40,7 @@ const inputUpdateValidation = (video: InputUpdateVideoType) => {
     errorsMessages: [],
   };
   // ...
-  if (!Array.isArray(video.availableResolutions) || video.availableResolutions.find((p) => !Resolutions[p])) {
-    errors.errorsMessages.push({
-      message: "error!!!!",
-      field: "availableResolution",
-    });
-  }
+
   if (video.author?.trim() === "" || !video.author || video.author.length > 20) {
     errors.errorsMessages.push({
       message: "Invalid value",
@@ -78,6 +75,13 @@ const inputUpdateValidation = (video: InputUpdateVideoType) => {
     });
   }
 
+  if (!Array.isArray(video.availableResolutions) || video.availableResolutions.find((p) => !Resolutions[p])) {
+    errors.errorsMessages.push({
+      message: "error!!!!",
+      field: "availableResolution",
+    });
+  }
+
   return errors;
 };
 
@@ -96,7 +100,7 @@ export const videosController = {
 
     res.status(200).json(video); // отдаём видео в качестве ответа
   },
-  async createVideo(req: Request<{}, {}, InputVideoType>, res: Response) {
+  async createVideo(req: Request<{}, {}, InputVideoType>, res: Response<OutputVideoType | OutputErrorsType>) {
     const errors = inputValidation(req.body);
     if (errors.errorsMessages.length) {
       // если есть ошибки - отправляем ошибки

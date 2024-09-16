@@ -13,9 +13,7 @@ describe("/videos", () => {
   });
 
   it("should get object", async () => {
-
     const res = await req.get("/").expect(200); // проверяем наличие эндпоинта
-
   });
 
   it("should get empty array", async () => {
@@ -54,7 +52,6 @@ describe("/videos", () => {
     expect(getVideosResponse.body.length).toBe(1);
 
     const getVideoResponse = await req.get(`${SETTINGS.PATH.VIDEOS}/${createResponse.body.id}`).expect(200); // проверка на ошибку
-
   });
 
   it("shouldn't create video", async () => {
@@ -154,7 +151,10 @@ describe("/videos", () => {
 
     const updateResponse = await req.put(`${SETTINGS.PATH.VIDEOS}/${videoId}`).send(updatedVideo).expect(204);
 
-    const updateResponseFailed = await req.put(`${SETTINGS.PATH.VIDEOS}/${videoId + 1}`).send(updatedVideo).expect(404);
+    const updateResponseFailed = await req
+      .put(`${SETTINGS.PATH.VIDEOS}/${videoId + 1}`)
+      .send(updatedVideo)
+      .expect(404);
 
     const getResponse = await req.get(`${SETTINGS.PATH.VIDEOS}/${videoId}`).expect(200);
 
@@ -190,7 +190,7 @@ describe("/videos", () => {
     };
 
     const updateResponse = await req.put(`${SETTINGS.PATH.VIDEOS}/${videoId}`).send(updatedVideo).expect(400);
-    expect(updateResponse.body.errorsMessages.length).toBe(1)
+    expect(updateResponse.body.errorsMessages.length).toBe(1);
   });
 
   it("should delete all data", async () => {
