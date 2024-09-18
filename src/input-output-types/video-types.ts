@@ -14,7 +14,7 @@ export type OutputVideoType = {
   availableResolutions: ResolutionsType;
 };
 
-export type InputVideoType = {
+export type InputVideoModel = {
   title: string;
   author: string;
   availableResolutions: ResolutionsType;

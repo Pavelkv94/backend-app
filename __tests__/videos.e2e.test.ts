@@ -1,10 +1,10 @@
-import { req } from "./test-helpers";
+import { req } from "./helpers/test-helpers";
 // import {dataset1} from './datasets'
 import { SETTINGS } from "../src/settings";
 import { setDB } from "../src/db/db";
-import { dataset1 } from "./datasets";
-import { InputVideoType } from "../src/input-output-types/video-types";
-import { Resolutions, VideoDBType } from "../src/db/video-db-type";
+import { Resolutions } from "../src/db/video-db-type";
+import { InputVideoModel } from "../src/input-output-types/video-types";
+import { dataset1 } from "./helpers/datasets";
 
 describe("/videos", () => {
   beforeAll(async () => {
@@ -34,7 +34,7 @@ describe("/videos", () => {
 
   it("should create video", async () => {
     setDB();
-    const newVideo: InputVideoType = {
+    const newVideo: InputVideoModel = {
       title: "t1",
       author: "a1",
       availableResolutions: [Resolutions.P144],
@@ -80,7 +80,7 @@ describe("/videos", () => {
     setDB();
 
     // Создаем новое видео
-    const newVideo: InputVideoType = {
+    const newVideo: InputVideoModel = {
       title: "t1",
       author: "a1",
       availableResolutions: [Resolutions.P144],
@@ -100,7 +100,7 @@ describe("/videos", () => {
     setDB();
 
     // Создаем новое видео
-    const newVideo: InputVideoType = {
+    const newVideo: InputVideoModel = {
       title: "t1",
       author: "a1",
       availableResolutions: [Resolutions.P144],
@@ -130,7 +130,7 @@ describe("/videos", () => {
     setDB();
 
     // Создаем новое видео
-    const newVideo: InputVideoType = {
+    const newVideo: InputVideoModel = {
       title: "t1",
       author: "a1",
       availableResolutions: [Resolutions.P144],
