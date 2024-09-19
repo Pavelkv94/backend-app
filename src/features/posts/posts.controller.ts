@@ -1,6 +1,4 @@
 import { Request, Response } from "express";
-import { db } from "../../db/db";
-import { InputUpdateVideoType, InputVideoModel, OutputVideoType, ParamVideoType, ViewVideoType } from "../../input-output-types/video-types";
 import { OutputErrorsType } from "../../input-output-types/output-errors-types";
 import { postsRepository } from "./posts.repository";
 import { PostInputModel, PostViewModel, URIParamsPostModel } from "../../input-output-types/posts-types";

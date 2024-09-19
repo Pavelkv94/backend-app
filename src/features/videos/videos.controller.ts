@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import { db } from "../../db/db";
-import { InputUpdateVideoType, InputVideoModel, OutputVideoType, ParamVideoType, ViewVideoType } from "../../input-output-types/video-types";
+import { InputUpdateVideoType, InputVideoModel, OutputVideoType, ParamVideoType } from "../../input-output-types/video-types";
 import { OutputErrorsType } from "../../input-output-types/output-errors-types";
 import { Resolutions } from "../../db/video-db-type";
 import { videosRepository } from "./videos.repository";
