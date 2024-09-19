@@ -43,7 +43,7 @@ export const videosRepository = {
     return newVideo;
   },
   async updateVideo(id: number, payload: InputUpdateVideoType): Promise<boolean> {
-    const video = db.videos.find((video) => video.id === id); // получаем видео из базы данных
+    const video = await this.findVideo(id); // получаем видео из базы данных
 
     if (video) {
       db.videos = db.videos.map((video) =>

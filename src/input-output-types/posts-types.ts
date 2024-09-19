@@ -13,3 +13,9 @@ export type PostViewModel = {
     blogId: string // valid
     blogName: string
 }
+
+export type PostOutputModel = PostViewModel
+
+export type URIParamsPostModel = {
+    id: string
+}

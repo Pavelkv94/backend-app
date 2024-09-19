@@ -2,91 +2,53 @@ import { Request, Response } from "express";
 import { db } from "../../db/db";
 import { InputUpdateVideoType, InputVideoModel, OutputVideoType, ParamVideoType, ViewVideoType } from "../../input-output-types/video-types";
 import { OutputErrorsType } from "../../input-output-types/output-errors-types";
-import { Resolutions } from "../../db/video-db-type";
-
+import { postsRepository } from "./posts.repository";
+import { PostInputModel, PostViewModel, URIParamsPostModel } from "../../input-output-types/posts-types";
 
 export const postsController = {
-  async getPosts(req: Request, res: Response<OutputVideoType[]>) {
-    const videos = db.videos; // получаем видео из базы данных
+  async getPosts(req: Request, res: Response<PostViewModel[]>) {
+    const posts = await postsRepository.findPosts();
 
-    res.status(200).json(videos); // отдаём видео в качестве ответа
+    res.status(200).json(posts);
   },
-  async getPost(req: Request<ParamVideoType>, res: Response<OutputVideoType>) {
-    const video = db.videos.find((video) => video.id === +req.params.id); // получаем видео из базы данных
 
-    if (!video) {
+  async getPost(req: Request<URIParamsPostModel>, res: Response<PostViewModel>) {
+    const post = await postsRepository.findForOutput(req.params.id);
+
+    if (!post) {
       res.sendStatus(404);
+    } else {
+      res.status(200).json(post);
     }
-
-    res.status(200).json(video); // отдаём видео в качестве ответа
   },
-  async createPost(req: Request<{}, {}, InputVideoModel>, res: Response<OutputVideoType | OutputErrorsType>) {
-    // if (errors.errorsMessages.length) {
-    //   // если есть ошибки - отправляем ошибки
-    //   res.status(400).json(errors);
-    //   return;
-    // }
-    const payload = req.body;
 
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
+  async createPost(req: Request<any, any, PostInputModel>, res: Response<PostViewModel | OutputErrorsType>) {
+    const newPostId = await postsRepository.create(req.body);
+    const newPost = await postsRepository.findAndMap(newPostId.id);
 
-    const newVideo: ViewVideoType = {
-      id: +new Date() + Math.random(),
-      title: payload.title,
-      author: payload.author,
-      canBeDownloaded: false,
-      minAgeRestriction: null,
-      createdAt: new Date().toISOString(),
-      publicationDate: tomorrow.toISOString(),
-      availableResolutions: payload.availableResolutions,
-    };
-
-    db.videos = [...db.videos, newVideo];
-
-    res.status(201).json(newVideo);
+    if (!newPost) {
+      res.sendStatus(500);
+    } else {
+      res.status(201).json(newPost);
+    }
   },
-  async updatePost(req: Request<ParamVideoType, {}, InputUpdateVideoType>, res: Response) {
-    const video = db.videos.find((video) => video.id === +req.params.id); // получаем видео из базы данных
 
-    // if (errors.errorsMessages.length) {
-    //   // если есть ошибки - отправляем ошибки
-    //   res.status(400).json(errors);
-    //   return;
-    // }
+  async updatePost(req: Request<URIParamsPostModel, {}, PostInputModel>, res: Response<OutputErrorsType>) {
+    const isUpdatedPost = await postsRepository.update(req.params.id, req.body);
 
-    if (!video) {
+    if (!isUpdatedPost) {
       res.sendStatus(404);
-      return;
+    } else {
+      res.sendStatus(204);
     }
-
-    const payload = req.body;
-
-    db.videos = db.videos.map((video) =>
-      video.id === +req.params.id
-        ? {
-            ...video,
-            title: payload.title,
-            author: payload.author,
-            availableResolutions: payload.availableResolutions,
-            canBeDownloaded: payload.canBeDownloaded,
-            minAgeRestriction: payload.minAgeRestriction,
-            publicationDate: payload.publicationDate,
-          }
-        : video
-    );
-
-    res.sendStatus(204); // отдаём видео в качестве ответа
   },
-  async deletePost(req: Request<ParamVideoType>, res: Response) {
-    const video = db.videos.find((video) => video.id === +req.params.id); // получаем видео из базы данных
+  async deletePost(req: Request<URIParamsPostModel>, res: Response) {
+    const isDeletedPost = await postsRepository.delete(req.params.id);
 
-    if (!video) {
+    if (!isDeletedPost) {
       res.sendStatus(404);
-      return;
+    } else {
+      res.sendStatus(204);
     }
-
-    db.videos = db.videos.filter((video) => video.id !== +req.params.id);
-    res.sendStatus(204);
   },
 };

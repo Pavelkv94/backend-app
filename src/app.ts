@@ -5,7 +5,7 @@ import { SETTINGS } from "./settings";
 import { setDB } from "./db/db";
 import { postsRouter } from "./features/posts/posts.router";
 import { testingRouter } from "./features/testing/testing.router";
-import { blogsRouter } from "./features/blogs";
+import { blogsRouter } from "./features/blogs/blogs.router";
 
 export const app = express(); // создать приложение
 

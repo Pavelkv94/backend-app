@@ -1,5 +1,5 @@
 import {Request, Response} from 'express'
-import {blogsRepository} from '../blogsRepository'
+import {blogsRepository} from '../blogs.repository'
 
 export const delBlogController = (req: Request<{id: string}>, res: Response) => {
 

@@ -10,3 +10,9 @@ export type BlogViewModel = {
     description: string // max 500
     websiteUrl: string // max 100 ^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$
 }
+
+export type BlogOutputModel = BlogViewModel
+
+export type URIParamsBlogModel = {
+    id: string
+}

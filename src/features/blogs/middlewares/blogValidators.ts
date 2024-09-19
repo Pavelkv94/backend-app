@@ -1,7 +1,7 @@
 import {body} from 'express-validator'
 import {inputCheckErrorsMiddleware} from '../../../global-middlewares/inputCheckErrorsMiddleware'
 import {NextFunction, Request, Response} from 'express'
-import {blogsRepository} from '../blogsRepository'
+import {blogsRepository} from '../blogs.repository'
 import {adminMiddleware} from '../../../global-middlewares/admin-middleware'
 
 // name: string // max 15
