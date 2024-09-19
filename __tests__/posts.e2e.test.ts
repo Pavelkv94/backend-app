@@ -174,7 +174,7 @@ describe('/posts', () => {
         expect(db.posts[0]).toEqual({...db.posts[0], ...post, blogName: dataset2.blogs[1].name})
     })
     it('shouldn\'t update 404', async () => {
-        setDB()
+        setDB(dataset1)
         const post: PostInputModel = {
             title: 't1',
             shortDescription: 's1',

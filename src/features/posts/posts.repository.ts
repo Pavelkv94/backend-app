@@ -27,7 +27,7 @@ export const postsRepository = {
     const newPost: PostDbType = {
       ...payload,
       id: (Date.now() + Math.random()).toString(),
-      blogName: blog?.name || "", //! вопросики
+      blogName: blog!.name
     };
 
     try {
@@ -54,7 +54,7 @@ export const postsRepository = {
       shortDescription: payload.shortDescription,
       content: payload.content,
       blogId: payload.blogId,
-      blogName: blog?.name || "" //! вопросики
+      blogName: blog!.name
     };
 
     try {

@@ -16,11 +16,11 @@ export const adminMiddleware = (req: Request, res: Response, next: NextFunction)
   const auth = req.headers["authorization"] as string; // 'Basic xxxx'
   // console.log(auth)
   if (!auth) {
-    res.status(401).json({});
+    res.sendStatus(401);
     return;
   }
   if (auth.slice(0, 6) !== "Basic ") {
-    res.status(401).json({});
+    res.sendStatus(401);
     return;
   }
 
@@ -29,6 +29,7 @@ export const adminMiddleware = (req: Request, res: Response, next: NextFunction)
 
   if (decodedAuth !== SETTINGS.ADMIN) {
     res.sendStatus(401);
+    return;
   }
 
   next();

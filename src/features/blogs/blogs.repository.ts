@@ -50,8 +50,8 @@ export const blogsRepository = {
         el.id === id
           ? {
               ...el,
-              name: payload.websiteUrl,
-              description: payload.websiteUrl,
+              name: payload.name,
+              description: payload.description,
               websiteUrl: payload.websiteUrl,
             }
           : el
