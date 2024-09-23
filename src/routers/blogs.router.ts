@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { adminMiddleware } from "../../global-middlewares/admin-middleware";
-import { blogsController } from "./blogs.controller";
-import { blogValidators, findBlogValidator } from "./middlewares/blogValidators";
+import { adminMiddleware } from "../middlewares/admin-middleware";
+import { blogsController } from "../constrollers/blogs.controller";
+import { blogValidators, findBlogValidator } from "../middlewares/blogValidators";
 
 export const blogsRouter = Router();
 

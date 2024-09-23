@@ -1,9 +1,9 @@
 // ...
 
-import { db } from "../../db/db";
-import { VideoDBType } from "../../db/video-db-type";
-import { OutputErrorsType } from "../../input-output-types/output-errors-types";
-import { InputUpdateVideoType, InputVideoModel, OutputVideoType, ViewVideoType } from "../../input-output-types/video-types";
+import { db } from "../db/db";
+import { VideoDBType } from "../db/video-db-type";
+import { OutputErrorsType } from "../input-output-types/output-errors-types";
+import { InputUpdateVideoType, InputVideoModel, OutputVideoType, ViewVideoType } from "../input-output-types/video-types";
 
 export const videosRepository = {
   async findVideos(): Promise<VideoDBType[]> {

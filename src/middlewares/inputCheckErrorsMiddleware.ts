@@ -7,7 +7,6 @@ export const inputCheckErrorsMiddleware = (req: Request, res: Response<OutputErr
 
   if (!e.isEmpty()) {
     const eArray = e.array({ onlyFirstError: true }) as { path: FieldNamesType; msg: string }[];
-    // console.log("eArray", eArray)
 
     res.status(400).json({
       errorsMessages: eArray.map((x) => ({ field: x.path, message: x.msg })),

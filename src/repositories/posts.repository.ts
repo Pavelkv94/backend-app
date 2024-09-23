@@ -1,7 +1,7 @@
-import { db } from "../../db/db";
-import { PostDbType } from "../../db/post-db-type";
-import { PostInputModel, PostOutputModel } from "../../input-output-types/posts-types";
-import { blogsRepository } from "../blogs/blogs.repository";
+import { db } from "../db/db";
+import { PostDbType } from "../db/post-db-type";
+import { PostInputModel, PostOutputModel } from "../input-output-types/posts-types";
+import { blogsRepository } from "./blogs.repository";
 
 export const postsRepository = {
   async findPosts(): Promise<PostDbType[]> {

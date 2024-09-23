@@ -1,9 +1,9 @@
 import { body } from "express-validator";
-import { inputCheckErrorsMiddleware } from "../../../global-middlewares/inputCheckErrorsMiddleware";
+import { inputCheckErrorsMiddleware } from "./inputCheckErrorsMiddleware";
 import { NextFunction, Request, Response } from "express";
-import { adminMiddleware } from "../../../global-middlewares/admin-middleware";
-import { blogsRepository } from "../../blogs/blogs.repository";
-import { postsRepository } from "../posts.repository";
+import { adminMiddleware } from "./admin-middleware";
+import { blogsRepository } from "../repositories/blogs.repository";
+import { postsRepository } from "../repositories/posts.repository";
 
 // title: string // max 30
 // shortDescription: string // max 100

@@ -3,37 +3,47 @@ import { PostDbType } from "./post-db-type";
 import { VideoDBType } from "./video-db-type";
 
 export type DBType = {
-  // типизация базы данных (что мы будем в ней хранить)
   videos: VideoDBType[];
   blogs: BlogDbType[];
   posts: PostDbType[];
 };
 
 export type ReadonlyDBType = {
-  // тип для dataset
   blogs: Readonly<BlogDbType[]>;
   posts: Readonly<PostDbType[]>;
   videos: Readonly<VideoDBType[]>;
 };
 
+// const mongoUri = process.env.MONGO_URI || "mongodb://0.0.0.0:27017";
+
+// const client = new MongoClient(mongoUri);
+
+// export const coursesCollection = client.db("test").collection<CourseType>("Courses");
+
+// export async function runDb() {
+//   try {
+//     await client.connect();
+//     await client.db("test").command({ ping: 1 });
+//     console.log("Log: MongoDB connected!");
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }
+
 export const db: DBType = {
-  // создаём базу данных (пока это просто переменная)
   videos: [],
   blogs: [],
   posts: [],
 };
 
-// функция для быстрой очистки/заполнения базы данных для тестов
 export const setDB = (dataset?: Partial<ReadonlyDBType>) => {
   if (!dataset) {
-    // если в функцию ничего не передано - то очищаем базу данных
     db.videos = [];
     db.blogs = [];
     db.posts = [];
     return;
   }
 
-  // если что-то передано - то заменяем старые значения новыми
   db.videos = dataset.videos?.map((b) => ({ ...b })) || db.videos;
   db.blogs = dataset.blogs?.map((b) => ({ ...b })) || db.blogs;
   db.posts = dataset.posts?.map((p) => ({ ...p })) || db.posts;

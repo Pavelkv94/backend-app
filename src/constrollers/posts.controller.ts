@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { OutputErrorsType } from "../../input-output-types/output-errors-types";
-import { postsRepository } from "./posts.repository";
-import { PostInputModel, PostViewModel, URIParamsPostModel } from "../../input-output-types/posts-types";
+import { OutputErrorsType } from "../input-output-types/output-errors-types";
+import { postsRepository } from "../repositories/posts.repository";
+import { PostInputModel, PostViewModel, URIParamsPostModel } from "../input-output-types/posts-types";
 
 export const postsController = {
   async getPosts(req: Request, res: Response<PostViewModel[]>) {

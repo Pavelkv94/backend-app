@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { BlogInputModel, BlogViewModel, URIParamsBlogModel } from "../../input-output-types/blogs-types";
-import { blogsRepository } from "./blogs.repository";
-import { OutputErrorsType } from "../../input-output-types/output-errors-types";
+import { BlogInputModel, BlogViewModel, URIParamsBlogModel } from "../input-output-types/blogs-types";
+import { blogsRepository } from "../repositories/blogs.repository";
+import { OutputErrorsType } from "../input-output-types/output-errors-types";
 
 export const blogsController = {
   async getBlogs(req: Request, res: Response<BlogViewModel[]>) {

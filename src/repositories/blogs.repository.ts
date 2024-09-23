@@ -1,6 +1,6 @@
-import { BlogDbType } from "../../db/blog-db-type";
-import { db } from "../../db/db";
-import { BlogInputModel, BlogViewModel } from "../../input-output-types/blogs-types";
+import { BlogDbType } from "../db/blog-db-type";
+import { db } from "../db/db";
+import { BlogInputModel, BlogViewModel } from "../input-output-types/blogs-types";
 
 export const blogsRepository = {
   findAll() {

@@ -1,5 +1,5 @@
 import {Router} from 'express'
-import { setDB } from '../../db/db'
+import { setDB } from '../db/db'
 
 export const testingRouter = Router()
 

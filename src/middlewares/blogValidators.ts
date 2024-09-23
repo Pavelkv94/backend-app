@@ -1,8 +1,8 @@
 import { body } from "express-validator";
-import { inputCheckErrorsMiddleware } from "../../../global-middlewares/inputCheckErrorsMiddleware";
+import { inputCheckErrorsMiddleware } from "./inputCheckErrorsMiddleware";
 import { NextFunction, Request, Response } from "express";
-import { blogsRepository } from "../blogs.repository";
-import { adminMiddleware } from "../../../global-middlewares/admin-middleware";
+import { blogsRepository } from "../repositories/blogs.repository";
+import { adminMiddleware } from "./admin-middleware";
 
 // name: string // max 15
 // description: string // max 500
