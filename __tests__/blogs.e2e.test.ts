@@ -1,185 +1,247 @@
-import { req } from "./helpers/test-helpers";
-import { db, setDB } from "../src/db/db";
-import { SETTINGS } from "../src/settings";
+import { clearDB, db, runDB } from "../src/db/db";
 import { BlogInputModel } from "../src/input-output-types/blogs-types";
-import { codedAuth, createString, dataset1 } from "./helpers/datasets";
+import { createString } from "./helpers/datasets";
+import { MongoMemoryServer } from "mongodb-memory-server";
+import { blogsManager } from "./helpers/blogsManager";
 
 describe("/blogs", () => {
+  let client: MongoMemoryServer;
   beforeAll(async () => {
-    setDB();
+    // запуск виртуального сервера с временной бд
+    client = await MongoMemoryServer.create();
+
+    const uri = client.getUri();
+
+    await runDB(uri);
   });
 
-  it("should create", async () => {
-    setDB();
+  beforeEach(async () => {
+    await clearDB();
+  });
+
+  afterAll(async () => {
+    await client.stop();
+  });
+
+  it("should create and shouldn't get empty array", async () => {
     const newBlog: BlogInputModel = {
       name: "n1",
       description: "d1",
       websiteUrl: "http://some.com",
     };
 
-    const res = await req
-      .post(SETTINGS.PATH.BLOGS)
-      .set({ Authorization: "Basic " + codedAuth })
-      .send(newBlog)
-      .expect(201);
+    const res = await blogsManager.createBlogWithAuth(newBlog);
 
+    expect(res.status).toBe(201);
     expect(res.body.name).toEqual(newBlog.name);
     expect(res.body.description).toEqual(newBlog.description);
     expect(res.body.websiteUrl).toEqual(newBlog.websiteUrl);
-    expect(typeof res.body.id).toEqual("string");
 
-    expect(res.body).toEqual(db.blogs[0]);
+    const getBlogsResponse = await blogsManager.getBlogs();
+
+    expect(getBlogsResponse.body.length).toBe(1);
   });
+
   it("shouldn't create 401", async () => {
-    setDB();
     const newBlog: BlogInputModel = {
       name: "n1",
       description: "d1",
       websiteUrl: "http://some.com",
     };
 
-    const res = await req.post(SETTINGS.PATH.BLOGS).send(newBlog).expect(401);
-
-    expect(db.blogs.length).toEqual(0);
+    const res = await blogsManager.createBlogWithoutAuth(newBlog);
+    expect(res.status).toBe(401);
   });
-  it("shouldn't create", async () => {
-    setDB();
+
+  it("shouldn't create and should get empty array ", async () => {
     const newBlog: BlogInputModel = {
       name: createString(16),
       description: createString(501),
       websiteUrl: createString(101),
     };
 
-    const res = await req
-      .post(SETTINGS.PATH.BLOGS)
-      .set({ Authorization: "Basic " + codedAuth })
-      .send(newBlog)
-      .expect(400);
+    const res = await blogsManager.createBlogWithAuth(newBlog);
+
+    expect(res.status).toBe(400);
 
     expect(res.body.errorsMessages.length).toEqual(3);
     expect(res.body.errorsMessages[0].field).toEqual("name");
     expect(res.body.errorsMessages[1].field).toEqual("description");
     expect(res.body.errorsMessages[2].field).toEqual("websiteUrl");
 
-    expect(db.blogs.length).toEqual(0);
+    const getBlogsResponse = await blogsManager.getBlogs();
+
+    expect(getBlogsResponse.body.length).toBe(0);
   });
-  it("should get empty array", async () => {
-    setDB();
 
-    const res = await req.get(SETTINGS.PATH.BLOGS).expect(200);
+  // it("should get empty array", async () => {
+  //   const res = await blogsManager.getBlogs();
 
-    expect(res.body.length).toEqual(0);
-  });
-  it("should get not empty array", async () => {
-    setDB(dataset1);
+  //   expect(res.status).toBe(200);
+  //   expect(res.body.length).toBe(0);
+  // });
 
-    const res = await req.get(SETTINGS.PATH.BLOGS).expect(200);
+  // it("should get not empty array", async () => {
 
-    expect(res.body.length).toEqual(1);
-    expect(res.body[0]).toEqual(dataset1.blogs[0]);
-  });
+  //   const res = await req.get(SETTINGS.PATH.BLOGS).expect(200);
+
+  //   expect(res.body.length).toEqual(1);
+  //   expect(res.body[0]).toEqual(dataset1.blogs[0]);
+  // });
+
   it("shouldn't find", async () => {
-    setDB(dataset1);
-
-    const res = await req.get(SETTINGS.PATH.BLOGS + "/1").expect(404);
+    const getResponse = await blogsManager.getBlog("1");
+    expect(getResponse.status).toBe(404);
   });
+
   it("should find", async () => {
-    setDB(dataset1);
+    const newBlog: BlogInputModel = {
+      name: "n1",
+      description: "d1",
+      websiteUrl: "http://some.com",
+    };
 
-    const res = await req.get(SETTINGS.PATH.BLOGS + "/" + dataset1.blogs[0].id).expect(200);
+    const createResponse = await blogsManager.createBlogWithAuth(newBlog);
 
-    expect(res.body).toEqual(dataset1.blogs[0]);
+    expect(createResponse.status).toBe(201);
+
+    const getResponse = await blogsManager.getBlog(createResponse.body.id);
+    expect(getResponse.status).toBe(200);
+
+    expect(getResponse.body.name).toBe(newBlog.name);
+    expect(getResponse.body.description).toBe(newBlog.description);
+    expect(getResponse.body.websiteUrl).toBe(newBlog.websiteUrl);
   });
+
   it("should del", async () => {
-    setDB(dataset1);
+    const newBlog: BlogInputModel = {
+      name: "n1",
+      description: "d1",
+      websiteUrl: "http://some.com",
+    };
 
-    const res = await req
-      .delete(SETTINGS.PATH.BLOGS + "/" + dataset1.blogs[0].id)
-      .set({ Authorization: "Basic " + codedAuth })
-      .expect(204);
+    const createResponse = await blogsManager.createBlogWithAuth(newBlog);
 
-    expect(db.blogs.length).toEqual(0);
+    expect(createResponse.status).toBe(201);
+
+    const res = await blogsManager.deleteBlogWithAuth(createResponse.body.id);
+
+    expect(res.status).toBe(204);
+
+    const getResponse = await blogsManager.getBlog(createResponse.body.id);
+    expect(getResponse.status).toBe(404);
   });
+
   it("shouldn't del", async () => {
-    setDB();
+    const res = await blogsManager.deleteBlogWithAuth("1");
 
-    const res = await req
-      .delete(SETTINGS.PATH.BLOGS + "/1")
-      .set({ Authorization: "Basic " + codedAuth })
-      .expect(404);
+    expect(res.status).toBe(404);
   });
+
   it("shouldn't del 401", async () => {
-    setDB();
+    const newBlog: BlogInputModel = {
+      name: "n1",
+      description: "d1",
+      websiteUrl: "http://some.com",
+    };
 
-    const res = await req
-      .delete(SETTINGS.PATH.BLOGS + "/1")
-      .set({ Authorization: "Basic" + codedAuth })
-      .expect(401);
+    const createResponse = await blogsManager.createBlogWithAuth(newBlog);
+
+    expect(createResponse.status).toBe(201);
+
+    const res = await blogsManager.deleteBlogWithoutAuth(createResponse.body.id);
+
+    expect(res.status).toBe(401);
   });
+
   it("should update", async () => {
-    setDB(dataset1);
+    const newBlog: BlogInputModel = {
+      name: "n1",
+      description: "d1",
+      websiteUrl: "http://some.com",
+    };
+
+    const createResponse = await blogsManager.createBlogWithAuth(newBlog);
+
+    expect(createResponse.status).toBe(201);
+
+    const updatedBlog: BlogInputModel = {
+      name: "n2",
+      description: "d2",
+      websiteUrl: "http://some2.com",
+    };
+
+    const updateRes = await blogsManager.updateBlogWithAuth(updatedBlog, createResponse.body.id);
+
+    expect(updateRes.status).toBe(204);
+
+    const getResponse = await blogsManager.getBlog(createResponse.body.id);
+    expect(getResponse.status).toBe(200);
+    expect(getResponse.body.name).toBe(updatedBlog.name);
+    expect(getResponse.body.description).toBe(updatedBlog.description);
+    expect(getResponse.body.websiteUrl).toBe(updatedBlog.websiteUrl);
+  });
+
+  it("shouldn't update 404", async () => {
     const blog: BlogInputModel = {
       name: "n2",
       description: "d2",
       websiteUrl: "http://some2.com",
     };
 
-    const res = await req
-      .put(SETTINGS.PATH.BLOGS + "/" + dataset1.blogs[0].id)
-      .set({ Authorization: "Basic " + codedAuth })
-      .send(blog)
-      .expect(204);
-
-    expect(db.blogs[0]).toEqual({ ...db.blogs[0], ...blog });
+    const res = await blogsManager.updateBlogWithAuth(blog, "1");
+    expect(res.status).toBe(404);
   });
-  it("shouldn't update 404", async () => {
-    setDB();
-    const blog: BlogInputModel = {
+
+  it("shouldn't update  400", async () => {
+    const newBlog: BlogInputModel = {
       name: "n1",
       description: "d1",
       websiteUrl: "http://some.com",
     };
 
-    const res = await req
-      .put(SETTINGS.PATH.BLOGS + "/1")
-      .set({ Authorization: "Basic " + codedAuth })
-      .send(blog)
-      .expect(404);
-  });
-  it("shouldn't update2", async () => {
-    setDB(dataset1);
+    const createResponse = await blogsManager.createBlogWithAuth(newBlog);
+
+    expect(createResponse.status).toBe(201);
+
     const blog: BlogInputModel = {
       name: createString(16),
       description: createString(501),
       websiteUrl: createString(101),
     };
 
-    const res = await req
-      .put(SETTINGS.PATH.BLOGS + "/" + dataset1.blogs[0].id)
-      .set({ Authorization: "Basic " + codedAuth })
-      .send(blog)
-      .expect(400);
+    const res = await blogsManager.updateBlogWithAuth(blog, createResponse.body.id);
 
-    expect(db).toEqual(dataset1);
+    expect(res.status).toBe(400);
     expect(res.body.errorsMessages.length).toEqual(3);
     expect(res.body.errorsMessages[0].field).toEqual("name");
     expect(res.body.errorsMessages[1].field).toEqual("description");
     expect(res.body.errorsMessages[2].field).toEqual("websiteUrl");
   });
   it("shouldn't update 401", async () => {
-    setDB(dataset1);
+    const newBlog: BlogInputModel = {
+      name: "n1",
+      description: "d1",
+      websiteUrl: "http://some.com",
+    };
+
+    const createResponse = await blogsManager.createBlogWithAuth(newBlog);
+
+    expect(createResponse.status).toBe(201);
+
     const blog: BlogInputModel = {
       name: createString(16),
       description: createString(501),
       websiteUrl: createString(101),
     };
 
-    const res = await req
-      .put(SETTINGS.PATH.BLOGS + "/" + dataset1.blogs[0].id)
-      .set({ Authorization: "Basic " + codedAuth + "error" })
-      .send(blog)
-      .expect(401);
+    const updateResponse = await blogsManager.updateBlogWithoutAuth(blog, createResponse.body.id);
+    expect(updateResponse.status).toBe(401);
 
-    expect(db).toEqual(dataset1);
+    const getResponse = await blogsManager.getBlog(createResponse.body.id);
+    expect(getResponse.status).toBe(200);
+    expect(getResponse.body.name).toBe(newBlog.name);
+    expect(getResponse.body.description).toBe(newBlog.description);
+    expect(getResponse.body.websiteUrl).toBe(newBlog.websiteUrl);
   });
 });

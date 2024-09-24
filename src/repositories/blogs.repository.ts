@@ -1,14 +1,16 @@
+import { ObjectId } from "mongodb";
 import { BlogDbType } from "../db/blog-db-type";
-import { db } from "../db/db";
+import { blogCollection, db } from "../db/db";
 import { BlogInputModel, BlogViewModel } from "../input-output-types/blogs-types";
 
 export const blogsRepository = {
-  findAll() {
-    return db.blogs;
+  async findAll(): Promise<BlogDbType[]> {
+    return blogCollection.find({}).toArray(); //find({}, {projection: {_id: 0}}) //todo projection - те поля которые (не) должны приходить(значение 1/0)
   },
 
-  find(id: string) {
-    const blog = db.blogs.find((b) => b.id === id);
+  async find(id: string) {
+    const blog = blogCollection.findOne({ id: id });
+
     if (!blog) {
       return null;
     } else {
@@ -16,55 +18,52 @@ export const blogsRepository = {
     }
   },
 
-  create(payload: BlogInputModel): string {
+  async create(payload: BlogInputModel): Promise<string> {
+    const id = new ObjectId();
+
     const newBlog: BlogDbType = {
-      id: new Date().toISOString() + Math.random(),
+      id: id.toString(),
       name: payload.name,
       description: payload.description,
       websiteUrl: payload.websiteUrl,
+      isMembership: false,
+      createdAt: new Date().toISOString(),
     };
-    db.blogs = [...db.blogs, newBlog];
+    const result = await db.collection("blogs").insertOne(newBlog);
     return newBlog.id;
   },
 
-  findAndMap(id: string) {
-    const blog = this.find(id)!; // ! используем этот метод если проверили существование
-    return this.mapToOutput(blog);
+  async findAndMap(id: string) {
+    const blog = await this.find(id)!; // ! используем этот метод если проверили существование
+    return this.mapToOutput(blog!);
   },
 
-  delete(id: string) {
-    const blog = this.find(id);
-    if (!blog) {
-      return false;
-    } else {
-      db.blogs = db.blogs.filter((el) => el.id !== id);
-      return true;
-    }
+  async delete(id: string) {
+    const result = await db.collection("blogs").deleteOne({ id: id });
+    return result.deletedCount > 0;
   },
-  update(id: string, payload: BlogInputModel) {
-    const blog = this.find(id);
-    if (!blog) {
-      return false;
-    } else {
-      db.blogs = db.blogs.map((el) =>
-        el.id === id
-          ? {
-              ...el,
-              name: payload.name,
-              description: payload.description,
-              websiteUrl: payload.websiteUrl,
-            }
-          : el
-      );
-      return true;
-    }
+  async update(id: string, payload: BlogInputModel) {
+    const result = await db.collection("blogs").updateOne(
+      { id: id },
+      {
+        $set: {
+          name: payload.name,
+          description: payload.description,
+          websiteUrl: payload.websiteUrl,
+        },
+      }
+    );
+    return result.matchedCount > 0;
   },
-  mapToOutput(blog: BlogDbType) {
+
+  async mapToOutput(blog: BlogDbType) {
     const blogForOutput: BlogViewModel = {
       id: blog.id,
       description: blog.description,
       websiteUrl: blog.websiteUrl,
       name: blog.name,
+      createdAt: blog.createdAt,
+      isMembership: blog.isMembership,
     };
     return blogForOutput;
   },

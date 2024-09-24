@@ -1,3 +1,4 @@
+import { Collection, Db, MongoClient } from "mongodb";
 import { BlogDbType } from "./blog-db-type";
 import { PostDbType } from "./post-db-type";
 import { VideoDBType } from "./video-db-type";
@@ -14,37 +15,37 @@ export type ReadonlyDBType = {
   videos: Readonly<VideoDBType[]>;
 };
 
-// const mongoUri = process.env.MONGO_URI || "mongodb://0.0.0.0:27017";
+export let db: Db;
 
-// const client = new MongoClient(mongoUri);
+export let blogCollection: Collection<BlogDbType>;
+export let postCollection: Collection<PostDbType>;
 
-// export const coursesCollection = client.db("test").collection<CourseType>("Courses");
+// проверка подключения к бд
+export const runDB = async (url: string) => {
+  const client: MongoClient = new MongoClient(url);
+  db = client.db(process.env.DB_NAME);
 
-// export async function runDb() {
-//   try {
-//     await client.connect();
-//     await client.db("test").command({ ping: 1 });
-//     console.log("Log: MongoDB connected!");
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
+  blogCollection = db.collection<BlogDbType>("blogs");
+  postCollection = db.collection<PostDbType>("posts");
 
-export const db: DBType = {
-  videos: [],
-  blogs: [],
-  posts: [],
+  try {
+    console.log("connected to MongoDB");
+    await client.connect();
+    return true;
+  } catch (e) {
+    console.log(e);
+    await client.close();
+    return false;
+  }
 };
 
-export const setDB = (dataset?: Partial<ReadonlyDBType>) => {
-  if (!dataset) {
-    db.videos = [];
-    db.blogs = [];
-    db.posts = [];
-    return;
-  }
+// export const db: DBType = {
+//   videos: [],
+//   blogs: [],
+//   posts: [],
+// };
 
-  db.videos = dataset.videos?.map((b) => ({ ...b })) || db.videos;
-  db.blogs = dataset.blogs?.map((b) => ({ ...b })) || db.blogs;
-  db.posts = dataset.posts?.map((p) => ({ ...p })) || db.posts;
+export const clearDB = async () => {
+  await postCollection.drop();
+  await blogCollection.drop();
 };

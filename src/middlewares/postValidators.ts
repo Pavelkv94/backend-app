@@ -29,7 +29,8 @@ export const postInputValidators = [
   postTitleInputValidator,
   postShortDescriptionInputValidator,
   postContentInputValidator,
-  //custom validator
+
+  //todo custom validator
   body("blogId").custom(async (blogId) => {
     const blog = await blogsRepository.find(blogId);
     if (!blog) {

@@ -1,9 +1,10 @@
-import {Router} from 'express'
-import { setDB } from '../db/db'
+import { Router } from "express";
+import { blogCollection, clearDB, postCollection } from "../db/db";
 
-export const testingRouter = Router()
+export const testingRouter = Router();
 
-testingRouter.delete('/all-data', (req, res) => {
-    setDB()
-    res.status(204).json({})
-})
+testingRouter.delete("/all-data", async (req, res) => {
+  await clearDB();
+
+  res.status(204).json({});
+});

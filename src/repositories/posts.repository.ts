@@ -1,15 +1,15 @@
-import { db } from "../db/db";
+import { db, postCollection } from "../db/db";
 import { PostDbType } from "../db/post-db-type";
 import { PostInputModel, PostOutputModel } from "../input-output-types/posts-types";
 import { blogsRepository } from "./blogs.repository";
 
 export const postsRepository = {
   async findPosts(): Promise<PostDbType[]> {
-    return db.posts;
+    return postCollection.find({}).toArray();
   },
 
   async find(id: string): Promise<PostDbType | null> {
-    const post = db.posts.find((p) => p.id === id);
+    const post = postCollection.findOne({ id: id });
     if (!post) {
       return null;
     }
@@ -22,16 +22,16 @@ export const postsRepository = {
   },
 
   async create(payload: PostInputModel): Promise<{ id: string }> {
-    const blog = blogsRepository.find(payload.blogId);
+    const blog = await blogsRepository.find(payload.blogId);
 
     const newPost: PostDbType = {
       ...payload,
       id: (Date.now() + Math.random()).toString(),
-      blogName: blog!.name
+      blogName: blog!.name,
     };
 
     try {
-      db.posts = [...db.posts, newPost];
+      const result = await db.collection("posts").insertOne(newPost);
     } catch (err) {
       // log
       console.log(err);
@@ -39,32 +39,28 @@ export const postsRepository = {
 
     return { id: newPost.id };
   },
-  async update(id: string, payload: PostInputModel): Promise<PostDbType | null> {
-    const blog = blogsRepository.find(payload.blogId);
+  async update(id: string, payload: PostInputModel): Promise<boolean> {
+    const blog = await blogsRepository.find(payload.blogId);
 
     const foundPost = await this.find(id);
 
     if (!foundPost) {
-      return null;
+      return false;
     }
 
-    const updatedPost: PostDbType = {
-      ...foundPost,
-      title: payload.title,
-      shortDescription: payload.shortDescription,
-      content: payload.content,
-      blogId: payload.blogId,
-      blogName: blog!.name
-    };
-
-    try {
-      db.posts = db.posts.map((post) => (post.id === id ? updatedPost : post));
-    } catch (err) {
-      // log
-      console.log(err);
-    }
-
-    return updatedPost;
+    const result = await db.collection("posts").updateOne(
+      { id: id },
+      {
+        $set: {
+          title: payload.title,
+          shortDescription: payload.shortDescription,
+          content: payload.content,
+          blogId: payload.blogId,
+          blogName: blog!.name,
+        },
+      }
+    );
+    return result.matchedCount > 0;
   },
 
   async delete(id: string): Promise<boolean> {
@@ -74,7 +70,7 @@ export const postsRepository = {
       return false;
     }
     try {
-      db.posts = db.posts.filter((post) => post.id !== id);
+      const result = await db.collection("posts").deleteOne({ id: id });
     } catch (err) {
       // log
       console.log(err);
