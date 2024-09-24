@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-// import { videosRouter } from "./routers/videos.router";
 import { SETTINGS } from "./settings";
 import { postsRouter } from "./routers/posts.router";
 import { testingRouter } from "./routers/testing.router";
@@ -21,7 +20,6 @@ app.get("/", (req, res) => {
   res.status(200).json({ version: "1.1" });
 });
 
-// app.use(SETTINGS.PATH.VIDEOS, videosRouter);
 app.use(SETTINGS.PATH.BLOGS, blogsRouter);
 app.use(SETTINGS.PATH.POSTS, postsRouter);
 app.use(SETTINGS.PATH.TESTING, testingRouter);

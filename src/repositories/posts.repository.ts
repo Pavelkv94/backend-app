@@ -28,6 +28,7 @@ export const postsRepository = {
       ...payload,
       id: (Date.now() + Math.random()).toString(),
       blogName: blog!.name,
+      createdAt: new Date().toISOString()
     };
 
     try {
@@ -90,6 +91,7 @@ export const postsRepository = {
       content: post.content,
       blogId: post.blogId,
       blogName: post.blogName,
+      createdAt: post.createdAt
     };
   },
 };

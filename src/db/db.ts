@@ -49,3 +49,11 @@ export const clearDB = async () => {
   await postCollection.drop();
   await blogCollection.drop();
 };
+
+export const clearBlogs = async () => {
+  await blogCollection.drop();
+};
+
+export const clearPosts = async () => {
+  await postCollection.drop();
+};

@@ -1,4 +1,4 @@
-import { clearDB, db, runDB } from "../src/db/db";
+import { clearBlogs, runDB } from "../src/db/db";
 import { BlogInputModel } from "../src/input-output-types/blogs-types";
 import { createString } from "./helpers/datasets";
 import { MongoMemoryServer } from "mongodb-memory-server";
@@ -16,7 +16,7 @@ describe("/blogs", () => {
   });
 
   beforeEach(async () => {
-    await clearDB();
+    await clearBlogs();
   });
 
   afterAll(async () => {
