@@ -5,11 +5,11 @@ import { blogsRepository } from "./blogs.repository";
 
 export const postsRepository = {
   async findPosts(): Promise<PostDbType[]> {
-    return postCollection.find({}).toArray();
+    return postCollection.find({}, {projection: {_id: 0}}).toArray();
   },
 
   async find(id: string): Promise<PostDbType | null> {
-    const post = postCollection.findOne({ id: id });
+    const post = postCollection.findOne({ id: id }, {projection: {_id: 0}});
     if (!post) {
       return null;
     }

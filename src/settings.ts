@@ -4,7 +4,6 @@ config(); // добавление переменных из файла .env в p
 export const SETTINGS = {
   // все хардкодные значения должны быть здесь, для удобства их изменения
   PATH: {
-    VIDEOS: "/videos",
     BLOGS: "/blogs",
     POSTS: "/posts",
     TESTING: "/testing",

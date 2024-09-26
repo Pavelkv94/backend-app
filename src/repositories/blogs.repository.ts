@@ -5,11 +5,10 @@ import { BlogInputModel, BlogViewModel } from "../input-output-types/blogs-types
 
 export const blogsRepository = {
   async findAll(): Promise<BlogDbType[]> {
-    return blogCollection.find({}).toArray(); //find({}, {projection: {_id: 0}}) //todo projection - те поля которые (не) должны приходить(значение 1/0)
+    return blogCollection.find({}, {projection: {_id: 0}}).toArray(); //find({}, {projection: {_id: 0}}) //todo projection - те поля которые (не) должны приходить(значение 1/0)
   },
-
   async find(id: string) {
-    const blog = blogCollection.findOne({ id: id });
+    const blog = blogCollection.findOne({ id: id }, {projection: {_id: 0}});
 
     if (!blog) {
       return null;
