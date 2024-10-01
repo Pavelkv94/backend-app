@@ -39,10 +39,10 @@ describe("/blogs", () => {
 
     const getBlogsResponse = await blogsManager.getBlogs();
 
-    expect(getBlogsResponse.body.length).toBe(1);
+    expect(getBlogsResponse.body.items.length).toBe(1);
   });
 
-  it("shouldn't create 401", async () => {
+  it("shouldn't create 401 without auth", async () => {
     const newBlog: BlogInputModel = {
       name: "n1",
       description: "d1",
@@ -50,6 +50,26 @@ describe("/blogs", () => {
     };
 
     const res = await blogsManager.createBlogWithoutAuth(newBlog);
+    expect(res.status).toBe(401);
+  });
+  it("shouldn't create 401 with invalid token", async () => {
+    const newBlog: BlogInputModel = {
+      name: "n1",
+      description: "d1",
+      websiteUrl: "http://some.com",
+    };
+
+    const res = await blogsManager.createBlogWithInvalidToken(newBlog);
+    expect(res.status).toBe(401);
+  });
+  it("shouldn't create 401 with auth", async () => {
+    const newBlog: BlogInputModel = {
+      name: "n1",
+      description: "d1",
+      websiteUrl: "http://some.com",
+    };
+
+    const res = await blogsManager.createBlogWithInvalidAuth(newBlog);
     expect(res.status).toBe(401);
   });
 
@@ -71,23 +91,8 @@ describe("/blogs", () => {
 
     const getBlogsResponse = await blogsManager.getBlogs();
 
-    expect(getBlogsResponse.body.length).toBe(0);
+    expect(getBlogsResponse.body.items.length).toBe(0);
   });
-
-  // it("should get empty array", async () => {
-  //   const res = await blogsManager.getBlogs();
-
-  //   expect(res.status).toBe(200);
-  //   expect(res.body.length).toBe(0);
-  // });
-
-  // it("should get not empty array", async () => {
-
-  //   const res = await req.get(SETTINGS.PATH.BLOGS).expect(200);
-
-  //   expect(res.body.length).toEqual(1);
-  //   expect(res.body[0]).toEqual(dataset1.blogs[0]);
-  // });
 
   it("shouldn't find", async () => {
     const getResponse = await blogsManager.getBlog("1");
@@ -243,5 +248,42 @@ describe("/blogs", () => {
     expect(getResponse.body.name).toBe(newBlog.name);
     expect(getResponse.body.description).toBe(newBlog.description);
     expect(getResponse.body.websiteUrl).toBe(newBlog.websiteUrl);
+  });
+
+  it("should get pagination", async () => {
+    const newBlog: BlogInputModel = {
+      name: "n1",
+      description: "d1",
+      websiteUrl: "http://some.com",
+    };
+
+    const createResponse = await blogsManager.createBlogWithAuth(newBlog);
+
+    expect(createResponse.status).toBe(201);
+
+    const getResponse = await blogsManager.getBlogs("?pageNumber=1&sortDirection=asc&pageSize=5&searchNameTerm=n&sortBy='createdAt'");
+    expect(getResponse.status).toBe(200);
+
+    expect(getResponse.body.pagesCount).toBe(1);
+    expect(getResponse.body.page).toBe(1);
+    expect(getResponse.body.pageSize).toBe(5);
+    expect(getResponse.body.totalCount).toBe(1);
+    expect(getResponse.body.items.length).toBe(1);
+  });
+
+  it("shouldn't get objects with incorrect search", async () => {
+    const newBlog: BlogInputModel = {
+      name: "n1",
+      description: "d1",
+      websiteUrl: "http://some.com",
+    };
+
+    const createResponse = await blogsManager.createBlogWithAuth(newBlog);
+
+    expect(createResponse.status).toBe(201);
+
+    const getResponse2 = await blogsManager.getBlogs("?searchNameTerm=n2");
+    expect(getResponse2.status).toBe(200);
+    expect(getResponse2.body.items.length).toBe(0);
   });
 });

@@ -1,53 +1,46 @@
+import { InsertOneResult } from "mongodb";
 import { db, postCollection } from "../db/db";
 import { PostDbType } from "../db/post-db-type";
-import { PostInputModel, PostOutputModel } from "../input-output-types/posts-types";
+import { PostInputModel, PostOutputModel, PostValidQueryModel } from "../input-output-types/posts-types";
 import { blogsRepository } from "./blogs.repository";
 
 export const postsRepository = {
-  async findPosts(): Promise<PostDbType[]> {
-    return postCollection.find({}, {projection: {_id: 0}}).toArray();
+  async findPosts(query: PostValidQueryModel): Promise<PostDbType[]> {
+    const { pageSize, pageNumber, sortBy, sortDirection } = query;
+
+    const filter: any = {};
+
+    return postCollection
+      .find(filter, { projection: { _id: 0 } })
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize)
+      .sort({ [sortBy]: sortDirection })
+      .toArray();
+
+    return postCollection.find({}, { projection: { _id: 0 } }).toArray(); //todo   types with _id ====>  Promise<WithId<PostDbType>[]>
   },
 
   async find(id: string): Promise<PostDbType | null> {
-    const post = postCollection.findOne({ id: id }, {projection: {_id: 0}});
+    const post = postCollection.findOne({ id: id }, { projection: { _id: 0 } });
+
     if (!post) {
       return null;
     }
     return post;
   },
+  async getPostsCount(): Promise<number> {
+    const filter: any = {};
 
-  async findForOutput(id: string): Promise<null | PostOutputModel | null> {
-    const post = await this.find(id);
-    return post;
+    return postCollection.countDocuments(filter);
   },
 
-  async create(payload: PostInputModel): Promise<{ id: string }> {
-    const blog = await blogsRepository.find(payload.blogId);
+  async create(payload: PostInputModel): Promise<InsertOneResult<Document>> {
+    const result = await db.collection("posts").insertOne(payload);
 
-    const newPost: PostDbType = {
-      ...payload,
-      id: (Date.now() + Math.random()).toString(),
-      blogName: blog!.name,
-      createdAt: new Date().toISOString()
-    };
-
-    try {
-      const result = await db.collection("posts").insertOne(newPost);
-    } catch (err) {
-      // log
-      console.log(err);
-    }
-
-    return { id: newPost.id };
+    return result;
   },
   async update(id: string, payload: PostInputModel): Promise<boolean> {
     const blog = await blogsRepository.find(payload.blogId);
-
-    const foundPost = await this.find(id);
-
-    if (!foundPost) {
-      return false;
-    }
 
     const result = await db.collection("posts").updateOne(
       { id: id },
@@ -65,33 +58,29 @@ export const postsRepository = {
   },
 
   async delete(id: string): Promise<boolean> {
-    const foundPost = await this.find(id);
+    const result = await db.collection("posts").deleteOne({ id: id });
 
-    if (!foundPost) {
-      return false;
-    }
-    try {
-      const result = await db.collection("posts").deleteOne({ id: id });
-    } catch (err) {
-      // log
-      console.log(err);
-    }
-    return true;
+    return result.deletedCount > 0;
   },
 
-  async findAndMap(id: string) {
-    const post = await this.find(id);
-    return this.mapToOutput(post!);
-  },
-  mapToOutput(post: PostDbType): PostDbType {
-    return {
-      id: post.id,
-      title: post.title,
-      shortDescription: post.shortDescription,
-      content: post.content,
-      blogId: post.blogId,
-      blogName: post.blogName,
-      createdAt: post.createdAt
-    };
-  },
+  // async findForOutput(id: string): Promise<null | PostOutputModel | null> {
+  //   const post = await this.find(id);
+  //   return post;
+  // },
+
+  // async findAndMap(id: string) {
+  //   const post = await this.find(id);
+  //   return this.mapToOutput(post!);
+  // },
+  // mapToOutput(post: PostDbType): PostDbType {
+  //   return {
+  //     id: post.id,
+  //     title: post.title,
+  //     shortDescription: post.shortDescription,
+  //     content: post.content,
+  //     blogId: post.blogId,
+  //     blogName: post.blogName,
+  //     createdAt: post.createdAt,
+  //   };
+  // },
 };

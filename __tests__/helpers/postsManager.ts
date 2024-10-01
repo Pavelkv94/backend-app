@@ -47,7 +47,7 @@ export const postsManager = {
     return response;
   },
   async deletePostWithoutAuth(id: string) {
-    const response = await req.delete(`${SETTINGS.PATH.POSTS}/${id}`);
+    const response = await req.delete(`${SETTINGS.PATH.POSTS}/${id}`).set({ Authorization: "Fail" });
 
     return response;
   },

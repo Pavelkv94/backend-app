@@ -17,7 +17,6 @@ export let db: Db;
 export let blogCollection: Collection<BlogDbType>;
 export let postCollection: Collection<PostDbType>;
 
-// проверка подключения к бд
 export const runDB = async (url: string) => {
   const client: MongoClient = new MongoClient(url);
   db = client.db(process.env.DB_NAME);

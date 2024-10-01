@@ -13,7 +13,7 @@ export const fromUTF8ToBase64 = (code: string) => {
 };
 
 export const adminMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const auth = req.headers["authorization"] as string; // 'Basic xxxx'
+  const auth = req.headers["authorization"] as string;
 
   if (!auth) {
     res.sendStatus(401);

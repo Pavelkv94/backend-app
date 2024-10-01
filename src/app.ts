@@ -6,17 +6,22 @@ import { testingRouter } from "./routers/testing.router";
 import { blogsRouter } from "./routers/blogs.router";
 import dotenv from "dotenv";
 import { runDB } from "./db/db";
+import { config } from "dotenv";
 
-const url = process.env.MONGO_URL || "mongodb://0.0.0.0:27017"
+config();
+
+const url = process.env.MONGO_URL || "mongodb://0.0.0.0:27017";
+
 export const app = express();
 
-dotenv.config()
+dotenv.config();
 
-runDB(url)
+runDB(url);
+
 app.use(express.json());
 app.use(cors());
 
-app.get("/", (req, res) => {
+app.get("/", (req, res) => {  
   res.status(200).json({ version: "1.1" });
 });
 

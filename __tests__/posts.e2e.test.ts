@@ -56,7 +56,7 @@ describe("/posts", () => {
 
     const getPostsResponse = await postsManager.getPosts();
     expect(getPostsResponse.status).toBe(200);
-    expect(getPostsResponse.body.length).toBe(1);
+    expect(getPostsResponse.body.items.length).toBe(1);
   });
 
   it("shouldn't create 401", async () => {
@@ -72,7 +72,7 @@ describe("/posts", () => {
 
     const getPostsResponse = await postsManager.getPosts();
     expect(getPostsResponse.status).toBe(200);
-    expect(getPostsResponse.body.length).toBe(0);
+    expect(getPostsResponse.body.items.length).toBe(0);
   });
 
   it("shouldn't create and should get empty array", async () => {
@@ -94,7 +94,7 @@ describe("/posts", () => {
 
     const getPostsResponse = await postsManager.getPosts();
     expect(getPostsResponse.status).toBe(200);
-    expect(getPostsResponse.body.length).toBe(0);
+    expect(getPostsResponse.body.items.length).toBe(0);
   });
 
   it("shouldn't find", async () => {
@@ -137,7 +137,7 @@ describe("/posts", () => {
 
     const getPostsResponse = await postsManager.getPosts();
     expect(getPostsResponse.status).toBe(200);
-    expect(getPostsResponse.body.length).toBe(0);
+    expect(getPostsResponse.body.items.length).toBe(0);
   });
 
   it("shouldn't del", async () => {
@@ -161,7 +161,7 @@ describe("/posts", () => {
 
     const getPostsResponse = await postsManager.getPosts();
     expect(getPostsResponse.status).toBe(200);
-    expect(getPostsResponse.body.length).toBe(1);
+    expect(getPostsResponse.body.items.length).toBe(1);
   });
 
   it("should update", async () => {
@@ -261,5 +261,26 @@ describe("/posts", () => {
     expect(getPostResponse.body.shortDescription).toBe(newPost.shortDescription);
     expect(getPostResponse.body.content).toBe(newPost.content);
     expect(getPostResponse.body.blogId).toBe(newPost.blogId);
+  });
+
+  it("should get pagination", async () => {
+    const newPost: PostInputModel = {
+      title: "t1",
+      shortDescription: "s1",
+      content: "c1",
+      blogId: blogFromDb.id,
+    };
+
+    const createPostResponse = await postsManager.createPostWithAuth(newPost);
+    expect(createPostResponse.status).toBe(201);
+
+    const getResponse = await blogsManager.getBlogs("?pageNumber=1&sortDirection=asc&pageSize=5&sortBy='createdAt'");
+    expect(getResponse.status).toBe(200);
+
+    expect(getResponse.body.pagesCount).toBe(1);
+    expect(getResponse.body.page).toBe(1);
+    expect(getResponse.body.pageSize).toBe(5);
+    expect(getResponse.body.totalCount).toBe(1);
+    expect(getResponse.body.items.length).toBe(1);
   });
 });

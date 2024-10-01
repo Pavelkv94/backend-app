@@ -29,11 +29,11 @@ describe("/blogs", () => {
     };
 
     const createBlogResponse = await blogsManager.createBlogWithAuth(newBlog);
-
     expect(createBlogResponse.status).toBe(201);
 
     const getBlogsResponse = await blogsManager.getBlogs();
-    expect(getBlogsResponse.body.length).toBe(1);
+
+    expect(getBlogsResponse.body.items.length).toBe(1);
 
     const newPost: PostInputModel = {
       title: "t1",
@@ -47,7 +47,7 @@ describe("/blogs", () => {
 
     const getPostsResponse = await postsManager.getPosts();
     expect(getPostsResponse.status).toBe(200);
-    expect(getPostsResponse.body.length).toBe(1);
+    expect(getPostsResponse.body.items.length).toBe(1);
 
     const cleanupResponse = await req.delete("/testing/all-data");
 
@@ -55,10 +55,10 @@ describe("/blogs", () => {
 
     const getPostsResponseAgain = await postsManager.getPosts();
     expect(getPostsResponseAgain.status).toBe(200);
-    expect(getPostsResponseAgain.body.length).toBe(0);
+    expect(getPostsResponseAgain.body.items.length).toBe(0);
 
     const getBlogsResponseAgain = await blogsManager.getBlogs();
-    expect(getBlogsResponseAgain.body.length).toBe(0);
+    expect(getBlogsResponseAgain.body.items.length).toBe(0);
   });
 
   it("should return version", async () => {

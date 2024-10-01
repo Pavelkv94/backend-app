@@ -1,8 +1,4 @@
 import { body } from "express-validator";
-import { inputCheckErrorsMiddleware } from "./inputCheckErrorsMiddleware";
-import { NextFunction, Request, Response } from "express";
-import { blogsRepository } from "../repositories/blogs.repository";
-import { adminMiddleware } from "./admin-middleware";
 
 // name: string // max 15
 // description: string // max 500
@@ -19,13 +15,4 @@ const websiteUrlValidator = body("websiteUrl")
   .isLength({ min: 1, max: 100 })
   .withMessage("more then 100 or 0");
 
-export const findBlogValidator = (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
-  const isBlogExist = blogsRepository.find(req.params.id);
-  if (!isBlogExist) {
-    res.sendStatus(404);
-    return;
-  }
-  next();
-};
-
-export const blogValidators = [adminMiddleware, nameValidator, descriptionValidator, websiteUrlValidator, inputCheckErrorsMiddleware];
+export const blogValidators = [nameValidator, descriptionValidator, websiteUrlValidator];
