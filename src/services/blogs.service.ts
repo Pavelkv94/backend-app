@@ -1,6 +1,6 @@
 import { ObjectId, WithId } from "mongodb";
 import { BlogDbType } from "../db/blog-db-type";
-import { BlogInputModel, BlogValidQueryModel } from "../input-output-types/blogs-types";
+import { BlogInputModel, BlogValidQueryModel, BlogViewModel } from "../input-output-types/blogs-types";
 import { blogsRepository } from "../repositories/blogs.repository";
 import { OutputDataWithPagination } from "../input-output-types/common-types";
 
@@ -27,7 +27,7 @@ export const blogsService = {
   async create(payload: BlogInputModel): Promise<WithId<BlogDbType> | null> {
     const id = new ObjectId();
 
-    const newBlog: BlogDbType = {
+    const newBlog: BlogViewModel = {
       id: id.toString(),
       name: payload.name,
       description: payload.description,

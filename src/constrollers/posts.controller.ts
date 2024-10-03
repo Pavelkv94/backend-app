@@ -14,7 +14,7 @@ export const postsController = {
       sortDirection: req.query.sortDirection as SortDirection,
     };
 
-    const posts = await postsService.findPosts(queryData);
+    const posts = await postsService.findAllPosts(queryData);
 
     res.status(200).json(posts);
   },

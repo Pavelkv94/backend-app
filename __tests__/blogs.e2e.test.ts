@@ -3,6 +3,7 @@ import { BlogInputModel } from "../src/input-output-types/blogs-types";
 import { createString } from "./helpers/datasets";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { blogsManager } from "./helpers/blogsManager";
+import { postsManager } from "./helpers/postsManager";
 
 describe("/blogs", () => {
   let client: MongoMemoryServer;
@@ -285,5 +286,32 @@ describe("/blogs", () => {
     const getResponse2 = await blogsManager.getBlogs("?searchNameTerm=n2");
     expect(getResponse2.status).toBe(200);
     expect(getResponse2.body.items.length).toBe(0);
+  });
+
+  it("should create post for blog", async () => {
+    const newBlog: BlogInputModel = {
+      name: "n1",
+      description: "d1",
+      websiteUrl: "http://some.com",
+    };
+
+    const createBlogResponse = await blogsManager.createBlogWithAuth(newBlog);
+    expect(createBlogResponse.status).toBe(201);
+
+    const newPost = {
+      title: "Post Title",
+      shortDescription: "Post Desc",
+      content: "Post Content",
+    };
+    const createPostResponse = await postsManager.createPostForBlog(newPost, createBlogResponse.body.id);
+
+    expect(createPostResponse.status).toBe(201);
+
+    const getPostResponse = await postsManager.getPost(createPostResponse.body.id);
+    expect(getPostResponse.status).toBe(200);
+  });
+  it("shouldn't get blog's posts", async () => {
+    const getBlogPosts = await blogsManager.getBlogsPosts("123123");
+    expect(getBlogPosts.status).toBe(404);
   });
 });

@@ -1,4 +1,4 @@
-import { PostInputModel } from "../../src/input-output-types/posts-types";
+import { PostForBlogInputModel, PostInputModel } from "../../src/input-output-types/posts-types";
 import { SETTINGS } from "../../src/settings";
 import { codedAuth } from "./datasets";
 import { req } from "./test-helpers";
@@ -15,7 +15,16 @@ export const postsManager = {
 
     return response;
   },
-  async createPostWithAuth(data: PostInputModel) {
+  async createPostForBlog(data: any, blog_id: string) {
+    const response = await req
+      .post(`${SETTINGS.PATH.BLOGS}/${blog_id}/posts`)
+      .set({ Authorization: "Basic " + codedAuth })
+      .send(data);
+
+    return response;
+  },
+
+  async createPostWithAuth(data: PostForBlogInputModel) {
     const response = await req
       .post(SETTINGS.PATH.POSTS)
       .set({ Authorization: "Basic " + codedAuth })

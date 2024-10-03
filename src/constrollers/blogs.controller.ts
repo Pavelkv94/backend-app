@@ -5,6 +5,8 @@ import { blogsService } from "../services/blogs.service";
 import { SortDirection, WithId } from "mongodb";
 import { BlogDbType } from "../db/blog-db-type";
 import { OutputDataWithPagination } from "../input-output-types/common-types";
+import { PostInputQueryModel, PostViewModel } from "../input-output-types/posts-types";
+import { postsService } from "../services/posts.service";
 
 export const blogsController = {
   async getBlogs(req: Request<{}, {}, {}, BlogInputQueryModel>, res: Response<OutputDataWithPagination<BlogViewModel>>) {
@@ -52,5 +54,25 @@ export const blogsController = {
     } else {
       res.sendStatus(204);
     }
+  },
+
+  async getBlogPosts(req: Request<URIParamsBlogModel, {}, {}, PostInputQueryModel>, res: Response<OutputDataWithPagination<PostViewModel> | OutputErrorsType>) {
+    const queryData = {
+      pageNumber: +req.query.pageNumber,
+      pageSize: +req.query.pageSize,
+      sortBy: req.query.sortBy,
+      sortDirection: req.query.sortDirection as SortDirection,
+    };
+    const blog = await blogsService.find(req.params.id);
+
+    const posts = await postsService.findAllPosts(queryData, blog!.id);
+
+    res.status(200).json(posts);
+  },
+
+  async createBlogPost(req: Request<URIParamsBlogModel>, res: Response<PostViewModel | OutputErrorsType>) {
+    const newPost = await postsService.createForBlog(req.body, req.params.id);
+
+    res.status(201).json(newPost!);
   },
 };
