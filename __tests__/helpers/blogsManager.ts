@@ -10,6 +10,12 @@ export const blogsManager = {
     return response;
   },
 
+  async getBlogsPosts(id: string, query?: string) {
+    const response = await req.get(`${SETTINGS.PATH.BLOGS}/${id}/posts${query ? query : ""}`);
+
+    return response;
+  },
+
   async getBlog(id: string) {
     const response = await req.get(`${SETTINGS.PATH.BLOGS}/${id}`);
 

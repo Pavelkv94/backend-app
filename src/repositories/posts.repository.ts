@@ -5,10 +5,10 @@ import { PostInputModel, PostOutputModel, PostValidQueryModel } from "../input-o
 import { blogsRepository } from "./blogs.repository";
 
 export const postsRepository = {
-  async findPosts(query: PostValidQueryModel): Promise<PostDbType[]> {
+  async findAllPosts(query: PostValidQueryModel, blog_id?: string): Promise<PostDbType[]> {
     const { pageSize, pageNumber, sortBy, sortDirection } = query;
 
-    const filter: any = {};
+    const filter: any = blog_id ? { blogId: blog_id } : {};
 
     return postCollection
       .find(filter, { projection: { _id: 0 } })
@@ -16,8 +16,6 @@ export const postsRepository = {
       .limit(pageSize)
       .sort({ [sortBy]: sortDirection })
       .toArray();
-
-    return postCollection.find({}, { projection: { _id: 0 } }).toArray(); //todo   types with _id ====>  Promise<WithId<PostDbType>[]>
   },
 
   async find(id: string): Promise<PostDbType | null> {
@@ -28,8 +26,8 @@ export const postsRepository = {
     }
     return post;
   },
-  async getPostsCount(): Promise<number> {
-    const filter: any = {};
+  async getPostsCount(blog_id?: string): Promise<number> {
+    const filter: any = blog_id ? { blogId: blog_id } : {};
 
     return postCollection.countDocuments(filter);
   },

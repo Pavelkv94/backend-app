@@ -7,6 +7,12 @@ export type PostInputModel = {
   blogId: string;
 };
 
+export type PostForBlogInputModel = {
+  title: string;
+  shortDescription: string;
+  content: string;
+};
+
 export type PostViewModel = {
   id: string;
   title: string;

@@ -6,7 +6,7 @@ import { PostInputModel } from "../src/input-output-types/posts-types";
 import { postsManager } from "./helpers/postsManager";
 import { req } from "./helpers/test-helpers";
 
-describe("/blogs", () => {
+describe("/test", () => {
   let client: MongoMemoryServer;
   beforeAll(async () => {
     // запуск виртуального сервера с временной бд
@@ -29,6 +29,7 @@ describe("/blogs", () => {
     };
 
     const createBlogResponse = await blogsManager.createBlogWithAuth(newBlog);
+
     expect(createBlogResponse.status).toBe(201);
 
     const getBlogsResponse = await blogsManager.getBlogs();

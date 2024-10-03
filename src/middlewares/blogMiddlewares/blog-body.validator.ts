@@ -15,4 +15,4 @@ const websiteUrlValidator = body("websiteUrl")
   .isLength({ min: 1, max: 100 })
   .withMessage("more then 100 or 0");
 
-export const blogValidators = [nameValidator, descriptionValidator, websiteUrlValidator];
+export const blogBodyValidators = [nameValidator, descriptionValidator, websiteUrlValidator];
