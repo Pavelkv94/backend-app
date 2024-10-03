@@ -314,4 +314,51 @@ describe("/blogs", () => {
     const getBlogPosts = await blogsManager.getBlogsPosts("123123");
     expect(getBlogPosts.status).toBe(404);
   });
+
+  it("shouldn get blog's posts", async () => {
+    const newBlog: BlogInputModel = {
+      name: "n1",
+      description: "d1",
+      websiteUrl: "http://some.com",
+    };
+
+    const createBlogResponse = await blogsManager.createBlogWithAuth(newBlog);
+    expect(createBlogResponse.status).toBe(201);
+
+    const newPost = {
+      title: "Post Title",
+      shortDescription: "Post Desc",
+      content: "Post Content",
+    };
+    const createPostResponse = await postsManager.createPostForBlog(newPost, createBlogResponse.body.id);
+
+    expect(createPostResponse.status).toBe(201);
+
+    const getBlogPosts = await blogsManager.getBlogsPosts(createBlogResponse.body.id, "?pageNumber=1");
+    expect(getBlogPosts.status).toBe(200);
+
+    expect(getBlogPosts.body.page).toBe(1);
+  });
+  it("shouldn't get blogs with invalid query", async () => {
+    const newBlog: BlogInputModel = {
+      name: "n1",
+      description: "d1",
+      websiteUrl: "http://some.com",
+    };
+
+    const createBlogResponse = await blogsManager.createBlogWithAuth(newBlog);
+    expect(createBlogResponse.status).toBe(201);
+
+    const getBlogPosts = await blogsManager.getBlogs("?pageNumber=0");
+    expect(getBlogPosts.status).toBe(400);
+
+    const getBlogPosts2 = await blogsManager.getBlogs("?pageNumber=test");
+    expect(getBlogPosts2.status).toBe(400);
+
+    const getBlogPosts3 = await blogsManager.getBlogs("?pageSize=test");
+    expect(getBlogPosts3.status).toBe(400);
+
+    const getBlogPosts4 = await blogsManager.getBlogs("?pageSize=0");
+    expect(getBlogPosts4.status).toBe(400);
+  });
 });
