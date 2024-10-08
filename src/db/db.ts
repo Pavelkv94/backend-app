@@ -1,6 +1,7 @@
 import { Collection, Db, MongoClient } from "mongodb";
 import { BlogDbType } from "./blog-db-type";
 import { PostDbType } from "./post-db-type";
+import { UserDbType } from "./user-db-type";
 
 export type DBType = {
   blogs: BlogDbType[];
@@ -16,6 +17,7 @@ export let db: Db;
 
 export let blogCollection: Collection<BlogDbType>;
 export let postCollection: Collection<PostDbType>;
+export let usersCollection: Collection<UserDbType>;
 
 export const runDB = async (url: string) => {
   const client: MongoClient = new MongoClient(url);
@@ -23,6 +25,7 @@ export const runDB = async (url: string) => {
 
   blogCollection = db.collection<BlogDbType>("blogs");
   postCollection = db.collection<PostDbType>("posts");
+  usersCollection = db.collection<UserDbType>("users");
 
   try {
     console.log("connected to MongoDB");
