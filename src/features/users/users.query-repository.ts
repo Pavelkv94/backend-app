@@ -50,7 +50,7 @@ export const usersQueryRepository = {
   },
   async findUser(id: string): Promise<UserViewModel | null> {
     const objectId = new ObjectId(id);
-    const userFromDb = await db.getCollections().usersCollection.findOne({ _id: objectId });
+    const userFromDb = await db.getCollections().usersCollection.findOne({ _id: objectId }, { projection: { password: 0 } });
 
     if (!userFromDb) {
       return null;
