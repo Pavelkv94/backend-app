@@ -6,6 +6,7 @@ import { postsManager } from "./helpers/postsManager";
 import { req } from "./helpers/test-helpers";
 import { usersManager } from "./helpers/usersManager";
 import { createString, fakeId, newUser } from "./helpers/datasets";
+import { LoginInputModel } from "../src/input-output-types/auth-types";
 
 describe("/users", () => {
   let mongoServer: MongoMemoryServer;
@@ -95,5 +96,43 @@ describe("/users", () => {
 
     const getUsersResponse2 = await usersManager.getUsersWithAuth();
     expect(getUsersResponse2.body.items.length).toBe(1);
+  });
+
+  it("User should login", async () => {
+    const createUserResponse = await usersManager.createUser(newUser);
+    expect(createUserResponse.status).toBe(201);
+
+    const loginData: LoginInputModel = {
+      loginOrEmail: newUser.login,
+      password: newUser.password,
+    };
+    const loginUserResponse = await usersManager.loginUser(loginData);
+    expect(loginUserResponse.status).toBe(204);
+
+    const loginData2: LoginInputModel = {
+      loginOrEmail: newUser.email,
+      password: newUser.password,
+    };
+    const loginUserResponse2 = await usersManager.loginUser(loginData2);
+    expect(loginUserResponse2.status).toBe(204);
+  });
+
+  it("User shouldn't login", async () => {
+    const createUserResponse = await usersManager.createUser(newUser);
+    expect(createUserResponse.status).toBe(201);
+
+    const loginData: LoginInputModel = {
+      loginOrEmail: "Invalid",
+      password: newUser.password,
+    };
+    const loginUserResponse = await usersManager.loginUser(loginData);
+    expect(loginUserResponse.status).toBe(401);
+
+    const loginData2: LoginInputModel = {
+      loginOrEmail: newUser.email,
+      password: "1234",
+    };
+    const loginUserResponse2 = await usersManager.loginUser(loginData2);
+    expect(loginUserResponse2.status).toBe(401);
   });
 });

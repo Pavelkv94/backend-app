@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { ObjectId, WithId } from "mongodb";
 import { db } from "../../db/db";
 import { UserEntityModel, UserViewModel } from "../../input-output-types/users-types";
 
@@ -14,6 +14,11 @@ export const usersRepository = {
       const { _id, ...rest } = user;
       return rest;
     }
+  },
+  async findUserByLoginOrEmail(loginOrEmail: string): Promise<WithId<UserEntityModel> | null> {
+    const user = await db.getCollections().usersCollection.findOne({ $or: [{ email: loginOrEmail }, { login: loginOrEmail }] });
+
+    return user;
   },
   async create(payload: UserEntityModel): Promise<string> {
     const result = await db.getCollections().usersCollection.insertOne(payload);

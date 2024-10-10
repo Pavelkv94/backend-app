@@ -1,3 +1,4 @@
+import { LoginInputModel } from "../../src/input-output-types/auth-types";
 import { UserInputModel } from "../../src/input-output-types/users-types";
 import { SETTINGS } from "../../src/settings";
 import { codedAuth } from "./datasets";
@@ -36,6 +37,11 @@ export const usersManager = {
 
   async deleteUser(id: string) {
     const response = await req.delete(`${SETTINGS.PATH.USERS}/${id}`).set({ Authorization: "Basic " + codedAuth });
+
+    return response;
+  },
+  async loginUser(data: LoginInputModel) {
+    const response = await req.post(SETTINGS.PATH.AUTH + "/login").send(data);
 
     return response;
   },

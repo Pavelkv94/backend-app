@@ -1,13 +1,16 @@
-import { ObjectId } from "mongodb";
+import bcrypt from "bcrypt";
 import { usersRepository } from "./users.repository";
 import { UserEntityModel, UserInputModel, UsersValidInputQueryModel, UserViewModel } from "../../input-output-types/users-types";
 
 export const usersService = {
   async create(payload: UserInputModel): Promise<string> {
+    const passwordSalt = await bcrypt.genSalt(10);
+    const passwordhash = await bcrypt.hash(payload.password, passwordSalt);
+
     const newUser: UserEntityModel = {
       login: payload.login,
       email: payload.email,
-      password: payload.password,
+      password: passwordhash,
       createdAt: new Date().toISOString(),
     };
 
