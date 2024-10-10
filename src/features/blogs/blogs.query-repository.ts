@@ -42,7 +42,7 @@ export const blogsQueryRepository = {
       filter.name = { $regex: searchNameTerm, $options: "i" };
     }
 
-    return db.getCollections().blogsCollection.countDocuments(filter);
+    return await db.getCollections().blogsCollection.countDocuments(filter);
   },
 
   async findBlog(id: string): Promise<BlogViewModel | null> {
