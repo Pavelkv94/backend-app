@@ -2,7 +2,7 @@ import { BlogEntityModel, BlogInputModel, BlogValidQueryModel, BlogViewModel } f
 import { blogsRepository } from "./blogs.repository";
 
 export const blogsService = {
-  async createBlog(payload: BlogInputModel): Promise<BlogViewModel | null> {
+  async createBlog(payload: BlogInputModel): Promise<string> {
     const newBlog: BlogEntityModel = {
       name: payload.name,
       description: payload.description,
@@ -11,9 +11,8 @@ export const blogsService = {
       createdAt: new Date().toISOString(),
     };
     const id: string = await blogsRepository.createBlog(newBlog);
-    const blog = await blogsRepository.findBlog(id);
 
-    return blog;
+    return id;
   },
 
   async updateBlog(id: string, payload: BlogInputModel): Promise<boolean> {

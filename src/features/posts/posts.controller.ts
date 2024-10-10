@@ -31,7 +31,13 @@ export const postsController = {
   },
 
   async createPost(req: Request<any, any, PostInputModel>, res: Response<PostViewModel | null | OutputErrorsType>) {
-    const newPost: PostViewModel | null = await postsService.createPost(req.body);
+    const newPostId = await postsService.createPost(req.body);
+    const newPost = await postsQueryRepository.findPost(newPostId);
+
+    if (!newPost) {
+      res.sendStatus(500); //! уточнить ошибку
+      return;
+    }
 
     res.status(201).json(newPost);
   },

@@ -5,7 +5,7 @@ import { blogsService } from "../blogs/blogs.service";
 import { blogsRepository } from "../blogs/blogs.repository";
 
 export const postsService = {
-  async createPost(payload: PostInputModel): Promise<PostViewModel | null> {
+  async createPost(payload: PostInputModel): Promise<string> {
     const blog = await blogsRepository.findBlog(payload.blogId);
 
     const newPost: PostEntityModel = {
@@ -16,9 +16,7 @@ export const postsService = {
 
     const postId: string = await postsRepository.createPost(newPost);
 
-    const post = await postsRepository.findPost(postId);
-
-    return post;
+    return postId;
   },
 
   async createForBlog(payload: PostForBlogInputModel, blog_id: string): Promise<PostViewModel | null> {

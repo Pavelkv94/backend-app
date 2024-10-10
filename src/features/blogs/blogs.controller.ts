@@ -34,7 +34,13 @@ export const blogsController = {
   },
 
   async createBlog(req: Request<any, any, BlogInputModel>, res: Response<BlogViewModel | null>) {
-    const newBlog = await blogsService.createBlog(req.body);
+    const newBlogId = await blogsService.createBlog(req.body);
+    const newBlog = await blogsQueryRepository.findBlog(newBlogId);
+
+    if (!newBlog) {
+      res.sendStatus(500); //! уточнить ошибку
+      return;
+    }
     res.status(201).json(newBlog);
   },
 

@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { postsController } from "./posts.controller";
-import { adminMiddleware } from "../../middlewares/admin-middleware";
-import { sortQueryMiddleware } from "../../middlewares/sort-query.middleware";
-import { paginationQueryMiddleware } from "../../middlewares/pagination-query.middleware";
-import { inputCheckErrorsMiddleware } from "../../middlewares/inputCheckErrorsMiddleware";
+import { adminMiddleware } from "../../global-middlewares/admin-middleware";
+import { sortQueryMiddleware } from "../../global-middlewares/sort-query.middleware";
+import { paginationQueryMiddleware } from "../../global-middlewares/pagination-query.middleware";
+import { inputCheckErrorsMiddleware } from "../../global-middlewares/inputCheckErrorsMiddleware";
 import { postBodyValidators } from "./middlewares/post-body.validator";
 import { findPostValidator } from "./middlewares/findPost.validator";
 import { findBlogByBodyIdValidator } from "./middlewares/findBlogByBodyId.validator.ts";

@@ -5,7 +5,7 @@ import { UserEntityModel, UserViewModel } from "../../input-output-types/users-t
 export const usersRepository = {
   async findUser(id: string): Promise<UserViewModel | null> {
     const objectId = new ObjectId(id);
-    const userFromDb = await  db.getCollections().usersCollection.findOne({ _id: objectId });
+    const userFromDb = await db.getCollections().usersCollection.findOne({ _id: objectId }, { projection: { password: 0 } });
 
     if (!userFromDb) {
       return null;
@@ -19,5 +19,10 @@ export const usersRepository = {
     const result = await db.getCollections().usersCollection.insertOne(payload);
 
     return result.insertedId.toString();
+  },
+  async deleteUser(id: string): Promise<boolean> {
+    const objectId = new ObjectId(id);
+    const result = await db.getCollections().usersCollection.deleteOne({ _id: objectId });
+    return result.deletedCount > 0;
   },
 };

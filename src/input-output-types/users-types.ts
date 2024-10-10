@@ -7,6 +7,8 @@ export type UserEntityModel = {
   createdAt: string;
 };
 
+export type UserEntityModelWithoutPassword = Omit<UserEntityModel, "password">;
+
 export type UserViewModel = {
   id: string;
   login: string;
