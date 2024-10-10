@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
-import { OutputErrorsType } from "../input-output-types/output-errors-types";
-import { PostInputModel, PostInputQueryModel, PostViewModel, URIParamsPostModel } from "../input-output-types/posts-types";
-import { postsService } from "../services/posts.service";
-import { OutputDataWithPagination } from "../input-output-types/common-types";
+import { OutputErrorsType } from "../../input-output-types/output-errors-types";
+import { PostInputModel, PostInputQueryModel, PostViewModel, URIParamsPostModel } from "../../input-output-types/posts-types";
+import { postsService } from "./posts.service";
+import { OutputDataWithPagination } from "../../input-output-types/common-types";
 import { SortDirection } from "mongodb";
+import { postsQueryRepository } from "./posts.query-repository";
 
 export const postsController = {
   async getPosts(req: Request<{}, {}, {}, PostInputQueryModel>, res: Response<OutputDataWithPagination<PostViewModel>>) {
@@ -14,13 +15,13 @@ export const postsController = {
       sortDirection: req.query.sortDirection as SortDirection,
     };
 
-    const posts = await postsService.findAllPosts(queryData);
+    const posts = await postsQueryRepository.findAllPosts(queryData);
 
     res.status(200).json(posts);
   },
 
   async getPost(req: Request<URIParamsPostModel>, res: Response<PostViewModel>) {
-    const post = await postsService.find(req.params.id);
+    const post = await postsQueryRepository.findPost(req.params.id);
 
     if (!post) {
       res.sendStatus(404);
@@ -29,14 +30,14 @@ export const postsController = {
     }
   },
 
-  async createPost(req: Request<any, any, PostInputModel>, res: Response<PostViewModel | OutputErrorsType>) {
-    const newPost = await postsService.create(req.body);
+  async createPost(req: Request<any, any, PostInputModel>, res: Response<PostViewModel | null | OutputErrorsType>) {
+    const newPost: PostViewModel | null = await postsService.createPost(req.body);
 
-    res.status(201).json(newPost!);
+    res.status(201).json(newPost);
   },
 
   async updatePost(req: Request<URIParamsPostModel, {}, PostInputModel>, res: Response<OutputErrorsType>) {
-    const isUpdatedPost = await postsService.update(req.params.id, req.body);
+    const isUpdatedPost = await postsService.updatePost(req.params.id, req.body);
 
     if (!isUpdatedPost) {
       res.sendStatus(404);
@@ -45,7 +46,7 @@ export const postsController = {
     }
   },
   async deletePost(req: Request<URIParamsPostModel>, res: Response) {
-    const isDeletedPost = await postsService.delete(req.params.id);
+    const isDeletedPost = await postsService.deletePost(req.params.id);
 
     if (!isDeletedPost) {
       res.sendStatus(404);

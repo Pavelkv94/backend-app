@@ -1,36 +1,31 @@
-import { clearBlogs, runDB } from "../src/db/db";
+import { db } from "../src/db/db";
 import { BlogInputModel } from "../src/input-output-types/blogs-types";
-import { createString } from "./helpers/datasets";
+import { createString, fakeId, newBlog, newBlogPost } from "./helpers/datasets";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { blogsManager } from "./helpers/blogsManager";
 import { postsManager } from "./helpers/postsManager";
 
 describe("/blogs", () => {
-  let client: MongoMemoryServer;
+  let mongoServer: MongoMemoryServer;
   beforeAll(async () => {
     // запуск виртуального сервера с временной бд
-    client = await MongoMemoryServer.create();
+    mongoServer = await MongoMemoryServer.create();
 
-    const uri = client.getUri();
+    const url = mongoServer.getUri();
 
-    await runDB(uri);
+    db.run(url);
   });
 
   beforeEach(async () => {
-    await clearBlogs();
+    await db.drop();
   });
 
   afterAll(async () => {
-    await client.stop();
+    await mongoServer.stop();
+    await db.stop();
   });
 
   it("should create and shouldn't get empty array", async () => {
-    const newBlog: BlogInputModel = {
-      name: "n1",
-      description: "d1",
-      websiteUrl: "http://some.com",
-    };
-
     const res = await blogsManager.createBlogWithAuth(newBlog);
 
     expect(res.status).toBe(201);
@@ -44,32 +39,14 @@ describe("/blogs", () => {
   });
 
   it("shouldn't create 401 without auth", async () => {
-    const newBlog: BlogInputModel = {
-      name: "n1",
-      description: "d1",
-      websiteUrl: "http://some.com",
-    };
-
     const res = await blogsManager.createBlogWithoutAuth(newBlog);
     expect(res.status).toBe(401);
   });
   it("shouldn't create 401 with invalid token", async () => {
-    const newBlog: BlogInputModel = {
-      name: "n1",
-      description: "d1",
-      websiteUrl: "http://some.com",
-    };
-
     const res = await blogsManager.createBlogWithInvalidToken(newBlog);
     expect(res.status).toBe(401);
   });
   it("shouldn't create 401 with auth", async () => {
-    const newBlog: BlogInputModel = {
-      name: "n1",
-      description: "d1",
-      websiteUrl: "http://some.com",
-    };
-
     const res = await blogsManager.createBlogWithInvalidAuth(newBlog);
     expect(res.status).toBe(401);
   });
@@ -96,17 +73,11 @@ describe("/blogs", () => {
   });
 
   it("shouldn't find", async () => {
-    const getResponse = await blogsManager.getBlog("1");
+    const getResponse = await blogsManager.getBlog(fakeId);
     expect(getResponse.status).toBe(404);
   });
 
   it("should find", async () => {
-    const newBlog: BlogInputModel = {
-      name: "n1",
-      description: "d1",
-      websiteUrl: "http://some.com",
-    };
-
     const createResponse = await blogsManager.createBlogWithAuth(newBlog);
 
     expect(createResponse.status).toBe(201);
@@ -120,12 +91,6 @@ describe("/blogs", () => {
   });
 
   it("should del", async () => {
-    const newBlog: BlogInputModel = {
-      name: "n1",
-      description: "d1",
-      websiteUrl: "http://some.com",
-    };
-
     const createResponse = await blogsManager.createBlogWithAuth(newBlog);
 
     expect(createResponse.status).toBe(201);
@@ -139,18 +104,12 @@ describe("/blogs", () => {
   });
 
   it("shouldn't del", async () => {
-    const res = await blogsManager.deleteBlogWithAuth("1");
+    const res = await blogsManager.deleteBlogWithAuth(fakeId);
 
     expect(res.status).toBe(404);
   });
 
   it("shouldn't del 401", async () => {
-    const newBlog: BlogInputModel = {
-      name: "n1",
-      description: "d1",
-      websiteUrl: "http://some.com",
-    };
-
     const createResponse = await blogsManager.createBlogWithAuth(newBlog);
 
     expect(createResponse.status).toBe(201);
@@ -161,12 +120,6 @@ describe("/blogs", () => {
   });
 
   it("should update", async () => {
-    const newBlog: BlogInputModel = {
-      name: "n1",
-      description: "d1",
-      websiteUrl: "http://some.com",
-    };
-
     const createResponse = await blogsManager.createBlogWithAuth(newBlog);
 
     expect(createResponse.status).toBe(201);
@@ -195,17 +148,11 @@ describe("/blogs", () => {
       websiteUrl: "http://some2.com",
     };
 
-    const res = await blogsManager.updateBlogWithAuth(blog, "1");
+    const res = await blogsManager.updateBlogWithAuth(blog, fakeId);
     expect(res.status).toBe(404);
   });
 
   it("shouldn't update  400", async () => {
-    const newBlog: BlogInputModel = {
-      name: "n1",
-      description: "d1",
-      websiteUrl: "http://some.com",
-    };
-
     const createResponse = await blogsManager.createBlogWithAuth(newBlog);
 
     expect(createResponse.status).toBe(201);
@@ -225,12 +172,6 @@ describe("/blogs", () => {
     expect(res.body.errorsMessages[2].field).toEqual("websiteUrl");
   });
   it("shouldn't update 401", async () => {
-    const newBlog: BlogInputModel = {
-      name: "n1",
-      description: "d1",
-      websiteUrl: "http://some.com",
-    };
-
     const createResponse = await blogsManager.createBlogWithAuth(newBlog);
 
     expect(createResponse.status).toBe(201);
@@ -252,12 +193,6 @@ describe("/blogs", () => {
   });
 
   it("should get pagination", async () => {
-    const newBlog: BlogInputModel = {
-      name: "n1",
-      description: "d1",
-      websiteUrl: "http://some.com",
-    };
-
     const createResponse = await blogsManager.createBlogWithAuth(newBlog);
 
     expect(createResponse.status).toBe(201);
@@ -273,12 +208,6 @@ describe("/blogs", () => {
   });
 
   it("shouldn't get objects with incorrect search", async () => {
-    const newBlog: BlogInputModel = {
-      name: "n1",
-      description: "d1",
-      websiteUrl: "http://some.com",
-    };
-
     const createResponse = await blogsManager.createBlogWithAuth(newBlog);
 
     expect(createResponse.status).toBe(201);
@@ -289,48 +218,25 @@ describe("/blogs", () => {
   });
 
   it("should create post for blog", async () => {
-    const newBlog: BlogInputModel = {
-      name: "n1",
-      description: "d1",
-      websiteUrl: "http://some.com",
-    };
-
     const createBlogResponse = await blogsManager.createBlogWithAuth(newBlog);
     expect(createBlogResponse.status).toBe(201);
 
-    const newPost = {
-      title: "Post Title",
-      shortDescription: "Post Desc",
-      content: "Post Content",
-    };
-    const createPostResponse = await postsManager.createPostForBlog(newPost, createBlogResponse.body.id);
+    const createPostResponse = await postsManager.createPostForBlog(newBlogPost, createBlogResponse.body.id);
 
     expect(createPostResponse.status).toBe(201);
-
     const getPostResponse = await postsManager.getPost(createPostResponse.body.id);
     expect(getPostResponse.status).toBe(200);
   });
   it("shouldn't get blog's posts", async () => {
-    const getBlogPosts = await blogsManager.getBlogsPosts("123123");
+    const getBlogPosts = await blogsManager.getBlogsPosts(fakeId);
     expect(getBlogPosts.status).toBe(404);
   });
 
   it("shouldn get blog's posts", async () => {
-    const newBlog: BlogInputModel = {
-      name: "n1",
-      description: "d1",
-      websiteUrl: "http://some.com",
-    };
-
     const createBlogResponse = await blogsManager.createBlogWithAuth(newBlog);
     expect(createBlogResponse.status).toBe(201);
 
-    const newPost = {
-      title: "Post Title",
-      shortDescription: "Post Desc",
-      content: "Post Content",
-    };
-    const createPostResponse = await postsManager.createPostForBlog(newPost, createBlogResponse.body.id);
+    const createPostResponse = await postsManager.createPostForBlog(newBlogPost, createBlogResponse.body.id);
 
     expect(createPostResponse.status).toBe(201);
 
@@ -340,12 +246,6 @@ describe("/blogs", () => {
     expect(getBlogPosts.body.page).toBe(1);
   });
   it("shouldn't get blogs with invalid query", async () => {
-    const newBlog: BlogInputModel = {
-      name: "n1",
-      description: "d1",
-      websiteUrl: "http://some.com",
-    };
-
     const createBlogResponse = await blogsManager.createBlogWithAuth(newBlog);
     expect(createBlogResponse.status).toBe(201);
 

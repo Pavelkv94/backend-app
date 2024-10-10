@@ -1,9 +1,10 @@
 import { SortDirection } from "mongodb";
 
-export type UserInputModel = {
+export type UserEntityModel = {
   login: string;
-  password: string;
   email: string;
+  password: string;
+  createdAt: string;
 };
 
 export type UserViewModel = {
@@ -11,6 +12,12 @@ export type UserViewModel = {
   login: string;
   email: string;
   createdAt: string;
+};
+
+export type UserInputModel = {
+  login: string;
+  password: string;
+  email: string;
 };
 
 export type URIParamsUserModel = {
@@ -27,10 +34,10 @@ export type UsersInputQueryModel = {
 };
 
 export type UsersValidInputQueryModel = {
-    sortBy: string;
-    sortDirection: SortDirection;
-    pageNumber: number;
-    pageSize: number;
-    searchLoginTerm: string;
-    searchEmailTerm: string;
-  };
+  sortBy: string;
+  sortDirection: SortDirection;
+  pageNumber: number;
+  pageSize: number;
+  searchLoginTerm: string;
+  searchEmailTerm: string;
+};

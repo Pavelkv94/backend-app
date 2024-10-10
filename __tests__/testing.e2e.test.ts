@@ -1,5 +1,5 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { runDB } from "../src/db/db";
+import { db } from "../src/db/db";
 import { BlogInputModel } from "../src/input-output-types/blogs-types";
 import { blogsManager } from "./helpers/blogsManager";
 import { PostInputModel } from "../src/input-output-types/posts-types";
@@ -7,18 +7,23 @@ import { postsManager } from "./helpers/postsManager";
 import { req } from "./helpers/test-helpers";
 
 describe("/test", () => {
-  let client: MongoMemoryServer;
+  let mongoServer: MongoMemoryServer;
   beforeAll(async () => {
     // запуск виртуального сервера с временной бд
-    client = await MongoMemoryServer.create();
+    mongoServer = await MongoMemoryServer.create();
 
-    const uri = client.getUri();
+    const url = mongoServer.getUri();
 
-    await runDB(uri);
+    await db.run(url);
   });
 
   afterAll(async () => {
-    await client.stop();
+    await mongoServer.stop();
+    await db.stop();
+  });
+
+  afterEach(async () => {
+    await db.drop();
   });
 
   it("should return empty array", async () => {

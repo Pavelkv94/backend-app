@@ -1,27 +1,21 @@
-import { clearDB, clearPosts, db, runDB } from "../src/db/db";
-import { createString } from "./helpers/datasets";
+import { buildPost, createString, fakeId, newBlog } from "./helpers/datasets";
 import { PostInputModel } from "../src/input-output-types/posts-types";
-import { BlogInputModel, BlogOutputModel } from "../src/input-output-types/blogs-types";
+import { BlogViewModel } from "../src/input-output-types/blogs-types";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { blogsManager } from "./helpers/blogsManager";
 import { postsManager } from "./helpers/postsManager";
+import { db } from "../src/db/db";
 
 describe("/posts", () => {
-  let client: MongoMemoryServer;
-  let blogFromDb: BlogOutputModel;
+  let mongoServer: MongoMemoryServer;
+  let blogFromDb: BlogViewModel;
   beforeAll(async () => {
     // запуск виртуального сервера с временной бд
-    client = await MongoMemoryServer.create();
+    mongoServer = await MongoMemoryServer.create();
 
-    const uri = client.getUri();
+    const url = mongoServer.getUri();
 
-    await runDB(uri);
-
-    const newBlog: BlogInputModel = {
-      name: "n1",
-      description: "d1",
-      websiteUrl: "http://some.com",
-    };
+    db.run(url);
 
     const createBlogResponse = await blogsManager.createBlogWithAuth(newBlog);
     blogFromDb = createBlogResponse.body;
@@ -29,21 +23,16 @@ describe("/posts", () => {
   });
 
   beforeEach(async () => {
-    await clearPosts();
+    await db.dropCollection("posts");
   });
 
   afterAll(async () => {
-    await clearDB();
-    await client.stop();
+    await mongoServer.stop();
+    await db.stop();
   });
 
   it("should create and shouldn't get empty array", async () => {
-    const newPost: PostInputModel = {
-      title: "t1",
-      shortDescription: "s1",
-      content: "c1",
-      blogId: blogFromDb.id,
-    };
+    const newPost = buildPost(blogFromDb);
 
     const createPostResponse = await postsManager.createPostWithAuth(newPost);
     expect(createPostResponse.status).toBe(201);
@@ -60,12 +49,7 @@ describe("/posts", () => {
   });
 
   it("shouldn't create 401", async () => {
-    const newPost: PostInputModel = {
-      title: "t1",
-      shortDescription: "s1",
-      content: "c1",
-      blogId: "1",
-    };
+    const newPost = buildPost(blogFromDb);
 
     const res = await postsManager.createPostWithoutAuth(newPost);
     expect(res.status).toBe(401);
@@ -80,7 +64,7 @@ describe("/posts", () => {
       title: createString(31),
       content: createString(1001),
       shortDescription: createString(101),
-      blogId: "1",
+      blogId: fakeId,
     };
 
     const createPostResponse = await postsManager.createPostWithAuth(newPost);
@@ -98,17 +82,12 @@ describe("/posts", () => {
   });
 
   it("shouldn't find", async () => {
-    const res = await postsManager.getPost("1");
+    const res = await postsManager.getPost(fakeId);
     expect(res.status).toBe(404);
   });
 
   it("should find", async () => {
-    const newPost: PostInputModel = {
-      title: "t1",
-      shortDescription: "s1",
-      content: "c1",
-      blogId: blogFromDb.id,
-    };
+    const newPost = buildPost(blogFromDb);
 
     const createPostResponse = await postsManager.createPostWithAuth(newPost);
     expect(createPostResponse.status).toBe(201);
@@ -122,12 +101,7 @@ describe("/posts", () => {
   });
 
   it("should del", async () => {
-    const newPost: PostInputModel = {
-      title: "t1",
-      shortDescription: "s1",
-      content: "c1",
-      blogId: blogFromDb.id,
-    };
+    const newPost = buildPost(blogFromDb);
 
     const createPostResponse = await postsManager.createPostWithAuth(newPost);
     expect(createPostResponse.status).toBe(201);
@@ -141,17 +115,12 @@ describe("/posts", () => {
   });
 
   it("shouldn't del", async () => {
-    const res = await postsManager.deletePostWithAuth("1");
+    const res = await postsManager.deletePostWithAuth(fakeId);
     expect(res.status).toBe(404);
   });
 
   it("shouldn't del 401", async () => {
-    const newPost: PostInputModel = {
-      title: "t1",
-      shortDescription: "s1",
-      content: "c1",
-      blogId: blogFromDb.id,
-    };
+    const newPost = buildPost(blogFromDb);
 
     const createPostResponse = await postsManager.createPostWithAuth(newPost);
     expect(createPostResponse.status).toBe(201);
@@ -165,12 +134,7 @@ describe("/posts", () => {
   });
 
   it("should update", async () => {
-    const newPost: PostInputModel = {
-      title: "t1",
-      shortDescription: "s1",
-      content: "c1",
-      blogId: blogFromDb.id,
-    };
+    const newPost = buildPost(blogFromDb);
 
     const createPostResponse = await postsManager.createPostWithAuth(newPost);
     expect(createPostResponse.status).toBe(201);
@@ -195,24 +159,14 @@ describe("/posts", () => {
   });
 
   it("shouldn't update 404", async () => {
-    const post: PostInputModel = {
-      title: "t1",
-      shortDescription: "s1",
-      content: "c1",
-      blogId: blogFromDb.id,
-    };
+    const post = buildPost(blogFromDb);
 
-    const res = await postsManager.updatePostWithAuth(post, "1");
+    const res = await postsManager.updatePostWithAuth(post, fakeId);
     expect(res.status).toBe(404);
   });
 
   it("shouldn't update 400", async () => {
-    const newPost: PostInputModel = {
-      title: "t1",
-      shortDescription: "s1",
-      content: "c1",
-      blogId: blogFromDb.id,
-    };
+    const newPost = buildPost(blogFromDb);
 
     const createPostResponse = await postsManager.createPostWithAuth(newPost);
     expect(createPostResponse.status).toBe(201);
@@ -221,7 +175,7 @@ describe("/posts", () => {
       title: createString(31),
       content: createString(1001),
       shortDescription: createString(101),
-      blogId: "1",
+      blogId: fakeId,
     };
 
     const res = await postsManager.updatePostWithAuth(post, createPostResponse.body.id);
@@ -234,12 +188,7 @@ describe("/posts", () => {
     expect(res.body.errorsMessages[3].field).toEqual("blogId");
   });
   it("shouldn't update 401", async () => {
-    const newPost: PostInputModel = {
-      title: "t1",
-      shortDescription: "s1",
-      content: "c1",
-      blogId: blogFromDb.id,
-    };
+    const newPost = buildPost(blogFromDb);
 
     const createPostResponse = await postsManager.createPostWithAuth(newPost);
     expect(createPostResponse.status).toBe(201);
@@ -264,12 +213,7 @@ describe("/posts", () => {
   });
 
   it("should get pagination", async () => {
-    const newPost: PostInputModel = {
-      title: "t1",
-      shortDescription: "s1",
-      content: "c1",
-      blogId: blogFromDb.id,
-    };
+    const newPost = buildPost(blogFromDb);
 
     const createPostResponse = await postsManager.createPostWithAuth(newPost);
     expect(createPostResponse.status).toBe(201);

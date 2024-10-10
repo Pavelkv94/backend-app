@@ -1,5 +1,18 @@
 import { SortDirection } from "mongodb";
 
+export type PostEntityModel = {
+  title: string;
+  shortDescription: string;
+  content: string;
+  blogId: string;
+  blogName: string;
+  createdAt: string;
+};
+
+export type PostViewModel = {
+  id: string;
+} & PostEntityModel;
+
 export type PostInputModel = {
   title: string;
   shortDescription: string;
@@ -11,16 +24,6 @@ export type PostForBlogInputModel = {
   title: string;
   shortDescription: string;
   content: string;
-};
-
-export type PostViewModel = {
-  id: string;
-  title: string;
-  shortDescription: string;
-  content: string;
-  blogId: string;
-  blogName: string;
-  createdAt: string;
 };
 
 export type PostOutputModel = PostViewModel;
@@ -35,7 +38,6 @@ export type PostInputQueryModel = {
   pageNumber: string;
   pageSize: string;
 };
-
 
 export type PostValidQueryModel = {
   sortBy: string;

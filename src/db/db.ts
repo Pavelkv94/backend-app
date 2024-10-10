@@ -1,52 +1,54 @@
 import { Collection, Db, MongoClient } from "mongodb";
-import { BlogDbType } from "./blog-db-type";
-import { PostDbType } from "./post-db-type";
-import { UserDbType } from "./user-db-type";
+import { BlogEntityModel } from "../input-output-types/blogs-types";
+import { PostEntityModel } from "../input-output-types/posts-types";
+import { UserEntityModel } from "../input-output-types/users-types";
 
-export type DBType = {
-  blogs: BlogDbType[];
-  posts: PostDbType[];
-};
+export const db = {
+  client: {} as MongoClient,
+  getDbName() {
+    return this.client.db(process.env.DB_NAME);
+  },
+  async run(url: string) {
+    try {
+      this.client = new MongoClient(url);
+      await this.client.connect();
+      await this.getDbName().command({ ping: 1 });
+      console.log("connected to MongoDB");
+    } catch (error) {
+      await this.client.close();
+      console.log(`Mongo connect Error: ${error}`);
+    }
+  },
+  async stop() {
+    await this.client.close();
+    console.log("Mongo connection closed");
+  },
+  async drop() {
+    try {
+      const collections = await this.getDbName().listCollections().toArray();
 
-export type ReadonlyDBType = {
-  blogs: Readonly<BlogDbType[]>;
-  posts: Readonly<PostDbType[]>;
-};
-
-export let db: Db;
-
-export let blogCollection: Collection<BlogDbType>;
-export let postCollection: Collection<PostDbType>;
-export let usersCollection: Collection<UserDbType>;
-
-export const runDB = async (url: string) => {
-  const client: MongoClient = new MongoClient(url);
-  db = client.db(process.env.DB_NAME);
-
-  blogCollection = db.collection<BlogDbType>("blogs");
-  postCollection = db.collection<PostDbType>("posts");
-  usersCollection = db.collection<UserDbType>("users");
-
-  try {
-    console.log("connected to MongoDB");
-    await client.connect();
-    return true;
-  } catch (e) {
-    console.log(e);
-    await client.close();
-    return false;
-  }
-};
-
-export const clearDB = async () => {
-  await postCollection.drop();
-  await blogCollection.drop();
-};
-
-export const clearBlogs = async () => {
-  await blogCollection.drop();
-};
-
-export const clearPosts = async () => {
-  await postCollection.drop();
+      for (const collection of collections) {
+        const collectionName = collection.name;
+        await this.getDbName().collection(collectionName).deleteMany({});
+      }
+    } catch (error) {
+      console.log("Mongo drop db Error: " + error);
+      await this.stop();
+    }
+  },
+  async dropCollection(collectionName: string) {
+    try {
+      await this.getDbName().collection(collectionName).deleteMany({});
+    } catch (error) {
+      console.log("Mongo drop collection Error: " + error);
+      await this.stop();
+    }
+  },
+  getCollections() {
+    return {
+      blogsCollection: this.getDbName().collection<BlogEntityModel>("blogs"),
+      postsCollection: this.getDbName().collection<PostEntityModel>("posts"),
+      usersCollection: this.getDbName().collection<UserEntityModel>("users"),
+    };
+  },
 };

@@ -1,13 +1,13 @@
 import { Router } from "express";
-import { adminMiddleware } from "../middlewares/admin-middleware";
-import { blogsController } from "../constrollers/blogs.controller";
-import { blogBodyValidators } from "../middlewares/blogMiddlewares/blog-body.validator";
-import { inputCheckErrorsMiddleware } from "../middlewares/inputCheckErrorsMiddleware";
-import { sortQueryMiddleware } from "../middlewares/sort-query.middleware";
-import { paginationQueryMiddleware } from "../middlewares/pagination-query.middleware";
-import { blogQueryValidator } from "../middlewares/blogMiddlewares/blog-query.validator";
-import { findBlogByParamIdValidator } from "../middlewares/blogMiddlewares/findBlogByParamId.validator";
-import { postBodyValidators } from "../middlewares/postMiddlewares/post-body.validator";
+import { adminMiddleware } from "../../middlewares/admin-middleware";
+import { blogsController } from "./blogs.controller";
+import { blogBodyValidators } from "./middlewares/blog-body.validator";
+import { inputCheckErrorsMiddleware } from "../../middlewares/inputCheckErrorsMiddleware";
+import { sortQueryMiddleware } from "../../middlewares/sort-query.middleware";
+import { paginationQueryMiddleware } from "../../middlewares/pagination-query.middleware";
+import { blogQueryValidator } from "./middlewares/blog-query.validator";
+import { findBlogByParamIdValidator } from "./middlewares/findBlogByParamId.validator";
+import { postBodyValidators } from "../posts/middlewares/post-body.validator";
 
 export const blogsRouter = Router();
 

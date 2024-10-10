@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { clearDB } from "../db/db";
+import { db } from "../db/db";
 
 export const testingRouter = Router();
 
 testingRouter.delete("/all-data", async (req, res) => {
-  await clearDB();
+  db.drop();
   res.sendStatus(204);
 });

@@ -1,18 +1,21 @@
 import { SortDirection } from "mongodb";
 
-export type BlogInputModel = {
-  name: string;
-  description: string;
-  websiteUrl: string;
-};
-
-export type BlogViewModel = {
-  id: string;
+export type BlogEntityModel = {
   name: string;
   description: string;
   websiteUrl: string;
   isMembership: boolean;
   createdAt: string;
+};
+
+export type BlogViewModel = {
+  id: string;
+} & BlogEntityModel;
+
+export type BlogInputModel = {
+  name: string;
+  description: string;
+  websiteUrl: string;
 };
 
 export type BlogOutputModel = BlogViewModel;
