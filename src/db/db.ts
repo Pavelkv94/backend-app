@@ -16,7 +16,7 @@ export const db = {
       console.log("connected to MongoDB");
     } catch (error) {
       await this.client.close();
-      console.log(`Mongo connect Error: ${error}`);
+      // console.log(`Mongo connect Error: ${error}`);
     }
   },
   async stop() {

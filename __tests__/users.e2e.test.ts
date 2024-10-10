@@ -67,13 +67,14 @@ describe("/users", () => {
 
     const getUsersResponse = await usersManager.getUsersWithAuth();
     expect(getUsersResponse.body.items.length).toBe(0);
+  });
 
+  it("shouldn't create user with the same data", async () => {
     const createUserResponse2 = await usersManager.createUser(newUser);
     expect(createUserResponse2.status).toBe(201);
-
     const createUserResponse3 = await usersManager.createUser(newUser);
     expect(createUserResponse3.status).toBe(400);
-    expect(createUserResponse.body.errorsMessages.length).toBe(2);
+    expect(createUserResponse3.body.errorsMessages.length).toBe(2);
   });
 
   it("should delete user", async () => {
