@@ -7,13 +7,15 @@ export const usersQueryRepository = {
   async findAllUsers(query: UsersValidInputQueryModel): Promise<OutputDataWithPagination<UserViewModel>> {
     const { pageSize, pageNumber, sortBy, sortDirection, searchLoginTerm, searchEmailTerm } = query;
 
-    const filter: any = {};
+    const filter: any = {
+      $or: [],
+    };
 
     if (searchLoginTerm) {
-      filter.login = { $regex: searchLoginTerm, $options: "i" };
+      filter.$or.push({ login: { $regex: searchLoginTerm, $options: "i" } });
     }
     if (searchEmailTerm) {
-      filter.email = { $regex: searchEmailTerm, $options: "i" };
+      filter.$or.push({ email: { $regex: searchEmailTerm, $options: "i" } });
     }
 
     const usersFromDb = await db
