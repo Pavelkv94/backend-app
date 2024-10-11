@@ -227,4 +227,13 @@ describe("/posts", () => {
     expect(getResponse.body.totalCount).toBe(1);
     expect(getResponse.body.items.length).toBe(1);
   });
+
+  it("should create blog and post", async () => {
+    const newBlogResponse = await blogsManager.createBlogWithAuth(newBlog);
+
+    const newPost = buildPost(newBlogResponse.body);
+
+    const createPostResponse = await postsManager.createPostWithAuth(newPost);
+    expect(createPostResponse.status).toBe(201);
+  });
 });

@@ -1,6 +1,5 @@
 import { ObjectId, WithId } from "mongodb";
-
-import { BlogEntityModel, BlogInputModel, BlogValidQueryModel, BlogViewModel } from "../../input-output-types/blogs-types";
+import { BlogEntityModel, BlogValidQueryModel, BlogViewModel } from "../../input-output-types/blogs-types";
 import { db } from "../../db/db";
 import { OutputDataWithPagination } from "../../input-output-types/common-types";
 
