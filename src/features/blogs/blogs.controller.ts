@@ -35,11 +35,13 @@ export const blogsController = {
 
   async createBlog(req: Request<any, any, BlogInputModel>, res: Response<BlogViewModel | null>) {
     const newBlogId = await blogsService.createBlog(req.body);
-    console.log('New Blog ID:', newBlogId); // Debugging output
-    await new Promise(resolve => setTimeout(resolve, 100));
     const newBlog = await blogsQueryRepository.findBlog(newBlogId);
-    console.log('Newly Created Blog:', newBlog); // Debugging output
 
+    if (!newBlog) {
+      //@ts-ignore
+      res.status(501).json({message: req.body}); //! уточнить ошибку
+      return;
+    }
     res.status(201).json(newBlog);
   },
 

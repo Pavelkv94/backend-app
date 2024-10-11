@@ -38,6 +38,19 @@ describe("/blogs", () => {
     expect(getBlogsResponse.body.items.length).toBe(1);
   });
 
+  it("should create a lot of blogs", async () => {
+
+    for(let i = 0; i < 10; i++) {
+      const res = await blogsManager.createBlogWithAuth(newBlog);
+      expect(res.status).toBe(201);
+    }
+
+    const getBlogsResponse = await blogsManager.getBlogs();
+
+    console.log(getBlogsResponse.body.items)
+    expect(getBlogsResponse.body.items.length).toBe(10);
+  });
+
   it("shouldn't create 401 without auth", async () => {
     const res = await blogsManager.createBlogWithoutAuth(newBlog);
     expect(res.status).toBe(401);
