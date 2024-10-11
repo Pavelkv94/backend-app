@@ -34,10 +34,10 @@ export const postsController = {
     const newPostId = await postsService.createPost(req.body);
     const newPost = await postsQueryRepository.findPost(newPostId);
 
-    if (!newPost) {
-      res.sendStatus(500); //! уточнить ошибку
-      return;
-    }
+    // if (!newPost) {
+    //   res.sendStatus(500); //! уточнить ошибку
+    //   return;
+    // }
 
     res.status(201).json(newPost);
   },

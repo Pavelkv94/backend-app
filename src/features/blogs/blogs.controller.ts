@@ -37,10 +37,10 @@ export const blogsController = {
     const newBlogId = await blogsService.createBlog(req.body);
     const newBlog = await blogsQueryRepository.findBlog(newBlogId);
 
-    if (!newBlog) {
-      res.sendStatus(500); //! уточнить ошибку
-      return;
-    }
+    // if (!newBlog) {
+    //   res.sendStatus(500); //! уточнить ошибку
+    //   return;
+    // }
     res.status(201).json(newBlog);
   },
 
