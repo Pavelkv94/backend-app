@@ -24,7 +24,7 @@ export const blogsQueryRepository = {
 
     const blogsView = this.mapBlogsToOutput(blogsFromDb);
 
-    const blogsCount = await this.getBlogsCount(query.searchNameTerm);
+    const blogsCount = await this.getBlogsCount(searchNameTerm || null);
 
     return {
       pagesCount: Math.ceil(blogsCount / query.pageSize),
