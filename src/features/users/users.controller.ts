@@ -4,6 +4,7 @@ import { OutputDataWithPagination } from "../../input-output-types/common-types"
 import { usersService } from "./users.service";
 import { usersQueryRepository } from "./users.query-repository";
 import { SortDirection } from "mongodb";
+import { OutputErrorsType } from "../../input-output-types/output-errors-types";
 
 export const usersController = {
   async getUsers(req: Request<{}, {}, {}, UsersInputQueryModel>, res: Response<OutputDataWithPagination<UserViewModel>>) {
@@ -19,12 +20,12 @@ export const usersController = {
     const users = await usersQueryRepository.findAllUsers(queryData);
     res.status(200).json(users);
   },
-  async createUser(req: Request<{}, {}, UserInputModel>, res: Response<UserViewModel>) {
+  async createUser(req: Request<{}, {}, UserInputModel>, res: Response<UserViewModel | OutputErrorsType>) {
     const newUserId = await usersService.create(req.body);
     const newUser = await usersQueryRepository.findUser(newUserId);
 
     if (!newUser) {
-      res.sendStatus(500); //! уточнить ошибку
+      res.status(404).json({ errorsMessages: [{ message: "User not found", field: "" }] });
       return;
     }
 

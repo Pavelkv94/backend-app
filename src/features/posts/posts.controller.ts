@@ -30,11 +30,16 @@ export const postsController = {
     }
   },
 
-  async createPost(req: Request<any, any, PostInputModel>, res: Response<PostViewModel>) {
+  async createPost(req: Request<any, any, PostInputModel>, res: Response<PostViewModel | OutputErrorsType>) {
     const newPostId = await postsService.createPost(req.body);
     const newPost = await postsQueryRepository.findPost(newPostId);
 
-    res.status(201).json(newPost!);
+    if (!newPost) {
+      res.status(404).json({ errorsMessages: [{ message: "Post not found", field: "" }] });
+      return;
+    }
+
+    res.status(201).json(newPost);
   },
 
   async updatePost(req: Request<URIParamsPostModel, {}, PostInputModel>, res: Response) {

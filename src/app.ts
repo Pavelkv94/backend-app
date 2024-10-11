@@ -12,7 +12,8 @@ import { authRouter } from "./features/auth/auth.router";
 
 config();
 
-const url = process.env.MONGO_URL || "mongodb://0.0.0.0:27017";
+// const url = process.env.MONGO_URL || "mongodb://0.0.0.0:27017";
+const url = "mongodb://0.0.0.0:27017";
 
 export const app = express();
 
