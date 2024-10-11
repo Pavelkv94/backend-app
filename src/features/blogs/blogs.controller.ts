@@ -39,7 +39,7 @@ export const blogsController = {
 
     if (!newBlog) {
       //@ts-ignore
-      res.status(501).json({message: req.body}); //! уточнить ошибку
+      res.status(501).json({newBlogId: newBlogId}); //! уточнить ошибку
       return;
     }
     res.status(201).json(newBlog);
