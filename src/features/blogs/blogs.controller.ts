@@ -8,6 +8,7 @@ import { PostForBlogInputModel, PostInputQueryModel, PostViewModel } from "../..
 import { postsService } from "../posts/posts.service";
 import { blogsQueryRepository } from "./blogs.query-repository";
 import { postsQueryRepository } from "../posts/posts.query-repository";
+import { db } from "../../db/db";
 
 export const blogsController = {
   async getBlogs(req: Request<{}, {}, {}, BlogInputQueryModel>, res: Response<OutputDataWithPagination<BlogViewModel>>) {
@@ -36,10 +37,11 @@ export const blogsController = {
   async createBlog(req: Request<any, any, BlogInputModel>, res: Response<BlogViewModel | null>) {
     const newBlogId = await blogsService.createBlog(req.body);
     const newBlog = await blogsQueryRepository.findBlog(newBlogId);
+    const blogs = await db.getCollections().blogsCollection.find({}).toArray();
 
     if (!newBlog) {
       //@ts-ignore
-      res.status(501).json({newBlogId: newBlogId, blogFromDb: newBlog}); //! уточнить ошибку
+      res.status(501).json({newBlogId: newBlogId, blogs: blogs}); //! уточнить ошибку
       return;
     }
     res.status(201).json(newBlog);

@@ -47,19 +47,16 @@ export const blogsQueryRepository = {
 
   async findBlog(id: string): Promise<BlogViewModel | null> {
     const objectId = new ObjectId(id);
-
+    
     const blogFromDb = await db.getCollections().blogsCollection.findOne({ _id: objectId });
-    const blogs = await db.getCollections().blogsCollection.find({})
-    //@ts-ignore
-    return {blogFromDb,
-      blogs}
-    // if (!blogFromDb) {
-    //   return null;
-    // } else {
-    //   const blog = { ...blogFromDb, id: blogFromDb._id.toString() };
-    //   const { _id, ...rest } = blog;
-    //   return rest;
-    // }
+
+    if (!blogFromDb) {
+      return null;
+    } else {
+      const blog = { ...blogFromDb, id: blogFromDb._id.toString() };
+      const { _id, ...rest } = blog;
+      return rest;
+    }
   },
 
   mapBlogsToOutput(blogs: WithId<BlogEntityModel>[]): BlogViewModel[] {
