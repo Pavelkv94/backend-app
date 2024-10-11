@@ -37,17 +37,17 @@ export const blogsController = {
   async createBlog(req: Request<any, any, BlogInputModel>, res: Response<BlogViewModel>) {
     const newBlogId = await blogsService.createBlog(req.body);
     const newBlog = await blogsQueryRepository.findBlog(newBlogId);
-    const blogs = await blogsQueryRepository.findAllBlogs({
-      pageNumber: 1,
-      pageSize: 10,
-      sortBy: "name",
-      sortDirection: "asc",
-      searchNameTerm: "",
-    });
-    if (!newBlog) {
-      //@ts-ignore
-      res.status(501).json({ newBlogId, blogs });
-    }
+    // const blogs = await blogsQueryRepository.findAllBlogs({
+    //   pageNumber: 1,
+    //   pageSize: 10,
+    //   sortBy: "name",
+    //   sortDirection: "asc",
+    //   searchNameTerm: "",
+    // });
+    // if (!newBlog) {
+    //   //@ts-ignore
+    //   res.status(501).json({ newBlogId, blogs });
+    // }
     res.status(201).json(newBlog!);
   },
 
