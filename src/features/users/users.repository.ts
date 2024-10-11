@@ -25,6 +25,7 @@ export const usersRepository = {
 
     return result.insertedId.toString();
   },
+  //d
   async deleteUser(id: string): Promise<boolean> {
     const objectId = new ObjectId(id);
     const result = await db.getCollections().usersCollection.deleteOne({ _id: objectId });
