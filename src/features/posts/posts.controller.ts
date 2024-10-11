@@ -30,19 +30,14 @@ export const postsController = {
     }
   },
 
-  async createPost(req: Request<any, any, PostInputModel>, res: Response<PostViewModel | null | OutputErrorsType>) {
+  async createPost(req: Request<any, any, PostInputModel>, res: Response<PostViewModel>) {
     const newPostId = await postsService.createPost(req.body);
     const newPost = await postsQueryRepository.findPost(newPostId);
 
-    // if (!newPost) {
-    //   res.sendStatus(500); //! уточнить ошибку
-    //   return;
-    // }
-
-    res.status(201).json(newPost);
+    res.status(201).json(newPost!);
   },
 
-  async updatePost(req: Request<URIParamsPostModel, {}, PostInputModel>, res: Response<OutputErrorsType>) {
+  async updatePost(req: Request<URIParamsPostModel, {}, PostInputModel>, res: Response) {
     const isUpdatedPost = await postsService.updatePost(req.params.id, req.body);
 
     if (!isUpdatedPost) {

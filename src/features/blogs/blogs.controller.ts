@@ -34,17 +34,11 @@ export const blogsController = {
     }
   },
 
-  async createBlog(req: Request<any, any, BlogInputModel>, res: Response<BlogViewModel | null>) {
+  async createBlog(req: Request<any, any, BlogInputModel>, res: Response<BlogViewModel>) {
     const newBlogId = await blogsService.createBlog(req.body);
     const newBlog = await blogsQueryRepository.findBlog(newBlogId);
-    const blogs = await db.getCollections().blogsCollection.find({}).toArray();
 
-    if (!newBlog) {
-      //@ts-ignore
-      res.status(501).json({newBlogId: newBlogId, blogs: blogs}); //! уточнить ошибку
-      return;
-    }
-    res.status(201).json(newBlog);
+    res.status(201).json(newBlog!);
   },
 
   async updateBlog(req: Request<any, any, BlogInputModel>, res: Response<BlogViewModel>) {
@@ -66,7 +60,7 @@ export const blogsController = {
     }
   },
 
-  async getBlogPosts(req: Request<URIParamsBlogModel, {}, {}, PostInputQueryModel>, res: Response<OutputDataWithPagination<PostViewModel> | OutputErrorsType>) {
+  async getBlogPosts(req: Request<URIParamsBlogModel, {}, {}, PostInputQueryModel>, res: Response<OutputDataWithPagination<PostViewModel>>) {
     const queryData = {
       pageNumber: +req.query.pageNumber,
       pageSize: +req.query.pageSize,
@@ -79,7 +73,7 @@ export const blogsController = {
     res.status(200).json(posts);
   },
 
-  async createBlogPost(req: Request<URIParamsBlogModel, {}, PostForBlogInputModel>, res: Response<PostViewModel | OutputErrorsType>) {
+  async createBlogPost(req: Request<URIParamsBlogModel, {}, PostForBlogInputModel>, res: Response<PostViewModel>) {
     const newPost = await postsService.createForBlog(req.body, req.params.id);
 
     res.status(201).json(newPost!);
