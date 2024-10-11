@@ -7,7 +7,7 @@ export const usersQueryRepository = {
   async findAllUsers(query: UsersValidInputQueryModel): Promise<OutputDataWithPagination<UserViewModel>> {
     const { pageSize, pageNumber, sortBy, sortDirection, searchLoginTerm, searchEmailTerm } = query;
 
-    const filter: any = {
+    let filter: any = {
       $or: [],
     };
 
@@ -16,6 +16,10 @@ export const usersQueryRepository = {
     }
     if (searchEmailTerm) {
       filter.$or.push({ email: { $regex: searchEmailTerm, $options: "i" } });
+    }
+
+    if (filter.$or.length === 0) {
+      filter = {};
     }
 
     const usersFromDb = await db
@@ -39,13 +43,19 @@ export const usersQueryRepository = {
     };
   },
   async getUsersCount(searchLoginTerm: string, searchEmailTerm: string): Promise<number> {
-    const filter: any = {};
+    let filter: any = {
+      $or: [],
+    };
 
     if (searchLoginTerm) {
-      filter.login = { $regex: searchLoginTerm, $options: "i" };
+      filter.$or.push({ login: { $regex: searchLoginTerm, $options: "i" } });
     }
     if (searchEmailTerm) {
-      filter.email = { $regex: searchEmailTerm, $options: "i" };
+      filter.$or.push({ email: { $regex: searchEmailTerm, $options: "i" } });
+    }
+
+    if (filter.$or.length === 0) {
+      filter = {};
     }
 
     return db.getCollections().usersCollection.countDocuments(filter);
