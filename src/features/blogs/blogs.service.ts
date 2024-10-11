@@ -1,9 +1,8 @@
 import { BlogEntityModel, BlogInputModel, BlogValidQueryModel, BlogViewModel } from "../../input-output-types/blogs-types";
-import { blogsQueryRepository } from "./blogs.query-repository";
 import { blogsRepository } from "./blogs.repository";
 
 export const blogsService = {
-  async createBlog(payload: BlogInputModel): Promise<any> {
+  async createBlog(payload: BlogInputModel): Promise<string> {
     const newBlog: BlogEntityModel = {
       name: payload.name,
       description: payload.description,
@@ -13,9 +12,7 @@ export const blogsService = {
     };
     const id: string = await blogsRepository.createBlog(newBlog);
 
-    const newBlogs = await blogsQueryRepository.findBlog(id);
-
-    return newBlogs;
+    return id;
   },
 
   async updateBlog(id: string, payload: BlogInputModel): Promise<boolean> {

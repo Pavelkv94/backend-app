@@ -47,11 +47,17 @@ export const blogsQueryRepository = {
 
   async findBlog(id: string): Promise<BlogViewModel | null> {
     const objectId = new ObjectId(id);
+    console.log('Finding Blog with ObjectId:', objectId); // Add this log
+
     const blogFromDb = await db.getCollections().blogsCollection.findOne({ _id: objectId });
 
     if (!blogFromDb) {
+      console.log('Blog not found in DB'); // Log if no blog is found
+
       return null;
     } else {
+      console.log('Blog found:', blogFromDb); // Log the found blog data
+
       const blog = { ...blogFromDb, id: blogFromDb._id.toString() };
       const { _id, ...rest } = blog;
       return rest;
