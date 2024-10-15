@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { adminMiddleware } from "../../global-middlewares/admin-middleware";
+import { adminMiddleware } from "../../global-middlewares/admin.middleware";
 import { blogsController } from "./blogs.controller";
 import { blogBodyValidators } from "./middlewares/blog-body.validator";
-import { inputCheckErrorsMiddleware } from "../../global-middlewares/inputCheckErrorsMiddleware";
+import { inputCheckErrorsMiddleware } from "../../global-middlewares/inputCheckErrors.middleware";
 import { sortQueryMiddleware } from "../../global-middlewares/sort-query.middleware";
 import { paginationQueryMiddleware } from "../../global-middlewares/pagination-query.middleware";
 import { blogQueryValidator } from "./middlewares/blog-query.validator";
