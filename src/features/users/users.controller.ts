@@ -25,7 +25,7 @@ export const usersController = {
     const newUser = await usersQueryRepository.findUser(newUserId);
 
     if (!newUser) {
-      res.status(404).json({ errorsMessages: [{ message: "User not found", field: "" }] });
+      res.status(500).json({ errorsMessages: [{ message: "Something was wrong", field: "" }] });
       return;
     }
 

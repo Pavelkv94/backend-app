@@ -1,4 +1,4 @@
-import { Collection, Db, MongoClient } from "mongodb";
+import { MongoClient } from "mongodb";
 import { BlogEntityModel } from "../input-output-types/blogs-types";
 import { PostEntityModel } from "../input-output-types/posts-types";
 import { UserEntityModel } from "../input-output-types/users-types";
@@ -16,7 +16,7 @@ export const db = {
       console.log("connected to MongoDB");
     } catch (error) {
       await this.client.close();
-      // console.log(`Mongo connect Error: ${error}`);
+      console.log(`Mongo connect Error: ${error}`);
     }
   },
   async stop() {

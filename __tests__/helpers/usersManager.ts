@@ -1,4 +1,3 @@
-import { LoginInputModel } from "../../src/input-output-types/auth-types";
 import { UserInputModel } from "../../src/input-output-types/users-types";
 import { SETTINGS } from "../../src/settings";
 import { codedAuth } from "./datasets";
@@ -40,8 +39,13 @@ export const usersManager = {
 
     return response;
   },
-  async loginUser(data: LoginInputModel) {
+  async loginUser(data: any) {
     const response = await req.post(SETTINGS.PATH.AUTH + "/login").send(data);
+
+    return response;
+  },
+  async getMe(token: string) {
+    const response = await req.get(SETTINGS.PATH.AUTH + "/me").set({ Authorization: "Bearer " + token });
 
     return response;
   },

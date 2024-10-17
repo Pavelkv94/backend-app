@@ -1,4 +1,5 @@
-import {app} from '../../src/app'
-import {agent} from 'supertest'
- 
-export const req = agent(app)
+import { agent } from "supertest";
+import { initApp } from "../../src/initApp";
+
+const app = initApp();
+export const req = agent(app);

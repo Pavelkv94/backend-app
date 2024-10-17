@@ -7,4 +7,5 @@ export const SETTINGS = {
     AUTH: "/auth",
   },
   ADMIN: process.env.ADMIN || "admin:qwerty",
+  JWT_SECRET_KEY: process.env.SECRET_JWT_KEY || "secret"
 };

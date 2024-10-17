@@ -39,7 +39,7 @@ export const blogsController = {
     const newBlog = await blogsQueryRepository.findBlog(newBlogId);
 
     if (!newBlog) {
-      res.status(404).json({ errorsMessages: [{ message: "Blog not found", field: "" }] });
+      res.status(500).json({ errorsMessages: [{ message: "Something was wrong", field: "" }] });
       return;
     }
 

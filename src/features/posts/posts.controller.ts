@@ -35,7 +35,7 @@ export const postsController = {
     const newPost = await postsQueryRepository.findPost(newPostId);
 
     if (!newPost) {
-      res.status(404).json({ errorsMessages: [{ message: "Post not found", field: "" }] });
+      res.status(500).json({ errorsMessages: [{ message: "Something was wrong", field: "" }] });
       return;
     }
 

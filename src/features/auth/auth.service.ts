@@ -1,19 +1,21 @@
-import { LoginInputModel } from "../../input-output-types/auth-types";
+import { LoginInputModel } from "./models/auth.models";
+import { bcryptService } from "../../utils/bcrypt.service";
+import { jwtService } from "../../utils/jwt.service";
 import { usersRepository } from "../users/users.repository";
-import bcrypt from "bcrypt";
 
 export const authService = {
-  async checkCredentials(payload: LoginInputModel): Promise<boolean> {
+  async checkCredentials(payload: LoginInputModel): Promise<string | null> {
     const user = await usersRepository.findUserByLoginOrEmail(payload.loginOrEmail);
 
     if (!user) {
-      return false;
+      return null;
     }
 
-    const isPasswordValid = await bcrypt.compare(payload.password, user.password);
+    const isPasswordValid = await bcryptService.checkPassword(payload.password, user.password);
+
     if (!isPasswordValid) {
-      return false;
+      return null;
     }
-    return true;
+    return jwtService.createToken({ user_id: user._id.toString() });
   },
 };

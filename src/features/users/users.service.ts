@@ -1,11 +1,10 @@
-import bcrypt from "bcrypt";
 import { usersRepository } from "./users.repository";
-import { UserEntityModel, UserInputModel, UsersValidInputQueryModel, UserViewModel } from "../../input-output-types/users-types";
+import { UserEntityModel, UserInputModel } from "../../input-output-types/users-types";
+import { bcryptService } from "../../utils/bcrypt.service";
 
 export const usersService = {
   async create(payload: UserInputModel): Promise<string> {
-    const passwordSalt = await bcrypt.genSalt(10);
-    const passwordhash = await bcrypt.hash(payload.password, passwordSalt);
+    const passwordhash = await bcryptService.generateHash(payload.password);
 
     const newUser: UserEntityModel = {
       login: payload.login,
