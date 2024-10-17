@@ -4,8 +4,8 @@ import { sortQueryMiddleware } from "../../global-middlewares/sort-query.middlew
 import { paginationQueryMiddleware } from "../../global-middlewares/pagination-query.middleware";
 import { inputCheckErrorsMiddleware } from "../../global-middlewares/inputCheckErrors.middleware";
 import { usersController } from "./users.controller";
-import { findUserValidator } from "./middlewares/findUser.validator";
-import { usersQueryValidator } from "./middlewares/users-query.validator";
+import { findUserMiddleware } from "./middlewares/findUser.middleware";
+import { usersQueryMiddleware } from "./middlewares/users-query.middleware";
 import { userBodyValidators } from "./middlewares/user-body.validator";
 
 export const usersRouter = Router();
@@ -15,9 +15,9 @@ usersRouter.get(
   adminMiddleware,
   ...paginationQueryMiddleware,
   ...sortQueryMiddleware,
-  usersQueryValidator,
+  usersQueryMiddleware,
   inputCheckErrorsMiddleware,
   usersController.getUsers
 );
 usersRouter.post("/", adminMiddleware, ...userBodyValidators, inputCheckErrorsMiddleware, usersController.createUser);
-usersRouter.delete("/:id", adminMiddleware, findUserValidator, inputCheckErrorsMiddleware, usersController.deleteUser);
+usersRouter.delete("/:id", adminMiddleware, findUserMiddleware, inputCheckErrorsMiddleware, usersController.deleteUser);

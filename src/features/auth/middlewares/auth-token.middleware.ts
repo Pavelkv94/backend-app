@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { jwtService } from "../../../utils/jwt.service";
+import { jwtService } from "../../../adapters/jwt.service";
 import { usersQueryRepository } from "../../users/users.query-repository";
 
 export const authTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -29,7 +29,7 @@ export const authTokenMiddleware = async (req: Request, res: Response, next: Nex
     return;
   }
 
-  req.body.userId = payload.user_id;
+  req.user = { id: payload.user_id };
 
   next();
 };

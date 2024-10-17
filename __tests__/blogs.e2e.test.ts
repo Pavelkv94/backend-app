@@ -1,9 +1,9 @@
 import { db } from "../src/db/db";
-import { BlogInputModel } from "../src/input-output-types/blogs-types";
 import { createString, fakeId, newBlog, newBlogPost } from "./helpers/datasets";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { blogsManager } from "./helpers/blogsManager";
 import { postsManager } from "./helpers/postsManager";
+import { BlogInputModel } from "../src/features/blogs/models/blogs.models";
 
 describe("/blogs", () => {
   let mongoServer: MongoMemoryServer;
@@ -13,11 +13,12 @@ describe("/blogs", () => {
 
     const url = mongoServer.getUri();
 
-    db.run(url);
+    await db.run(url);
+    await db.drop();
   });
 
   beforeEach(async () => {
-    await db.drop();
+    await db.dropCollection("blogs");
   });
 
   afterAll(async () => {

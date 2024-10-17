@@ -1,9 +1,5 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { db } from "../src/db/db";
-import { blogsManager } from "./helpers/blogsManager";
-import { PostInputModel } from "../src/input-output-types/posts-types";
-import { postsManager } from "./helpers/postsManager";
-import { req } from "./helpers/test-helpers";
 import { usersManager } from "./helpers/usersManager";
 import { createString, fakeId, newUser } from "./helpers/datasets";
 import { LoginInputModel } from "../src/features/auth/models/auth.models";

@@ -7,6 +7,7 @@ import { config } from "dotenv";
 import { usersRouter } from "./features/users/users.router";
 import { testingRouter } from "./features/testing/testing.router";
 import { authRouter } from "./features/auth/auth.router";
+import { commentsRouter } from "./features/comments/comments.router";
 
 export const initApp = () => {
   const app = express();
@@ -24,6 +25,7 @@ export const initApp = () => {
   app.use(SETTINGS.PATH.BLOGS, blogsRouter);
   app.use(SETTINGS.PATH.POSTS, postsRouter);
   app.use(SETTINGS.PATH.USERS, usersRouter);
+  app.use(SETTINGS.PATH.COMMENTS, commentsRouter);
 
   app.use(SETTINGS.PATH.TESTING, testingRouter);
 

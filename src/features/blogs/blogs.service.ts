@@ -1,4 +1,4 @@
-import { BlogEntityModel, BlogInputModel, BlogValidQueryModel, BlogViewModel } from "../../input-output-types/blogs-types";
+import { BlogEntityModel, BlogInputModel, BlogValidQueryModel, BlogViewModel } from "./models/blogs.models";
 import { blogsRepository } from "./blogs.repository";
 
 export const blogsService = {

@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import { BlogEntityModel, BlogInputModel, BlogInputQueryModel, BlogViewModel, URIParamsBlogModel } from "../../input-output-types/blogs-types";
-import { OutputErrorsType } from "../../input-output-types/output-errors-types";
+import { BlogEntityModel, BlogInputModel, BlogInputQueryModel, BlogViewModel, URIParamsBlogModel } from "./models/blogs.models";
+import { OutputErrorsType } from "../../types/output-errors-types";
 import { blogsService } from "./blogs.service";
 import { SortDirection, WithId } from "mongodb";
-import { OutputDataWithPagination } from "../../input-output-types/common-types";
-import { PostForBlogInputModel, PostInputQueryModel, PostViewModel } from "../../input-output-types/posts-types";
+import { OutputDataWithPagination } from "../../types/common-types";
+import { PostForBlogInputModel, PostInputQueryModel, PostViewModel } from "../posts/models/posts.models";
 import { postsService } from "../posts/posts.service";
 import { blogsQueryRepository } from "./blogs.query-repository";
 import { postsQueryRepository } from "../posts/posts.query-repository";

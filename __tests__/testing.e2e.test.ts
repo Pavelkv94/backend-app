@@ -1,10 +1,10 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { db } from "../src/db/db";
-import { BlogInputModel } from "../src/input-output-types/blogs-types";
 import { blogsManager } from "./helpers/blogsManager";
-import { PostInputModel } from "../src/input-output-types/posts-types";
 import { postsManager } from "./helpers/postsManager";
 import { req } from "./helpers/test-helpers";
+import { BlogInputModel } from "../src/features/blogs/models/blogs.models";
+import { PostInputModel } from "../src/features/posts/models/posts.models";
 
 describe("/test", () => {
   let mongoServer: MongoMemoryServer;

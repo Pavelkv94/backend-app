@@ -1,7 +1,7 @@
 import { ObjectId, WithId } from "mongodb";
-import { BlogEntityModel, BlogValidQueryModel, BlogViewModel } from "../../input-output-types/blogs-types";
+import { BlogEntityModel, BlogValidQueryModel, BlogViewModel } from "./models/blogs.models";
 import { db } from "../../db/db";
-import { OutputDataWithPagination } from "../../input-output-types/common-types";
+import { OutputDataWithPagination } from "../../types/common-types";
 
 export const blogsQueryRepository = {
   async findAllBlogs(query: BlogValidQueryModel): Promise<OutputDataWithPagination<BlogViewModel>> {

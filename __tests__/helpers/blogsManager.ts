@@ -1,4 +1,4 @@
-import { BlogInputModel } from "../../src/input-output-types/blogs-types";
+import { BlogInputModel } from "../../src/features/blogs/models/blogs.models";
 import { SETTINGS } from "../../src/settings";
 import { codedAuth } from "./datasets";
 import { req } from "./test-helpers";

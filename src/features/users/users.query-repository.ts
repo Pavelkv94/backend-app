@@ -1,7 +1,7 @@
 import { ObjectId, WithId } from "mongodb";
 import { db } from "../../db/db";
-import { UserEntityModelWithoutPassword, UsersValidInputQueryModel, UserViewModel } from "../../input-output-types/users-types";
-import { OutputDataWithPagination } from "../../input-output-types/common-types";
+import { UserEntityModelWithoutPassword, UsersValidInputQueryModel, UserViewModel } from "./models/users.models";
+import { OutputDataWithPagination } from "../../types/common-types";
 import { MeViewModel } from "../auth/models/auth.models";
 
 export const usersQueryRepository = {

@@ -1,4 +1,4 @@
-import { UserInputModel } from "../../src/input-output-types/users-types";
+import { UserInputModel } from "../../src/features/users/models/users.models";
 import { SETTINGS } from "../../src/settings";
 import { codedAuth } from "./datasets";
 import { req } from "./test-helpers";

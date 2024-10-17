@@ -1,6 +1,6 @@
 import { ObjectId, WithId } from "mongodb";
 import { db } from "../../db/db";
-import { UserEntityModel, UserViewModel } from "../../input-output-types/users-types";
+import { UserEntityModel, UserViewModel } from "./models/users.models";
 
 export const usersRepository = {
   async findUser(id: string): Promise<UserViewModel | null> {

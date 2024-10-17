@@ -1,6 +1,6 @@
 import { LoginInputModel } from "./models/auth.models";
-import { bcryptService } from "../../utils/bcrypt.service";
-import { jwtService } from "../../utils/jwt.service";
+import { bcryptService } from "../../adapters/bcrypt.service";
+import { jwtService } from "../../adapters/jwt.service";
 import { usersRepository } from "../users/users.repository";
 
 export const authService = {

@@ -10,6 +10,7 @@
     "noImplicitReturns": true,
     "skipLibCheck": true
   },
+  "files": ["src/index.d.ts"],
   "include": ["src/**/*", "src/index.d.ts"],
   "exclude": ["node_modules", "**/*.test.ts"]
 }

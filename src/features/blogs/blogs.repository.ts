@@ -1,6 +1,6 @@
 import { ObjectId, WithId } from "mongodb";
 
-import { BlogEntityModel, BlogInputModel, BlogValidQueryModel, BlogViewModel } from "../../input-output-types/blogs-types";
+import { BlogEntityModel, BlogInputModel, BlogValidQueryModel, BlogViewModel } from "./models/blogs.models";
 import { db } from "../../db/db";
 
 export const blogsRepository = {

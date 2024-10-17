@@ -1,5 +1,5 @@
-import { BlogInputModel, BlogViewModel } from "../../src/input-output-types/blogs-types";
-import { PostForBlogInputModel, PostInputModel } from "../../src/input-output-types/posts-types";
+import { BlogInputModel, BlogViewModel } from "../../src/features/blogs/models/blogs.models";
+import { PostForBlogInputModel, PostInputModel } from "../../src/features/posts/models/posts.models";
 import { fromUTF8ToBase64 } from "../../src/global-middlewares/admin.middleware";
 import { SETTINGS } from "../../src/settings";
 
@@ -38,4 +38,8 @@ export const newUser = {
   login: "Login123",
   password: "12345678",
   email: "example@example.com",
+};
+
+export const newComment = {
+  content: "default comment with correct length",
 };

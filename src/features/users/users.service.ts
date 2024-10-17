@@ -1,6 +1,6 @@
 import { usersRepository } from "./users.repository";
-import { UserEntityModel, UserInputModel } from "../../input-output-types/users-types";
-import { bcryptService } from "../../utils/bcrypt.service";
+import { UserEntityModel, UserInputModel } from "./models/users.models";
+import { bcryptService } from "../../adapters/bcrypt.service";
 
 export const usersService = {
   async create(payload: UserInputModel): Promise<string> {

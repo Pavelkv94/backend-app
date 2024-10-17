@@ -10,5 +10,9 @@ export type MeViewModel = {
 };
 
 export type IdType = {
-  userId: string;
+  id: string;
+};
+
+export type LoginOutputModel = {
+  accessToken: string;
 };

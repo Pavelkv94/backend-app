@@ -1,7 +1,8 @@
 import { MongoClient } from "mongodb";
-import { BlogEntityModel } from "../input-output-types/blogs-types";
-import { PostEntityModel } from "../input-output-types/posts-types";
-import { UserEntityModel } from "../input-output-types/users-types";
+import { BlogEntityModel } from "../features/blogs/models/blogs.models";
+import { PostEntityModel } from "../features/posts/models/posts.models";
+import { UserEntityModel } from "../features/users/models/users.models";
+import { CommentEntityModel } from "../features/comments/models/comments.models";
 
 export const db = {
   client: {} as MongoClient,
@@ -49,6 +50,8 @@ export const db = {
       blogsCollection: this.getDbName().collection<BlogEntityModel>("blogs"),
       postsCollection: this.getDbName().collection<PostEntityModel>("posts"),
       usersCollection: this.getDbName().collection<UserEntityModel>("users"),
+      commentsCollection: this.getDbName().collection<CommentEntityModel>("comments"),
+
     };
   },
 };
