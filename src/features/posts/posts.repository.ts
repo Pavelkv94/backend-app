@@ -1,6 +1,6 @@
 import { InsertOneResult, ObjectId, WithId } from "mongodb";
 import { db } from "../../db/db";
-import { PostEntityModel, PostInputModel, PostValidQueryModel, PostViewModel } from "../../input-output-types/posts-types";
+import { PostEntityModel, PostInputModel, PostValidQueryModel, PostViewModel } from "./models/posts.models";
 import { blogsRepository } from "../blogs/blogs.repository";
 
 export const postsRepository = {

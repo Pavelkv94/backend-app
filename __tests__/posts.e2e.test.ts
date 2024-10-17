@@ -1,10 +1,10 @@
 import { buildPost, createString, fakeId, newBlog } from "./helpers/datasets";
-import { PostInputModel } from "../src/input-output-types/posts-types";
-import { BlogViewModel } from "../src/input-output-types/blogs-types";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { blogsManager } from "./helpers/blogsManager";
 import { postsManager } from "./helpers/postsManager";
 import { db } from "../src/db/db";
+import { BlogViewModel } from "../src/features/blogs/models/blogs.models";
+import { PostInputModel } from "../src/features/posts/models/posts.models";
 
 describe("/posts", () => {
   let mongoServer: MongoMemoryServer;
@@ -15,7 +15,7 @@ describe("/posts", () => {
 
     const url = mongoServer.getUri();
 
-    db.run(url);
+    await db.run(url);
 
     const createBlogResponse = await blogsManager.createBlogWithAuth(newBlog);
     blogFromDb = createBlogResponse.body;
@@ -27,6 +27,7 @@ describe("/posts", () => {
   });
 
   afterAll(async () => {
+    await db.drop();
     await mongoServer.stop();
     await db.stop();
   });

@@ -1,8 +1,8 @@
 import { InsertOneResult, ObjectId, WithId } from "mongodb";
 import { db } from "../../db/db";
-import { PostEntityModel, PostInputModel, PostValidQueryModel, PostViewModel } from "../../input-output-types/posts-types";
+import { PostEntityModel, PostInputModel, PostValidQueryModel, PostViewModel } from "./models/posts.models";
 import { blogsRepository } from "../blogs/blogs.repository";
-import { OutputDataWithPagination } from "../../input-output-types/common-types";
+import { OutputDataWithPagination } from "../../types/common-types";
 
 export const postsQueryRepository = {
   async findAllPosts(query: PostValidQueryModel, blog_id?: string): Promise<OutputDataWithPagination<PostViewModel>> {

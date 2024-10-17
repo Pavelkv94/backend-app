@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import { URIParamsUserModel, UserInputModel, UsersInputQueryModel, UsersValidInputQueryModel, UserViewModel } from "../../input-output-types/users-types";
-import { OutputDataWithPagination } from "../../input-output-types/common-types";
+import { URIParamsUserModel, UserInputModel, UsersInputQueryModel, UsersValidInputQueryModel, UserViewModel } from "./models/users.models";
+import { OutputDataWithPagination } from "../../types/common-types";
 import { usersService } from "./users.service";
 import { usersQueryRepository } from "./users.query-repository";
 import { SortDirection } from "mongodb";
-import { OutputErrorsType } from "../../input-output-types/output-errors-types";
+import { OutputErrorsType } from "../../types/output-errors-types";
 
 export const usersController = {
   async getUsers(req: Request<{}, {}, {}, UsersInputQueryModel>, res: Response<OutputDataWithPagination<UserViewModel>>) {
@@ -25,7 +25,7 @@ export const usersController = {
     const newUser = await usersQueryRepository.findUser(newUserId);
 
     if (!newUser) {
-      res.status(404).json({ errorsMessages: [{ message: "User not found", field: "" }] });
+      res.status(500).json({ errorsMessages: [{ message: "Something was wrong", field: "" }] });
       return;
     }
 

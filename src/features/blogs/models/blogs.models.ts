@@ -18,8 +18,6 @@ export type BlogInputModel = {
   websiteUrl: string;
 };
 
-export type BlogOutputModel = BlogViewModel;
-
 export type URIParamsBlogModel = {
   id: string;
 };

@@ -1,7 +1,8 @@
 import { ObjectId, WithId } from "mongodb";
 import { db } from "../../db/db";
-import { UserEntityModelWithoutPassword, UsersValidInputQueryModel, UserViewModel } from "../../input-output-types/users-types";
-import { OutputDataWithPagination } from "../../input-output-types/common-types";
+import { UserEntityModelWithoutPassword, UsersValidInputQueryModel, UserViewModel } from "./models/users.models";
+import { OutputDataWithPagination } from "../../types/common-types";
+import { MeViewModel } from "../auth/models/auth.models";
 
 export const usersQueryRepository = {
   async findAllUsers(query: UsersValidInputQueryModel): Promise<OutputDataWithPagination<UserViewModel>> {
@@ -70,6 +71,17 @@ export const usersQueryRepository = {
       const user = { ...userFromDb, id: userFromDb._id.toString() };
       const { _id, ...rest } = user;
       return rest;
+    }
+  },
+  async findMe(user_id: string): Promise<MeViewModel | null> {
+    const objectId = new ObjectId(user_id);
+    const userFromDb = await db.getCollections().usersCollection.findOne({ _id: objectId }, { projection: { password: 0, createdAt: 0, _id: 0 } });
+
+    if (!userFromDb) {
+      return null;
+    } else {
+      const user = { ...userFromDb, userId: user_id };
+      return user;
     }
   },
   mapUsersToOutput(users: WithId<UserEntityModelWithoutPassword>[]): UserViewModel[] {
