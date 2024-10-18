@@ -4,10 +4,10 @@ import { PostInputModel } from "../features/posts/models/posts.models";
 export type FieldNamesType = keyof BlogInputModel | keyof PostInputModel;
 
 export type OutputErrorsType = {
-  errorsMessages: ErrorMEssageType[];
+  errorsMessages: ErrorMessageType[];
 };
 
-type ErrorMEssageType = {
+type ErrorMessageType = {
   message: string;
-  field: string;
+  field?: string;
 };

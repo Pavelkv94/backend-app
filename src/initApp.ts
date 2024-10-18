@@ -8,6 +8,7 @@ import { usersRouter } from "./features/users/users.router";
 import { testingRouter } from "./features/testing/testing.router";
 import { authRouter } from "./features/auth/auth.router";
 import { commentsRouter } from "./features/comments/comments.router";
+import { handleUnexpectedError } from "./exeptions/unexpectedError";
 
 export const initApp = () => {
   const app = express();
