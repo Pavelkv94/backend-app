@@ -1,5 +1,6 @@
 import { Response, Request, NextFunction } from "express";
 import { SETTINGS } from "../settings";
+import { ApiError } from "../exeptions/api-error";
 
 export const fromBase64ToUTF8 = (code: string) => {
   const buff = Buffer.from(code, "base64");
@@ -16,20 +17,17 @@ export const adminMiddleware = (req: Request, res: Response, next: NextFunction)
   const auth = req.headers["authorization"] as string;
 
   if (!auth) {
-    res.sendStatus(401);
-    return;
+    return next(ApiError.Unauthorized());
   }
   if (auth.slice(0, 6) !== "Basic ") {
-    res.sendStatus(401);
-    return;
+    return next(ApiError.Unauthorized());
   }
 
   const decodedAuth = fromBase64ToUTF8(auth.slice(6));
   const codedAuth = fromUTF8ToBase64(SETTINGS.ADMIN);
 
   if (decodedAuth !== SETTINGS.ADMIN) {
-    res.sendStatus(401);
-    return;
+    return next(ApiError.Unauthorized());
   }
 
   next();
