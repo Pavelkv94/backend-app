@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { OutputErrorsType } from "../../types/output-errors-types";
 import { PostInputModel, PostInputQueryModel, PostViewModel, URIParamsPostModel } from "./models/posts.models";
 import { postsService } from "./posts.service";
@@ -10,10 +10,10 @@ import { commentsService } from "../comments/comments.service";
 import { usersQueryRepository } from "../users/users.query-repository";
 import { commentQueryRepository } from "../comments/comments.query-repository";
 import { IdType } from "../auth/models/auth.models";
-import { handleUnexpectedError } from "../../exeptions/unexpectedError";
+import { ApiError } from "../../exeptions/api-error";
 
 export const postsController = {
-  async getPosts(req: Request<{}, {}, {}, PostInputQueryModel>, res: Response<OutputDataWithPagination<PostViewModel>>) {
+  async getPosts(req: Request<{}, {}, {}, PostInputQueryModel>, res: Response<OutputDataWithPagination<PostViewModel>>, next: NextFunction) {
     try {
       const queryData = {
         pageNumber: +req.query.pageNumber,
@@ -26,25 +26,25 @@ export const postsController = {
 
       res.status(200).json(posts);
     } catch (error) {
-      handleUnexpectedError(res, error as Error);
+      return next(ApiError.UnexpectedError(error as Error));
     }
   },
 
-  async getPost(req: Request<URIParamsPostModel>, res: Response<PostViewModel>) {
+  async getPost(req: Request<URIParamsPostModel>, res: Response<PostViewModel>, next: NextFunction) {
     try {
       const post = await postsQueryRepository.findPost(req.params.id);
 
       if (!post) {
-        res.sendStatus(404);
+        return next(ApiError.NotFound("The requested resource was not found"));
       } else {
         res.status(200).json(post);
       }
     } catch (error) {
-      handleUnexpectedError(res, error as Error);
+      return next(ApiError.UnexpectedError(error as Error));
     }
   },
 
-  async createPost(req: Request<any, any, PostInputModel>, res: Response<PostViewModel | OutputErrorsType>) {
+  async createPost(req: Request<any, any, PostInputModel>, res: Response<PostViewModel | OutputErrorsType>, next: NextFunction) {
     try {
       const newPostId = await postsService.createPost(req.body);
       const newPost = await postsQueryRepository.findPost(newPostId);
@@ -55,39 +55,43 @@ export const postsController = {
 
       res.status(201).json(newPost);
     } catch (error) {
-      handleUnexpectedError(res, error as Error);
+      return next(ApiError.UnexpectedError(error as Error));
     }
   },
 
-  async updatePost(req: Request<URIParamsPostModel, {}, PostInputModel>, res: Response) {
+  async updatePost(req: Request<URIParamsPostModel, {}, PostInputModel>, res: Response, next: NextFunction) {
     try {
       const isUpdatedPost = await postsService.updatePost(req.params.id, req.body);
 
       if (!isUpdatedPost) {
-        res.sendStatus(404);
+        return next(ApiError.NotFound("The requested resource was not found"));
       } else {
         res.sendStatus(204);
       }
     } catch (error) {
-      handleUnexpectedError(res, error as Error);
+      return next(ApiError.UnexpectedError(error as Error));
     }
   },
-  async deletePost(req: Request<URIParamsPostModel>, res: Response) {
+  async deletePost(req: Request<URIParamsPostModel>, res: Response, next: NextFunction) {
     try {
       const isDeletedPost = await postsService.deletePost(req.params.id);
 
       if (!isDeletedPost) {
-        res.sendStatus(404);
+        return next(ApiError.NotFound("The requested resource was not found"));
       } else {
         res.sendStatus(204);
       }
     } catch (error) {
-      handleUnexpectedError(res, error as Error);
+      return next(ApiError.UnexpectedError(error as Error));
     }
   },
 
   //POST COMMENTS
-  async getComments(req: Request<URIParamsPostModel, {}, {}, CommentInputQueryModel>, res: Response<OutputDataWithPagination<CommentViewModel>>) {
+  async getComments(
+    req: Request<URIParamsPostModel, {}, {}, CommentInputQueryModel>,
+    res: Response<OutputDataWithPagination<CommentViewModel>>,
+    next: NextFunction
+  ) {
     try {
       const queryData = {
         pageNumber: +req.query.pageNumber,
@@ -100,10 +104,14 @@ export const postsController = {
 
       res.status(200).json(comments);
     } catch (error) {
-      handleUnexpectedError(res, error as Error);
+      return next(ApiError.UnexpectedError(error as Error));
     }
   },
-  async createComment(req: Request<URIParamsPostModel, {}, CommentInputModel, {}, IdType>, res: Response<CommentViewModel | OutputErrorsType>) {
+  async createComment(
+    req: Request<URIParamsPostModel, {}, CommentInputModel, {}, IdType>,
+    res: Response<CommentViewModel | OutputErrorsType>,
+    next: NextFunction
+  ) {
     try {
       const user = await usersQueryRepository.findMe(req.user.id);
 
@@ -120,7 +128,7 @@ export const postsController = {
 
       res.status(201).send(newComment);
     } catch (error) {
-      handleUnexpectedError(res, error as Error);
+      return next(ApiError.UnexpectedError(error as Error));
     }
   },
 };

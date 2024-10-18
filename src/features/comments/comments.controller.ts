@@ -1,26 +1,25 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { commentQueryRepository } from "./comments.query-repository";
 import { CommentInputModel, CommentViewModel, URIParamsCommentModel } from "./models/comments.models";
 import { commentsService } from "./comments.service";
 import { ResultStatus } from "../../types/common-types";
-import { handleUnexpectedError } from "../../exeptions/unexpectedError";
+import { ApiError } from "../../exeptions/api-error";
 
 export const commentsController = {
-  async getComment(req: Request<URIParamsCommentModel>, res: Response<CommentViewModel>) {
+  async getComment(req: Request<URIParamsCommentModel>, res: Response<CommentViewModel>, next: NextFunction) {
     try {
       const comment = await commentQueryRepository.findComment(req.params.id);
 
       if (!comment) {
-        res.sendStatus(404);
-        return;
+        return next(ApiError.NotFound("The requested resource was not found"));
       }
 
       res.status(200).send(comment);
     } catch (error) {
-      handleUnexpectedError(res, error as Error);
+      return next(ApiError.UnexpectedError(error as Error));
     }
   },
-  async updateComment(req: Request<URIParamsCommentModel, {}, CommentInputModel>, res: Response) {
+  async updateComment(req: Request<URIParamsCommentModel, {}, CommentInputModel>, res: Response, next: NextFunction) {
     try {
       const userId = req.user.id;
 
@@ -29,15 +28,15 @@ export const commentsController = {
       if (status === ResultStatus.SUCCESS && isUpdated) {
         res.sendStatus(204);
       } else if (status === ResultStatus.FORBIDDEN) {
-        res.status(403).json({ errorsMessages: [{ message: errorMessage, field: "" }] });
+        return next(ApiError.Forbidden(errorMessage));
       } else {
-        res.sendStatus(404);
+        return next(ApiError.NotFound("The requested resource was not found"));
       }
     } catch (error) {
-      handleUnexpectedError(res, error as Error);
+      return next(ApiError.UnexpectedError(error as Error));
     }
   },
-  async deleteComment(req: Request<URIParamsCommentModel>, res: Response) {
+  async deleteComment(req: Request<URIParamsCommentModel>, res: Response, next: NextFunction) {
     try {
       const userId = req.user.id;
 
@@ -46,12 +45,12 @@ export const commentsController = {
       if (status === ResultStatus.SUCCESS && isDeleted) {
         res.sendStatus(204);
       } else if (status === ResultStatus.FORBIDDEN) {
-        res.status(403).json({ errorsMessages: [{ message: errorMessage, field: "" }] });
+        return next(ApiError.Forbidden(errorMessage));
       } else {
-        res.sendStatus(404);
+        return next(ApiError.NotFound("The requested resource was not found"));
       }
     } catch (error) {
-      handleUnexpectedError(res, error as Error);
+      return next(ApiError.UnexpectedError(error as Error));
     }
   },
 };

@@ -1,14 +1,14 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { URIParamsUserModel, UserInputModel, UsersInputQueryModel, UsersValidInputQueryModel, UserViewModel } from "./models/users.models";
 import { OutputDataWithPagination } from "../../types/common-types";
 import { usersService } from "./users.service";
 import { usersQueryRepository } from "./users.query-repository";
 import { SortDirection } from "mongodb";
 import { OutputErrorsType } from "../../types/output-errors-types";
-import { handleUnexpectedError } from "../../exeptions/unexpectedError";
+import { ApiError } from "../../exeptions/api-error";
 
 export const usersController = {
-  async getUsers(req: Request<{}, {}, {}, UsersInputQueryModel>, res: Response<OutputDataWithPagination<UserViewModel>>) {
+  async getUsers(req: Request<{}, {}, {}, UsersInputQueryModel>, res: Response<OutputDataWithPagination<UserViewModel>>, next: NextFunction) {
     try {
       const queryData: UsersValidInputQueryModel = {
         pageNumber: +req.query.pageNumber,
@@ -22,10 +22,10 @@ export const usersController = {
       const users = await usersQueryRepository.findAllUsers(queryData);
       res.status(200).json(users);
     } catch (error) {
-      handleUnexpectedError(res, error as Error);
+      return next(ApiError.UnexpectedError(error as Error));
     }
   },
-  async createUser(req: Request<{}, {}, UserInputModel>, res: Response<UserViewModel | OutputErrorsType>) {
+  async createUser(req: Request<{}, {}, UserInputModel>, res: Response<UserViewModel | OutputErrorsType>, next: NextFunction) {
     try {
       const newUserId = await usersService.create(req.body);
       const newUser = await usersQueryRepository.findUser(newUserId);
@@ -36,20 +36,20 @@ export const usersController = {
 
       res.status(201).json(newUser);
     } catch (error) {
-      handleUnexpectedError(res, error as Error);
+      return next(ApiError.UnexpectedError(error as Error));
     }
   },
-  async deleteUser(req: Request<URIParamsUserModel>, res: Response) {
+  async deleteUser(req: Request<URIParamsUserModel>, res: Response, next: NextFunction) {
     try {
       const isDeletedUser = await usersService.deleteUser(req.params.id);
 
       if (!isDeletedUser) {
-        res.sendStatus(404);
+        return next(ApiError.NotFound("The requested resource was not found"));
       } else {
         res.sendStatus(204);
       }
     } catch (error) {
-      handleUnexpectedError(res, error as Error);
+      return next(ApiError.UnexpectedError(error as Error));
     }
   },
 };
