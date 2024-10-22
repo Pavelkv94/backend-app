@@ -8,8 +8,8 @@ export type OutputDataWithPagination<T> = {
 
 export enum ResultStatus {
   SUCCESS = 0,
-  NOT_FOUND = 2,
-  FORBIDDEN = 403,
+  NOT_FOUND = 1,
+  FORBIDDEN = 2,
 }
 
 export type ResultObject<T> = {
