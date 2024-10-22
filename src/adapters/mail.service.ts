@@ -1,8 +1,8 @@
-import nodemailer, { TransportOptions } from "nodemailer";
-import { RegistrationInputModel } from "../features/auth/models/auth.models";
+import nodemailer from "nodemailer";
+import { UserInputModel } from "../features/users/models/users.models";
 
 export const nodemailerService = {
-  async sendLetter(payload: RegistrationInputModel): Promise<void> {
+  async sendLetter(payload: UserInputModel): Promise<void> {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       host: process.env.SMTP_HOST,

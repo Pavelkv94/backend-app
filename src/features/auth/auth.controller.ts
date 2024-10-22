@@ -36,7 +36,6 @@ export const authController = {
 
       res.sendStatus(204);
     } catch (error) {
-      //удалить созданного юзера?   
       return next(ApiError.UnexpectedError(error as Error));
     }
   },
