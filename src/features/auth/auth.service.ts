@@ -2,6 +2,7 @@ import { LoginInputModel } from "./models/auth.models";
 import { bcryptService } from "../../adapters/bcrypt.service";
 import { jwtService } from "../../adapters/jwt.service";
 import { usersRepository } from "../users/users.repository";
+import { UserInputModel } from "../users/models/users.models";
 
 export const authService = {
   async checkCredentials(payload: LoginInputModel): Promise<string | null> {

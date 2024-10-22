@@ -11,6 +11,9 @@ export const usersService = {
       email: payload.email,
       password: passwordhash,
       createdAt: new Date().toISOString(),
+      emailConfirmation: {
+        
+      }
     };
 
     const userId = await usersRepository.create(newUser);

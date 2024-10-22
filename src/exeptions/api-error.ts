@@ -38,11 +38,10 @@ export class ApiError extends Error {
     };
 
     // Include message only if the error is not a ValidationError
-    if (this.statusCode !== 400) { // Assuming 400 is the status code for ValidationError
+    if (this.statusCode !== 400) {
       responseBody.message = this.message;
     }
 
     res.status(this.statusCode).json(responseBody);
-
   }
 }

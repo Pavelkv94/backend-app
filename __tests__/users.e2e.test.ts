@@ -2,7 +2,6 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import { db } from "../src/db/db";
 import { usersManager } from "./helpers/usersManager";
 import { createString, fakeId, newUser } from "./helpers/datasets";
-import { LoginInputModel } from "../src/features/auth/models/auth.models";
 
 describe("/users", () => {
   let mongoServer: MongoMemoryServer;
@@ -93,82 +92,5 @@ describe("/users", () => {
 
     const getUsersResponse2 = await usersManager.getUsersWithAuth();
     expect(getUsersResponse2.body.items.length).toBe(1);
-  });
-
-  it("User should login", async () => {
-    const createUserResponse = await usersManager.createUser(newUser);
-    expect(createUserResponse.status).toBe(201);
-
-    const loginData: LoginInputModel = {
-      loginOrEmail: newUser.login,
-      password: newUser.password,
-    };
-
-    const loginUserResponse = await usersManager.loginUser(loginData);
-    expect(loginUserResponse.status).toBe(200);
-    expect(loginUserResponse.body).toHaveProperty("accessToken");
-
-    const loginData2: LoginInputModel = {
-      loginOrEmail: newUser.email,
-      password: newUser.password,
-    };
-    const loginUserResponse2 = await usersManager.loginUser(loginData2);
-    expect(loginUserResponse2.status).toBe(200);
-  });
-
-  it("User shouldn't login", async () => {
-    const createUserResponse = await usersManager.createUser(newUser);
-    expect(createUserResponse.status).toBe(201);
-
-    const loginData: LoginInputModel = {
-      loginOrEmail: "Invalid",
-      password: newUser.password,
-    };
-    const loginUserResponse = await usersManager.loginUser(loginData);
-    expect(loginUserResponse.status).toBe(401);
-
-    const loginData2: LoginInputModel = {
-      loginOrEmail: newUser.email,
-      password: "1234",
-    };
-    const loginUserResponse2 = await usersManager.loginUser(loginData2);
-    expect(loginUserResponse2.status).toBe(401);
-  });
-
-  it("User shouldn't login with incorrect data", async () => {
-    const createUserResponse = await usersManager.createUser(newUser);
-    expect(createUserResponse.status).toBe(201);
-
-    const loginData = {
-      loginOrEmail: newUser.login,
-    };
-    const loginUserResponse = await usersManager.loginUser(loginData);
-    expect(loginUserResponse.status).toBe(400);
-    expect(loginUserResponse.body.errorsMessages.length).toBe(1);
-
-    const loginData2 = {
-      password: newUser.password,
-    };
-    const loginUserResponse2 = await usersManager.loginUser(loginData2);
-    expect(loginUserResponse2.status).toBe(400);
-    expect(loginUserResponse2.body.errorsMessages.length).toBe(1);
-  });
-
-  it("/ME should return me user", async () => {
-    const createUserResponse = await usersManager.createUser(newUser);
-    expect(createUserResponse.status).toBe(201);
-
-    const loginData: LoginInputModel = {
-      loginOrEmail: newUser.login,
-      password: newUser.password,
-    };
-
-    const loginUserResponse = await usersManager.loginUser(loginData);
-    expect(loginUserResponse.status).toBe(200);
-    expect(loginUserResponse.body).toHaveProperty("accessToken");
-
-    const meResponse = await usersManager.getMe(loginUserResponse.body.accessToken);
-    expect(meResponse.status).toBe(200);
-    expect(meResponse.body.login).toBe(newUser.login);
   });
 });

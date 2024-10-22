@@ -3,6 +3,9 @@ import { LoginInputModel, LoginOutputModel, MeViewModel } from "./models/auth.mo
 import { authService } from "./auth.service";
 import { usersQueryRepository } from "../users/users.query-repository";
 import { ApiError } from "../../exeptions/api-error";
+import { nodemailerService } from "../../adapters/mail.service";
+import { UserInputModel } from "../users/models/users.models";
+import { usersService } from "../users/users.service";
 
 export const authController = {
   async login(req: Request<{}, {}, LoginInputModel>, res: Response<LoginOutputModel>, next: NextFunction) {
@@ -14,7 +17,7 @@ export const authController = {
 
     res.status(200).send({ accessToken });
   },
-  async me(req: Request, res: Response<MeViewModel>, next: NextFunction) {
+  async me(req: Request, res: Response<MeViewModel>, next: NextFunction) {  
     const user = await usersQueryRepository.findMe(req.user.id);
 
     if (!user) {
@@ -22,5 +25,19 @@ export const authController = {
     }
 
     res.status(200).send(user);
+  },
+  async registration(req: Request<{}, {}, UserInputModel>, res: Response, next: NextFunction) {
+    try {
+      const userId = await usersService.create(req.body);
+
+      if (userId) {
+        await nodemailerService.sendLetter(req.body);
+      }
+
+      res.sendStatus(204);
+    } catch (error) {
+      //удалить созданного юзера?   
+      return next(ApiError.UnexpectedError(error as Error));
+    }
   },
 };

@@ -37,7 +37,7 @@ export const buildPost = (blogFromDb: BlogViewModel): PostInputModel => ({
 export const newUser = {
   login: "Login123",
   password: "12345678",
-  email: "example@example.com",
+  email: "example123@example.com",
 };
 
 export const newComment = {
