@@ -4,7 +4,6 @@ import { OutputDataWithPagination } from "../../types/common-types";
 import { usersService } from "./users.service";
 import { usersQueryRepository } from "./users.query-repository";
 import { SortDirection } from "mongodb";
-import { OutputErrorsType } from "../../types/output-errors-types";
 import { ApiError } from "../../exeptions/api-error";
 
 export const usersController = {
@@ -25,13 +24,13 @@ export const usersController = {
       return next(ApiError.UnexpectedError(error as Error));
     }
   },
-  async createUser(req: Request<{}, {}, UserInputModel>, res: Response<UserViewModel | OutputErrorsType>, next: NextFunction) {
+  async createUser(req: Request<{}, {}, UserInputModel>, res: Response<UserViewModel>, next: NextFunction) {
     try {
       const newUserId = await usersService.create(req.body);
       const newUser = await usersQueryRepository.findUser(newUserId);
 
       if (!newUser) {
-        throw new Error("user not found");
+        return next(ApiError.NotFound("The requested user was not found"));
       }
 
       res.status(201).json(newUser);
@@ -44,7 +43,7 @@ export const usersController = {
       const isDeletedUser = await usersService.deleteUser(req.params.id);
 
       if (!isDeletedUser) {
-        return next(ApiError.NotFound("The requested resource was not found"));
+        return next(ApiError.NotFound("The requested user was not found"));
       } else {
         res.sendStatus(204);
       }

@@ -1,27 +1,24 @@
-import { Request, Response } from "express";
-import { IdType, LoginInputModel, LoginOutputModel, MeViewModel } from "./models/auth.models";
+import { NextFunction, Request, Response } from "express";
+import { LoginInputModel, LoginOutputModel, MeViewModel } from "./models/auth.models";
 import { authService } from "./auth.service";
-import { usersService } from "../users/users.service";
 import { usersQueryRepository } from "../users/users.query-repository";
-import { OutputErrorsType } from "../../types/output-errors-types";
+import { ApiError } from "../../exeptions/api-error";
 
 export const authController = {
-  async login(req: Request<{}, {}, LoginInputModel>, res: Response<LoginOutputModel>) {
+  async login(req: Request<{}, {}, LoginInputModel>, res: Response<LoginOutputModel>, next: NextFunction) {
     const accessToken = await authService.checkCredentials(req.body);
 
     if (!accessToken) {
-      res.sendStatus(401);
-      return;
+      return next(ApiError.Unauthorized("Unauthorized access"));
     }
 
     res.status(200).send({ accessToken });
   },
-  async me(req: Request, res: Response<MeViewModel | OutputErrorsType>) {
+  async me(req: Request, res: Response<MeViewModel>, next: NextFunction) {
     const user = await usersQueryRepository.findMe(req.user.id);
 
     if (!user) {
-      res.status(500).json({ errorsMessages: [{ message: "Something was wrong", field: "" }] });
-      return;
+      return next(ApiError.NotFound("The requested user was not found"));
     }
 
     res.status(200).send(user);

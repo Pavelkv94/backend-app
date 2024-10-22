@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { OutputErrorsType } from "../../types/output-errors-types";
 import { PostInputModel, PostInputQueryModel, PostViewModel, URIParamsPostModel } from "./models/posts.models";
 import { postsService } from "./posts.service";
 import { OutputDataWithPagination } from "../../types/common-types";
@@ -44,13 +43,13 @@ export const postsController = {
     }
   },
 
-  async createPost(req: Request<any, any, PostInputModel>, res: Response<PostViewModel | OutputErrorsType>, next: NextFunction) {
+  async createPost(req: Request<any, any, PostInputModel>, res: Response<PostViewModel>, next: NextFunction) {
     try {
       const newPostId = await postsService.createPost(req.body);
       const newPost = await postsQueryRepository.findPost(newPostId);
 
       if (!newPost) {
-        throw new Error("post not found");
+        return next(ApiError.NotFound("The requested post was not found"));
       }
 
       res.status(201).json(newPost);
@@ -109,21 +108,21 @@ export const postsController = {
   },
   async createComment(
     req: Request<URIParamsPostModel, {}, CommentInputModel, {}, IdType>,
-    res: Response<CommentViewModel | OutputErrorsType>,
+    res: Response<CommentViewModel>,
     next: NextFunction
   ) {
     try {
       const user = await usersQueryRepository.findMe(req.user.id);
 
       if (!user) {
-        throw new Error("user not found");
+        return next(ApiError.NotFound("The requested user was not found"));
       }
 
       const newCommentId = await commentsService.createComment(req.params.id, req.body, user);
       const newComment = await commentQueryRepository.findComment(newCommentId);
 
       if (!newComment) {
-        throw new Error("comment not found");
+        return next(ApiError.NotFound("The requested comment was not found"));
       }
 
       res.status(201).send(newComment);

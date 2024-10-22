@@ -1,9 +1,9 @@
 import { Response, Request, NextFunction } from "express";
 import { validationResult } from "express-validator";
-import { FieldNamesType, OutputErrorsType } from "../types/output-errors-types";
+import { FieldNamesType } from "../types/output-errors-types";
 import { ApiError } from "../exeptions/api-error";
 
-export const inputCheckErrorsMiddleware = (req: Request, res: Response<OutputErrorsType>, next: NextFunction) => {
+export const inputCheckErrorsMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const e = validationResult(req);
 
   if (!e.isEmpty()) {

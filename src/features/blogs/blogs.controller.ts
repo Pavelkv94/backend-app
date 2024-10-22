@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { BlogEntityModel, BlogInputModel, BlogInputQueryModel, BlogViewModel, URIParamsBlogModel } from "./models/blogs.models";
-import { OutputErrorsType } from "../../types/output-errors-types";
 import { blogsService } from "./blogs.service";
 import { SortDirection, WithId } from "mongodb";
 import { OutputDataWithPagination } from "../../types/common-types";
@@ -11,7 +10,7 @@ import { postsQueryRepository } from "../posts/posts.query-repository";
 import { ApiError } from "../../exeptions/api-error";
 
 export const blogsController = {
-  async getBlogs(req: Request<{}, {}, {}, BlogInputQueryModel>, res: Response<OutputDataWithPagination<BlogViewModel> | OutputErrorsType>, next: NextFunction) {
+  async getBlogs(req: Request<{}, {}, {}, BlogInputQueryModel>, res: Response<OutputDataWithPagination<BlogViewModel>>, next: NextFunction) {
     try {
       const queryData = {
         pageNumber: +req.query.pageNumber,
@@ -28,11 +27,11 @@ export const blogsController = {
     }
   },
 
-  async getBlog(req: Request<URIParamsBlogModel>, res: Response<BlogViewModel | OutputErrorsType>, next: NextFunction) {
+  async getBlog(req: Request<URIParamsBlogModel>, res: Response<BlogViewModel>, next: NextFunction) {
     try {
       const blog = await blogsQueryRepository.findBlog(req.params.id);
       if (!blog) {
-        return next(ApiError.NotFound("The requested resource was not found"));
+        return next(ApiError.NotFound("The blog resource was not found"));
       } else {
         res.status(200).json(blog);
       }
@@ -41,13 +40,13 @@ export const blogsController = {
     }
   },
 
-  async createBlog(req: Request<any, any, BlogInputModel>, res: Response<BlogViewModel | OutputErrorsType>, next: NextFunction) {
+  async createBlog(req: Request<any, any, BlogInputModel>, res: Response<BlogViewModel>, next: NextFunction) {
     try {
       const newBlogId = await blogsService.createBlog(req.body);
       const newBlog = await blogsQueryRepository.findBlog(newBlogId);
 
       if (!newBlog) {
-        throw new Error("blog not found");
+        return next(ApiError.NotFound("The requested blog was not found"));
       }
 
       res.status(201).json(newBlog);
@@ -56,7 +55,7 @@ export const blogsController = {
     }
   },
 
-  async updateBlog(req: Request<any, any, BlogInputModel>, res: Response<BlogViewModel | OutputErrorsType>, next: NextFunction) {
+  async updateBlog(req: Request<any, any, BlogInputModel>, res: Response<BlogViewModel>, next: NextFunction) {
     try {
       const isUpdated = await blogsService.updateBlog(req.params.id, req.body);
 
@@ -69,7 +68,7 @@ export const blogsController = {
       return next(ApiError.UnexpectedError(error as Error));
     }
   },
-  async deleteBlog(req: Request<URIParamsBlogModel>, res: Response<OutputErrorsType>, next: NextFunction) {
+  async deleteBlog(req: Request<URIParamsBlogModel>, res: Response, next: NextFunction) {
     try {
       const isDeletedBlog = await blogsService.deleteBlog(req.params.id);
 
@@ -85,7 +84,7 @@ export const blogsController = {
 
   async getBlogPosts(
     req: Request<URIParamsBlogModel, {}, {}, PostInputQueryModel>,
-    res: Response<OutputDataWithPagination<PostViewModel> | OutputErrorsType>,
+    res: Response<OutputDataWithPagination<PostViewModel>>,
     next: NextFunction
   ) {
     try {
@@ -104,11 +103,15 @@ export const blogsController = {
     }
   },
 
-  async createBlogPost(req: Request<URIParamsBlogModel, {}, PostForBlogInputModel>, res: Response<PostViewModel | OutputErrorsType>, next: NextFunction) {
+  async createBlogPost(req: Request<URIParamsBlogModel, {}, PostForBlogInputModel>, res: Response<PostViewModel>, next: NextFunction) {
     try {
       const newPost = await postsService.createForBlog(req.body, req.params.id);
 
-      res.status(201).json(newPost!);
+      if (!newPost) {
+        return next(ApiError.NotFound("The requested new post was not found"));
+      } else {
+        res.status(201).json(newPost);
+      }
     } catch (error) {
       return next(ApiError.UnexpectedError(error as Error));
     }

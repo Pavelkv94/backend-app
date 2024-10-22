@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { OutputErrorsType } from "../types/output-errors-types";
 
 export class ApiError extends Error {
   public statusCode: number;
@@ -32,9 +33,16 @@ export class ApiError extends Error {
   }
 
   public send(res: Response) {
-    res.status(this.statusCode).json({
-      // message: this.message, //! commited only for incubator tests
-      errorsMessages: this.errorsMessages || null,
-    });
+    const responseBody: OutputErrorsType = {
+      errorsMessages: this.errorsMessages || [],
+    };
+
+    // Include message only if the error is not a ValidationError
+    if (this.statusCode !== 400) { // Assuming 400 is the status code for ValidationError
+      responseBody.message = this.message;
+    }
+
+    res.status(this.statusCode).json(responseBody);
+
   }
 }
