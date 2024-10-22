@@ -13,11 +13,11 @@ export const usersRouter = Router();
 usersRouter.get(
   "/",
   adminMiddleware,
-  ...paginationQueryMiddleware,
-  ...sortQueryMiddleware,
+  paginationQueryMiddleware,
+  sortQueryMiddleware,
   usersQueryMiddleware,
   inputCheckErrorsMiddleware,
   usersController.getUsers
 );
-usersRouter.post("/", adminMiddleware, ...userBodyValidators, usersController.createUser);
+usersRouter.post("/", adminMiddleware, userBodyValidators, usersController.createUser);
 usersRouter.delete("/:id", adminMiddleware, findUserMiddleware, usersController.deleteUser);

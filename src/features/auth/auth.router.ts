@@ -5,5 +5,5 @@ import { authTokenMiddleware } from "./middlewares/auth-token.middleware";
 
 export const authRouter = Router();
 
-authRouter.post("/login", ...authBodyValidators, authController.login);
+authRouter.post("/login", authBodyValidators, authController.login);
 authRouter.get("/me", authTokenMiddleware, authController.me);

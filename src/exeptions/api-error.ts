@@ -9,7 +9,6 @@ export class ApiError extends Error {
     super(message);
     this.statusCode = statusCode;
     this.errorsMessages = errorsMessages;
-    // Object.setPrototypeOf(this, ApiError.prototype);
   }
 
   static UnexpectedError(error: Error) {

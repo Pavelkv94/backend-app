@@ -11,10 +11,10 @@ import { commentBodyValidator } from "../comments/middlewares/comment.body.valid
 
 export const postsRouter = Router();
 
-postsRouter.get("/", ...paginationQueryMiddleware, ...sortQueryMiddleware, inputCheckErrorsMiddleware, postsController.getPosts);
+postsRouter.get("/", paginationQueryMiddleware, sortQueryMiddleware, inputCheckErrorsMiddleware, postsController.getPosts);
 postsRouter.get("/:id", findPostMiddleware, postsController.getPost);
-postsRouter.post("/", adminMiddleware, findBlogByBodyIdValidator, ...postBodyValidators, postsController.createPost);
-postsRouter.put("/:id", adminMiddleware, findPostMiddleware, findBlogByBodyIdValidator, ...postBodyValidators, postsController.updatePost);
+postsRouter.post("/", adminMiddleware, findBlogByBodyIdValidator, postBodyValidators, postsController.createPost);
+postsRouter.put("/:id", adminMiddleware, findPostMiddleware, findBlogByBodyIdValidator, postBodyValidators, postsController.updatePost);
 postsRouter.delete("/:id", adminMiddleware, findPostMiddleware, postsController.deletePost);
 
 postsRouter.get(
