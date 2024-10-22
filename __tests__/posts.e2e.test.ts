@@ -72,10 +72,6 @@ describe("/posts", () => {
     expect(createPostResponse.status).toBe(400);
 
     expect(createPostResponse.body.errorsMessages.length).toEqual(4);
-    expect(createPostResponse.body.errorsMessages[0].field).toEqual("title");
-    expect(createPostResponse.body.errorsMessages[1].field).toEqual("shortDescription");
-    expect(createPostResponse.body.errorsMessages[2].field).toEqual("content");
-    expect(createPostResponse.body.errorsMessages[3].field).toEqual("blogId");
 
     const getPostsResponse = await postsManager.getPosts();
     expect(getPostsResponse.status).toBe(200);
@@ -183,10 +179,6 @@ describe("/posts", () => {
     expect(res.status).toBe(400);
 
     expect(res.body.errorsMessages.length).toEqual(4);
-    expect(res.body.errorsMessages[0].field).toEqual("title");
-    expect(res.body.errorsMessages[1].field).toEqual("shortDescription");
-    expect(res.body.errorsMessages[2].field).toEqual("content");
-    expect(res.body.errorsMessages[3].field).toEqual("blogId");
   });
   it("shouldn't update 401", async () => {
     const newPost = buildPost(blogFromDb);

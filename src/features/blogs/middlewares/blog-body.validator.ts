@@ -1,4 +1,5 @@
 import { body } from "express-validator";
+import { inputCheckErrorsMiddleware } from "../../../global-middlewares/inputCheckErrors.middleware";
 
 // name: string // max 15
 // description: string // max 500
@@ -15,4 +16,4 @@ const websiteUrlValidator = body("websiteUrl")
   .isLength({ min: 1, max: 100 })
   .withMessage("more then 100 or 0");
 
-export const blogBodyValidators = [nameValidator, descriptionValidator, websiteUrlValidator];
+export const blogBodyValidators = [nameValidator, descriptionValidator, websiteUrlValidator, inputCheckErrorsMiddleware];

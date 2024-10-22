@@ -13,8 +13,8 @@ export const blogsRouter = Router();
 
 blogsRouter.get("/", ...paginationQueryMiddleware, ...sortQueryMiddleware, blogQueryMiddleware, inputCheckErrorsMiddleware, blogsController.getBlogs);
 blogsRouter.get("/:id", findBlogByParamIdMiddleware, blogsController.getBlog);
-blogsRouter.post("/", adminMiddleware, ...blogBodyValidators, inputCheckErrorsMiddleware, blogsController.createBlog);
-blogsRouter.put("/:id", adminMiddleware, findBlogByParamIdMiddleware, ...blogBodyValidators, inputCheckErrorsMiddleware, blogsController.updateBlog);
+blogsRouter.post("/", adminMiddleware, ...blogBodyValidators, blogsController.createBlog);
+blogsRouter.put("/:id", adminMiddleware, findBlogByParamIdMiddleware, ...blogBodyValidators, blogsController.updateBlog);
 blogsRouter.delete("/:id", adminMiddleware, findBlogByParamIdMiddleware, blogsController.deleteBlog);
 
 blogsRouter.get(
@@ -25,4 +25,4 @@ blogsRouter.get(
   inputCheckErrorsMiddleware,
   blogsController.getBlogPosts
 );
-blogsRouter.post("/:id/posts", adminMiddleware, findBlogByParamIdMiddleware, postBodyValidators, inputCheckErrorsMiddleware, blogsController.createBlogPost);
+blogsRouter.post("/:id/posts", adminMiddleware, findBlogByParamIdMiddleware, ...postBodyValidators, blogsController.createBlogPost);

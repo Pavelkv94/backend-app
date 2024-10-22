@@ -1,5 +1,6 @@
 import { body } from "express-validator";
 import { db } from "../../../db/db";
+import { inputCheckErrorsMiddleware } from "../../../global-middlewares/inputCheckErrors.middleware";
 
 type UniqueField = {
   login?: string;
@@ -48,4 +49,4 @@ const userEmailInputValidator = body("email")
     return true;
   });
 
-export const userBodyValidators = [userLoginInputValidator, userPasswordInputValidator, userEmailInputValidator];
+export const userBodyValidators = [userLoginInputValidator, userPasswordInputValidator, userEmailInputValidator, inputCheckErrorsMiddleware];

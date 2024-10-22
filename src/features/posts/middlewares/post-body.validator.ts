@@ -1,4 +1,6 @@
 import { body } from "express-validator";
+import { blogsRepository } from "../../blogs/blogs.repository";
+import { inputCheckErrorsMiddleware } from "../../../global-middlewares/inputCheckErrors.middleware";
 
 // title: string // max 30
 // shortDescription: string // max 100
@@ -20,4 +22,11 @@ const postContentInputValidator = body("content")
   .isLength({ min: 1, max: 1000 })
   .withMessage("no more than 1000 symbols");
 
-export const postBodyValidators = [postTitleInputValidator, postShortDescriptionInputValidator, postContentInputValidator];
+export const findBlogByBodyIdValidator = body("blogId").custom(async (blogId) => {
+  const blog = await blogsRepository.findBlog(blogId);
+  if (!blog) {
+    throw new Error("no blog!");
+  }
+});
+
+export const postBodyValidators = [postTitleInputValidator, postShortDescriptionInputValidator, postContentInputValidator, inputCheckErrorsMiddleware];

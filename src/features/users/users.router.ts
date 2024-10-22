@@ -19,5 +19,5 @@ usersRouter.get(
   inputCheckErrorsMiddleware,
   usersController.getUsers
 );
-usersRouter.post("/", adminMiddleware, ...userBodyValidators, inputCheckErrorsMiddleware, usersController.createUser);
-usersRouter.delete("/:id", adminMiddleware, findUserMiddleware, inputCheckErrorsMiddleware, usersController.deleteUser);
+usersRouter.post("/", adminMiddleware, ...userBodyValidators, usersController.createUser);
+usersRouter.delete("/:id", adminMiddleware, findUserMiddleware, usersController.deleteUser);

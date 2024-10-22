@@ -234,8 +234,8 @@ describe("/blogs", () => {
     expect(createBlogResponse.status).toBe(201);
 
     const createPostResponse = await postsManager.createPostForBlog(newBlogPost, createBlogResponse.body.id);
-
     expect(createPostResponse.status).toBe(201);
+    
     const getPostResponse = await postsManager.getPost(createPostResponse.body.id);
     expect(getPostResponse.status).toBe(200);
   });

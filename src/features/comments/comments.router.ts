@@ -8,5 +8,5 @@ import { commentBodyValidator } from "./middlewares/comment.body.validator";
 export const commentsRouter = Router();
 
 commentsRouter.get("/:id", findCommentByIdMiddleware, commentsController.getComment);
-commentsRouter.put("/:id", authTokenMiddleware, findCommentByIdMiddleware, commentBodyValidator, inputCheckErrorsMiddleware, commentsController.updateComment);
+commentsRouter.put("/:id", authTokenMiddleware, findCommentByIdMiddleware, ...commentBodyValidator, commentsController.updateComment);
 commentsRouter.delete("/:id", authTokenMiddleware, findCommentByIdMiddleware, commentsController.deleteComment);
