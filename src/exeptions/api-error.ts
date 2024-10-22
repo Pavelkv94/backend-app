@@ -9,7 +9,6 @@ export class ApiError extends Error {
     super(message);
     this.statusCode = statusCode;
     this.errorsMessages = errorsMessages;
-    Object.setPrototypeOf(this, ApiError.prototype);
   }
 
   static UnexpectedError(error: Error) {
@@ -37,7 +36,6 @@ export class ApiError extends Error {
       errorsMessages: this.errorsMessages || [],
     };
 
-    // Include message only if the error is not a ValidationError
     if (this.statusCode !== 400) {
       responseBody.message = this.message;
     }

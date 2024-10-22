@@ -6,7 +6,7 @@ import { authRegistrationBodyValidators } from "./middlewares/auth-registration-
 
 export const authRouter = Router();
 
-authRouter.post("/login", ...authLoginBodyValidators, authController.login);
+authRouter.post("/login", authLoginBodyValidators, authController.login);
 authRouter.get("/me", authTokenMiddleware, authController.me);
 authRouter.post("/registration", ...authRegistrationBodyValidators, authController.registration);
 // authRouter.post("/registration-confirmation", authController.registrationConfirmation);

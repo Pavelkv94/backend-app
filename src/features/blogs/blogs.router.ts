@@ -11,10 +11,10 @@ import { findBlogByParamIdMiddleware } from "./middlewares/findBlogByParamId.mid
 
 export const blogsRouter = Router();
 
-blogsRouter.get("/", ...paginationQueryMiddleware, ...sortQueryMiddleware, blogQueryMiddleware, inputCheckErrorsMiddleware, blogsController.getBlogs);
+blogsRouter.get("/", paginationQueryMiddleware, sortQueryMiddleware, blogQueryMiddleware, inputCheckErrorsMiddleware, blogsController.getBlogs);
 blogsRouter.get("/:id", findBlogByParamIdMiddleware, blogsController.getBlog);
-blogsRouter.post("/", adminMiddleware, ...blogBodyValidators, blogsController.createBlog);
-blogsRouter.put("/:id", adminMiddleware, findBlogByParamIdMiddleware, ...blogBodyValidators, blogsController.updateBlog);
+blogsRouter.post("/", adminMiddleware, blogBodyValidators, blogsController.createBlog);
+blogsRouter.put("/:id", adminMiddleware, findBlogByParamIdMiddleware, blogBodyValidators, blogsController.updateBlog);
 blogsRouter.delete("/:id", adminMiddleware, findBlogByParamIdMiddleware, blogsController.deleteBlog);
 
 blogsRouter.get(
