@@ -16,3 +16,11 @@ export type IdType = {
 export type LoginOutputModel = {
   accessToken: string;
 };
+
+export type ConfirmationInputModel = {
+  code: string;
+};
+
+export type EmailResendInputModel = {
+  email: string;
+};

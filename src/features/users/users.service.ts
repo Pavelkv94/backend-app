@@ -1,6 +1,8 @@
 import { usersRepository } from "./users.repository";
 import { UserEntityModel, UserInputModel } from "./models/users.models";
 import { bcryptService } from "../../adapters/bcrypt.service";
+import { randomUUID } from "crypto";
+import { getExpirationDate } from "../../utils/date/getExpirationDate";
 
 export const usersService = {
   async create(payload: UserInputModel): Promise<string> {
@@ -11,7 +13,11 @@ export const usersService = {
       email: payload.email,
       password: passwordhash,
       createdAt: new Date().toISOString(),
-
+      emailConfirmation: {
+        confirmationCode: randomUUID(),
+        expirationDate: getExpirationDate(30),
+        isConfirmed: false
+    }
     };
 
     const userId = await usersRepository.create(newUser);

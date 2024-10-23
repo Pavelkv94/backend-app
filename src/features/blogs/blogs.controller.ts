@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { BlogEntityModel, BlogInputModel, BlogInputQueryModel, BlogViewModel, URIParamsBlogModel } from "./models/blogs.models";
 import { blogsService } from "./blogs.service";
 import { SortDirection, WithId } from "mongodb";
-import { OutputDataWithPagination } from "../../types/common-types";
+import { HTTP_STATUSES, OutputDataWithPagination } from "../../types/common-types";
 import { PostForBlogInputModel, PostInputQueryModel, PostViewModel } from "../posts/models/posts.models";
 import { postsService } from "../posts/posts.service";
 import { blogsQueryRepository } from "./blogs.query-repository";
@@ -21,7 +21,7 @@ export const blogsController = {
       };
 
       const blogs = await blogsQueryRepository.findAllBlogs(queryData);
-      res.status(200).json(blogs);
+      res.status(HTTP_STATUSES.SUCCESS).json(blogs);
     } catch (error) {
       return next(ApiError.UnexpectedError(error as Error));
     }
@@ -33,7 +33,7 @@ export const blogsController = {
       if (!blog) {
         return next(ApiError.NotFound("The blog resource was not found"));
       } else {
-        res.status(200).json(blog);
+        res.status(HTTP_STATUSES.SUCCESS).json(blog);
       }
     } catch (error) {
       return next(ApiError.UnexpectedError(error as Error));
@@ -62,7 +62,7 @@ export const blogsController = {
       if (!isUpdated) {
         return next(ApiError.NotFound("The requested resource was not found"));
       } else {
-        res.sendStatus(204);
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT);
       }
     } catch (error) {
       return next(ApiError.UnexpectedError(error as Error));
@@ -75,7 +75,7 @@ export const blogsController = {
       if (!isDeletedBlog) {
         return next(ApiError.NotFound("The requested resource was not found"));
       } else {
-        res.sendStatus(204);
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT);
       }
     } catch (error) {
       return next(ApiError.UnexpectedError(error as Error));
@@ -97,7 +97,7 @@ export const blogsController = {
       const blog = await blogsQueryRepository.findBlog(req.params.id);
       const posts = await postsQueryRepository.findAllPosts(queryData, blog!.id);
 
-      res.status(200).json(posts);
+      res.status(HTTP_STATUSES.SUCCESS).json(posts);
     } catch (error) {
       return next(ApiError.UnexpectedError(error as Error));
     }

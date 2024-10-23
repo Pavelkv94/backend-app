@@ -1,10 +1,16 @@
 import { SortDirection } from "mongodb";
 
+export type EmailConfirmationEntityType = {
+  confirmationCode: string;
+  expirationDate: string;
+  isConfirmed: boolean;
+};
 export type UserEntityModel = {
   login: string;
   email: string;
   password: string;
   createdAt: string;
+  emailConfirmation: EmailConfirmationEntityType;
 };
 
 export type UserEntityModelWithoutPassword = Omit<UserEntityModel, "password">;

@@ -1,10 +1,10 @@
-import { buildPost, createString, fakeId, newBlog } from "./helpers/datasets";
+import { buildPost, createString, fakeId, newBlog } from "../helpers/datasets";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { blogsManager } from "./helpers/blogsManager";
-import { postsManager } from "./helpers/postsManager";
-import { db } from "../src/db/db";
-import { BlogViewModel } from "../src/features/blogs/models/blogs.models";
-import { PostInputModel } from "../src/features/posts/models/posts.models";
+import { blogsManager } from "../helpers/blogsManager";
+import { postsManager } from "../helpers/postsManager";
+import { db } from "../../src/db/db";
+import { BlogViewModel } from "../../src/features/blogs/models/blogs.models";
+import { PostInputModel } from "../../src/features/posts/models/posts.models";
 
 describe("/posts", () => {
   let mongoServer: MongoMemoryServer;

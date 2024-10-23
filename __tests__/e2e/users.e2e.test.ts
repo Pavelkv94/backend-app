@@ -1,7 +1,7 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { db } from "../src/db/db";
-import { usersManager } from "./helpers/usersManager";
-import { createString, fakeId, newUser } from "./helpers/datasets";
+import { db } from "../../src/db/db";
+import { usersManager } from "../helpers/usersManager";
+import { createString, fakeId, newUser } from "../helpers/datasets";
 
 describe("/users", () => {
   let mongoServer: MongoMemoryServer;

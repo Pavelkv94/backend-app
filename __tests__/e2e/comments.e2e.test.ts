@@ -1,13 +1,13 @@
-import { fakeId, newBlog, newBlogPost, newComment, newUser } from "./helpers/datasets";
+import { fakeId, newBlog, newBlogPost, newComment, newUser } from "../helpers/datasets";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { blogsManager } from "./helpers/blogsManager";
-import { postsManager } from "./helpers/postsManager";
-import { db } from "../src/db/db";
-import { BlogViewModel } from "../src/features/blogs/models/blogs.models";
-import { PostViewModel } from "../src/features/posts/models/posts.models";
-import { commentsManager } from "./helpers/commentsManager";
-import { usersManager } from "./helpers/usersManager";
-import { LoginInputModel } from "../src/features/auth/models/auth.models";
+import { blogsManager } from "../helpers/blogsManager";
+import { postsManager } from "../helpers/postsManager";
+import { db } from "../../src/db/db";
+import { BlogViewModel } from "../../src/features/blogs/models/blogs.models";
+import { PostViewModel } from "../../src/features/posts/models/posts.models";
+import { commentsManager } from "../helpers/commentsManager";
+import { usersManager } from "../helpers/usersManager";
+import { LoginInputModel } from "../../src/features/auth/models/auth.models";
 
 describe("/posts", () => {
   let mongoServer: MongoMemoryServer;

@@ -9,6 +9,7 @@ import { testingRouter } from "./features/testing/testing.router";
 import { authRouter } from "./features/auth/auth.router";
 import { commentsRouter } from "./features/comments/comments.router";
 import { errorHandlerMiddleware } from "./global-middlewares/error-handler.middleware";
+import { HTTP_STATUSES } from "./types/common-types";
 
 export const initApp = () => {
   const app = express();
@@ -19,7 +20,7 @@ export const initApp = () => {
   app.use(cors());
 
   app.get("/", (req, res) => {
-    res.status(200).json({ version: "1.1" });
+    res.status(HTTP_STATUSES.SUCCESS).json({ version: "1.1" });
   });
 
   app.use(SETTINGS.PATH.AUTH, authRouter);

@@ -1,13 +1,8 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { db } from "../src/db/db";
-import { blogsManager } from "./helpers/blogsManager";
-import { postsManager } from "./helpers/postsManager";
-import { req } from "./helpers/test-helpers";
-import { BlogInputModel } from "../src/features/blogs/models/blogs.models";
-import { PostInputModel } from "../src/features/posts/models/posts.models";
-import { usersManager } from "./helpers/usersManager";
-import { createString, newUser } from "./helpers/datasets";
-import { LoginInputModel } from "../src/features/auth/models/auth.models";
+import { db } from "../../src/db/db";
+import { usersManager } from "../helpers/usersManager";
+import { createString, newUser } from "../helpers/datasets";
+import { LoginInputModel } from "../../src/features/auth/models/auth.models";
 
 describe("/test", () => {
   let mongoServer: MongoMemoryServer;

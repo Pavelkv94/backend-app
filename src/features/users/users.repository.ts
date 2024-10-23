@@ -30,4 +30,18 @@ export const usersRepository = {
     const result = await db.getCollections().usersCollection.deleteOne({ _id: objectId });
     return result.deletedCount > 0;
   },
+  async setConfirmEmailStatus(user_id: string, status: boolean) {
+    const objectId = new ObjectId(user_id);
+    const result = await db.getCollections().usersCollection.updateOne({ _id: objectId }, { $set: { "emailConfirmation.isConfirmed": status } });
+
+    return result.matchedCount > 0;
+  },
+  async setConfirmCode(user_id: string, newCode: string, newDate: string) {
+    const objectId = new ObjectId(user_id);
+    const result = await db
+      .getCollections()
+      .usersCollection.updateOne({ _id: objectId }, { $set: { "emailConfirmation.confirmationCode": newCode, "emailConfirmation.expirationDate": newDate } });
+
+    return result.matchedCount > 0;
+  },
 };

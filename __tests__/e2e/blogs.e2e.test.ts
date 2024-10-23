@@ -1,9 +1,9 @@
-import { db } from "../src/db/db";
-import { createString, fakeId, newBlog, newBlogPost } from "./helpers/datasets";
+import { db } from "../../src/db/db";
+import { createString, fakeId, newBlog, newBlogPost } from "../helpers/datasets";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { blogsManager } from "./helpers/blogsManager";
-import { postsManager } from "./helpers/postsManager";
-import { BlogInputModel } from "../src/features/blogs/models/blogs.models";
+import { blogsManager } from "../helpers/blogsManager";
+import { postsManager } from "../helpers/postsManager";
+import { BlogInputModel } from "../../src/features/blogs/models/blogs.models";
 
 describe("/blogs", () => {
   let mongoServer: MongoMemoryServer;

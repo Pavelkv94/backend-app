@@ -1,8 +1,7 @@
 import nodemailer from "nodemailer";
-import { UserInputModel } from "../features/users/models/users.models";
 
 export const nodemailerService = {
-  async sendLetter(payload: UserInputModel): Promise<void> {
+  async sendLetter(email: string, confirmationCode: string): Promise<void> {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       host: process.env.SMTP_HOST,
@@ -16,12 +15,12 @@ export const nodemailerService = {
 
     const mailOptions = {
       from: process.env.SMTP_USER,
-      to: payload.email,
+      to: email,
       subject: "Account activation at " + process.env.CLIENT_URL,
       html: `
         <h1>Thank for your registration</h1>
         <p>To finish registration please follow the link below:
-            <a href='https://somesite.com/confirm-email?code=your_confirmation_code'>complete registration</a>
+            <a href='https://somesite.com/confirm-email?code=${confirmationCode}'>complete registration</a>
         </p>
         `,
     };
