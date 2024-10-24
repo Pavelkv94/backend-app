@@ -8,6 +8,7 @@ import { PostViewModel } from "../../src/features/posts/models/posts.models";
 import { commentsManager } from "../helpers/commentsManager";
 import { usersManager } from "../helpers/usersManager";
 import { LoginInputModel } from "../../src/features/auth/models/auth.models";
+import { authManager } from "../helpers/authManager";
 
 describe("/posts", () => {
   let mongoServer: MongoMemoryServer;
@@ -32,7 +33,7 @@ describe("/posts", () => {
       password: newUser.password,
     };
 
-    const loginUserResponse = await usersManager.loginUser(loginData);
+    const loginUserResponse = await authManager.loginUser(loginData);
 
     userToken = loginUserResponse.body.accessToken;
 
