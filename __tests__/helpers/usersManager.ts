@@ -39,14 +39,4 @@ export const usersManager = {
 
     return response;
   },
-  async loginUser(data: any) {
-    const response = await req.post(SETTINGS.PATH.AUTH + "/login").send(data);
-
-    return response;
-  },
-  async getMe(token: string) {
-    const response = await req.get(SETTINGS.PATH.AUTH + "/me").set({ Authorization: "Bearer " + token });
-
-    return response;
-  },
 };

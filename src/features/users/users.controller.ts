@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { URIParamsUserModel, UserInputModel, UsersInputQueryModel, UsersValidInputQueryModel, UserViewModel } from "./models/users.models";
-import { OutputDataWithPagination } from "../../types/common-types";
+import { HTTP_STATUSES, OutputDataWithPagination } from "../../types/common-types";
 import { usersService } from "./users.service";
 import { usersQueryRepository } from "./users.query-repository";
 import { SortDirection } from "mongodb";
 import { ApiError } from "../../exeptions/api-error";
+import { authService } from "../auth/auth.service";
 
 export const usersController = {
   async getUsers(req: Request<{}, {}, {}, UsersInputQueryModel>, res: Response<OutputDataWithPagination<UserViewModel>>, next: NextFunction) {
@@ -19,7 +20,7 @@ export const usersController = {
       };
 
       const users = await usersQueryRepository.findAllUsers(queryData);
-      res.status(200).json(users);
+      res.status(HTTP_STATUSES.SUCCESS).json(users);
     } catch (error) {
       return next(ApiError.UnexpectedError(error as Error));
     }
@@ -27,6 +28,7 @@ export const usersController = {
   async createUser(req: Request<{}, {}, UserInputModel>, res: Response<UserViewModel>, next: NextFunction) {
     try {
       const newUserId = await usersService.create(req.body);
+      await authService.setConfirmEmailStatus(newUserId, true);
       const newUser = await usersQueryRepository.findUser(newUserId);
 
       if (!newUser) {
@@ -45,7 +47,7 @@ export const usersController = {
       if (!isDeletedUser) {
         return next(ApiError.NotFound("The requested user was not found"));
       } else {
-        res.sendStatus(204);
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT);
       }
     } catch (error) {
       return next(ApiError.UnexpectedError(error as Error));

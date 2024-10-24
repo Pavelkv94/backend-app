@@ -1,25 +1,14 @@
 import { body } from "express-validator";
-import { db } from "../../../db/db";
 import { inputCheckErrorsMiddleware } from "../../../global-middlewares/inputCheckErrors.middleware";
+import { isUserUniqueField } from "../../users/middlewares/user-body.validator";
 
-type UniqueField = {
-  login?: string;
-  email?: string;
-};
-
-export const isUserUniqueField = async (field: UniqueField) => {
-  const existingUser = await db.getDbName().collection("users").findOne(field);
-  return !existingUser;
-};
-
-const userLoginInputValidator = body("login")
+const login = body("login")
+  .notEmpty()
+  .withMessage("login is required")
   .isString()
   .withMessage("not string")
-  .trim()
   .isLength({ min: 3, max: 10 })
-  .withMessage("should be from 3 to 10 symbols")
-  .matches(/^[a-zA-Z0-9_-]*$/)
-  .withMessage("Login must contain only letters, numbers, underscores, and hyphens")
+  .withMessage("must be from 3 to 10 symbols")
   .custom(async (login) => {
     const isUnique = await isUserUniqueField({ login });
     if (!isUnique) {
@@ -27,13 +16,13 @@ const userLoginInputValidator = body("login")
     }
     return true;
   });
-
-const userPasswordInputValidator = body("password")
+const password = body("password")
+  .notEmpty()
+  .withMessage("password is required")
   .isString()
   .withMessage("not string")
-  .trim()
   .isLength({ min: 6, max: 20 })
-  .withMessage("should be from 6 to 20 symbols");
+  .withMessage("must be from 6 to 20 symbols");
 
 const userEmailInputValidator = body("email")
   .isString()
@@ -49,4 +38,4 @@ const userEmailInputValidator = body("email")
     return true;
   });
 
-export const userBodyValidators = [userLoginInputValidator, userPasswordInputValidator, userEmailInputValidator, inputCheckErrorsMiddleware];
+export const authRegistrationBodyValidators = [login, password, userEmailInputValidator, inputCheckErrorsMiddleware];

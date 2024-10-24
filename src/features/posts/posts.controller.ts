@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { PostInputModel, PostInputQueryModel, PostViewModel, URIParamsPostModel } from "./models/posts.models";
 import { postsService } from "./posts.service";
-import { OutputDataWithPagination } from "../../types/common-types";
+import { HTTP_STATUSES, OutputDataWithPagination } from "../../types/common-types";
 import { SortDirection } from "mongodb";
 import { postsQueryRepository } from "./posts.query-repository";
 import { CommentInputModel, CommentInputQueryModel, CommentViewModel } from "../comments/models/comments.models";
@@ -23,7 +23,7 @@ export const postsController = {
 
       const posts = await postsQueryRepository.findAllPosts(queryData);
 
-      res.status(200).json(posts);
+      res.status(HTTP_STATUSES.SUCCESS).json(posts);
     } catch (error) {
       return next(ApiError.UnexpectedError(error as Error));
     }
@@ -36,7 +36,7 @@ export const postsController = {
       if (!post) {
         return next(ApiError.NotFound("The requested resource was not found"));
       } else {
-        res.status(200).json(post);
+        res.status(HTTP_STATUSES.SUCCESS).json(post);
       }
     } catch (error) {
       return next(ApiError.UnexpectedError(error as Error));
@@ -65,7 +65,7 @@ export const postsController = {
       if (!isUpdatedPost) {
         return next(ApiError.NotFound("The requested resource was not found"));
       } else {
-        res.sendStatus(204);
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT);
       }
     } catch (error) {
       return next(ApiError.UnexpectedError(error as Error));
@@ -78,7 +78,7 @@ export const postsController = {
       if (!isDeletedPost) {
         return next(ApiError.NotFound("The requested resource was not found"));
       } else {
-        res.sendStatus(204);
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT);
       }
     } catch (error) {
       return next(ApiError.UnexpectedError(error as Error));
@@ -101,7 +101,7 @@ export const postsController = {
 
       const comments = await commentQueryRepository.findAllComments(req.params.id, queryData);
 
-      res.status(200).json(comments);
+      res.status(HTTP_STATUSES.SUCCESS).json(comments);
     } catch (error) {
       return next(ApiError.UnexpectedError(error as Error));
     }

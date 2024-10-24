@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { commentQueryRepository } from "./comments.query-repository";
 import { CommentInputModel, CommentViewModel, URIParamsCommentModel } from "./models/comments.models";
 import { commentsService } from "./comments.service";
-import { ResultStatus } from "../../types/common-types";
+import { HTTP_STATUSES, ResultStatus } from "../../types/common-types";
 import { ApiError } from "../../exeptions/api-error";
 
 export const commentsController = {
@@ -14,7 +14,7 @@ export const commentsController = {
         return next(ApiError.NotFound("The requested resource was not found"));
       }
 
-      res.status(200).send(comment);
+      res.status(HTTP_STATUSES.SUCCESS).send(comment);
     } catch (error) {
       return next(ApiError.UnexpectedError(error as Error));
     }
@@ -26,7 +26,7 @@ export const commentsController = {
       const { status, errorMessage, data: isUpdated } = await commentsService.updateComment(req.params.id, req.body, userId);
 
       if (status === ResultStatus.SUCCESS && isUpdated) {
-        res.sendStatus(204);
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT);
       } else if (status === ResultStatus.FORBIDDEN) {
         return next(ApiError.Forbidden(errorMessage));
       } else {
@@ -43,7 +43,7 @@ export const commentsController = {
       const { status, errorMessage, data: isDeleted } = await commentsService.deleteComment(req.params.id, userId);
 
       if (status === ResultStatus.SUCCESS && isDeleted) {
-        res.sendStatus(204);
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT);
       } else if (status === ResultStatus.FORBIDDEN) {
         return next(ApiError.Forbidden(errorMessage));
       } else {

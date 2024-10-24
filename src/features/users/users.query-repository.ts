@@ -1,6 +1,6 @@
 import { ObjectId, WithId } from "mongodb";
 import { db } from "../../db/db";
-import { UserEntityModelWithoutPassword, UsersValidInputQueryModel, UserViewModel } from "./models/users.models";
+import { EmailConfirmationEntityType, UserEntityModelWithoutPassword, UsersValidInputQueryModel, UserViewModel } from "./models/users.models";
 import { OutputDataWithPagination } from "../../types/common-types";
 import { MeViewModel } from "../auth/models/auth.models";
 
@@ -71,6 +71,34 @@ export const usersQueryRepository = {
       const user = { ...userFromDb, id: userFromDb._id.toString() };
       const { _id, ...rest } = user;
       return rest;
+    }
+  },
+  async findUserByEmail(email: string): Promise<WithId<UserEntityModelWithoutPassword> | null> {
+    const userFromDb = await db.getCollections().usersCollection.findOne({ email: email }, { projection: { password: 0 } });
+
+    if (!userFromDb) {
+      return null;
+    } else {
+      return userFromDb;
+    }
+  },
+  async findEmailConfirmationByUser(id: string): Promise<EmailConfirmationEntityType | null> {
+    const objectId = new ObjectId(id);
+    const userFromDb = await db.getCollections().usersCollection.findOne({ _id: objectId });
+
+    if (!userFromDb) {
+      return null;
+    } else {
+      return userFromDb.emailConfirmation;
+    }
+  },
+  async findUserByEmailConfirmation(code: string): Promise<WithId<UserEntityModelWithoutPassword> | null> {
+    const userFromDb = await db.getCollections().usersCollection.findOne({ "emailConfirmation.confirmationCode": code }, { projection: { password: 0 } });
+
+    if (!userFromDb) {
+      return null;
+    } else {
+      return userFromDb;
     }
   },
   async findMe(user_id: string): Promise<MeViewModel | null> {
