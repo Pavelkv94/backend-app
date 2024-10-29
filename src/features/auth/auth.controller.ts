@@ -9,7 +9,6 @@ import { usersService } from "../users/users.service";
 import { HTTP_STATUSES } from "../../types/common-types";
 import { jwtService } from "../../adapters/jwt/jwt.service";
 import { usersRepository } from "../users/users.repository";
-import { bcryptService } from "../../adapters/bcrypt.service";
 
 export const authController = {
   async login(req: Request<{}, {}, LoginInputModel>, res: Response<LoginOutputModel>, next: NextFunction) {
@@ -17,13 +16,7 @@ export const authController = {
       const user = await usersRepository.findUserByLoginOrEmail(req.body.loginOrEmail);
 
       if (!user) {
-        return next(ApiError.Unauthorized());
-      }
-
-      const isPasswordValid = await bcryptService.checkPassword(req.body.password, user.password);
-
-      if (!isPasswordValid) {
-        return next(ApiError.Unauthorized());
+        throw new Error("Something was wrong");
       }
 
       const { accessToken, refreshToken } = await authService.login(user._id.toString());

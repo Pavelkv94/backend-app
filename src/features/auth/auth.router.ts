@@ -6,10 +6,11 @@ import { authRegistrationBodyValidators } from "./middlewares/auth-registration-
 import { authConfirmBodyValidators } from "./middlewares/auth-confirmation-body.validator";
 import { authEmailResendBodyValidators } from "./middlewares/auth-emailResend-body.validator";
 import { authRefreshTokenMiddleware } from "./middlewares/auth-refreshToken.middleware";
+import { authLoginMiddleware } from "./middlewares/auth-login.middleware";
 
 export const authRouter = Router();
 
-authRouter.post("/login", authLoginBodyValidators, authController.login);
+authRouter.post("/login", authLoginBodyValidators, authLoginMiddleware, authController.login);
 authRouter.post("/refresh-token", authRefreshTokenMiddleware, authController.refresh);
 authRouter.get("/me", authAccessTokenMiddleware, authController.me);
 authRouter.post("/registration", authRegistrationBodyValidators, authController.registration);
