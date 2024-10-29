@@ -18,7 +18,18 @@ export const authManager = {
     return response;
   },
   async confirmation(code: string) {
-    const response = await req.post(SETTINGS.PATH.AUTH + "/registration-confirmation").send({code});
+    const response = await req.post(SETTINGS.PATH.AUTH + "/registration-confirmation").send({ code });
+
+    return response;
+  },
+  async resendEmail(email: string) {
+    const response = await req.post(SETTINGS.PATH.AUTH + "/registration-email-resending").send({ email });
+
+    return response;
+  },
+
+  async refresh(refreshToken?: string) {
+    const response = await req.post(SETTINGS.PATH.AUTH + "/refresh-token").set("Cookie", [`session=${refreshToken}`]);
 
     return response;
   },

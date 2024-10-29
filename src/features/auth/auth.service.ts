@@ -7,20 +7,8 @@ import { getExpirationDate } from "../../utils/date/getExpirationDate";
 import { ApiError } from "../../exeptions/api-error";
 
 export const authService = {
-  async login(payload: LoginInputModel): Promise<JwtTokensType> {
-    const user = await usersRepository.findUserByLoginOrEmail(payload.loginOrEmail);
-
-    if (!user) {
-      throw ApiError.NotFound("User not found");
-    }
-
-    const isPasswordValid = await bcryptService.checkPassword(payload.password, user.password);
-
-    if (!isPasswordValid) {
-      throw ApiError.BadRequest("Password is incorrect");
-    }
-
-    const tokens = jwtService.generateTokens({ user_id: user._id.toString() });
+  async login(user_id: string): Promise<JwtTokensType> {
+    const tokens = jwtService.generateTokens({ user_id });
 
     return tokens;
   },

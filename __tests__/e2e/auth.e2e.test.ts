@@ -4,10 +4,8 @@ import { usersManager } from "../helpers/usersManager";
 import { createString, newUser } from "../helpers/datasets";
 import { LoginInputModel } from "../../src/features/auth/models/auth.models";
 import { nodemailerService } from "../../src/adapters/mail.service";
-import { usersService } from "../../src/features/users/users.service";
 import { usersQueryRepository } from "../../src/features/users/users.query-repository";
 import { authManager } from "../helpers/authManager";
-import { authService } from "../../src/features/auth/auth.service";
 
 describe("/test", () => {
   let mongoServer: MongoMemoryServer;
@@ -58,6 +56,7 @@ describe("/test", () => {
       loginOrEmail: "Invalid",
       password: newUser.password,
     };
+
     const loginUserResponse = await authManager.loginUser(loginData);
     expect(loginUserResponse.status).toBe(401);
 
@@ -156,6 +155,28 @@ describe("/test", () => {
     expect(confirmResponse.status).toBe(204);
   });
 
+  it("should resend confirmation code", async () => {
+    const fakeSendMail = () => Promise.resolve(true);
+    nodemailerService.sendLetter = jest.fn().mockImplementation(fakeSendMail);
+
+    const registrationResponse = await authManager.registerUser(newUser);
+    expect(registrationResponse.status).toBe(204);
+
+    const user = await usersQueryRepository.findUserByEmail(newUser.email);
+
+    const emailConfirmation = await usersQueryRepository.findEmailConfirmationByUser(user!._id.toString());
+
+    const resendResponse = await authManager.resendEmail(user!.email);
+    expect(resendResponse.status).toBe(204);
+
+    const newEmailConfirmation = await usersQueryRepository.findEmailConfirmationByUser(user!._id.toString());
+
+    const confirmResponse = await authManager.confirmation(newEmailConfirmation!.confirmationCode);
+    expect(confirmResponse.status).toBe(204);
+
+    expect(emailConfirmation!.confirmationCode).not.toBe(newEmailConfirmation!.confirmationCode);
+  });
+
   it("shouldn't register user with wrong confirmation code", async () => {
     const fakeSendMail = () => Promise.resolve(true);
     nodemailerService.sendLetter = jest.fn().mockImplementation(fakeSendMail);
@@ -181,5 +202,50 @@ describe("/test", () => {
 
     expect(confirmResponse.status).toBe(400);
     expect(confirmResponse.body.errorsMessages.length).toBe(1);
+  });
+
+  it("should refresh token", async () => {
+    const createUserResponse = await usersManager.createUser(newUser);
+    expect(createUserResponse.status).toBe(201);
+
+    const loginData: LoginInputModel = {
+      loginOrEmail: newUser.login,
+      password: newUser.password,
+    };
+
+    const loginUserResponse = await authManager.loginUser(loginData);
+    expect(loginUserResponse.status).toBe(200);
+
+    const cookies = loginUserResponse.headers["set-cookie"];
+    expect(cookies).toBeDefined();
+
+    const refreshToken = cookies[0].split(" ")[0].split("=")[1];
+
+    // const refreshResponse = await authManager.refresh(refreshToken);
+    // expect(refreshResponse.status).toBe(200);
+  });
+
+  it("shouldn't refresh token", async () => {
+    const createUserResponse = await usersManager.createUser(newUser);
+    expect(createUserResponse.status).toBe(201);
+
+    const loginData: LoginInputModel = {
+      loginOrEmail: newUser.login,
+      password: newUser.password,
+    };
+
+    const loginUserResponse = await authManager.loginUser(loginData);
+    expect(loginUserResponse.status).toBe(200);
+
+    const cookies = loginUserResponse.headers["set-cookie"];
+    expect(cookies).toBeDefined();
+
+    const refreshToken = cookies[0].split(" ")[0].split("=")[1];
+
+    const refreshResponse = await authManager.refresh(refreshToken);
+    expect(refreshResponse.status).toBe(401);
+
+    const refreshResponse2 = await authManager.refresh("invalid");
+    expect(refreshResponse2.status).toBe(401);
   });
 });
