@@ -1,25 +1,28 @@
-import { LoginInputModel } from "./models/auth.models";
+import { JwtTokensType, LoginInputModel } from "./models/auth.models";
 import { bcryptService } from "../../adapters/bcrypt.service";
-import { jwtService } from "../../adapters/jwt.service";
+import { jwtService } from "../../adapters/jwt/jwt.service";
 import { usersRepository } from "../users/users.repository";
-import { UserInputModel } from "../users/models/users.models";
 import { randomUUID } from "crypto";
 import { getExpirationDate } from "../../utils/date/getExpirationDate";
+import { ApiError } from "../../exeptions/api-error";
 
 export const authService = {
-  async checkCredentials(payload: LoginInputModel): Promise<string | null> {
+  async login(payload: LoginInputModel): Promise<JwtTokensType> {
     const user = await usersRepository.findUserByLoginOrEmail(payload.loginOrEmail);
 
     if (!user) {
-      return null;
+      throw ApiError.NotFound("User not found");
     }
 
     const isPasswordValid = await bcryptService.checkPassword(payload.password, user.password);
 
     if (!isPasswordValid) {
-      return null;
+      throw ApiError.BadRequest("Password is incorrect");
     }
-    return jwtService.createToken({ user_id: user._id.toString() });
+
+    const tokens = jwtService.generateTokens({ user_id: user._id.toString() });
+
+    return tokens;
   },
   async setConfirmEmailStatus(user_id: string, status: boolean): Promise<boolean> {
     const isChanged = await usersRepository.setConfirmEmailStatus(user_id, true);

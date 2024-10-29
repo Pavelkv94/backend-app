@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { jwtService } from "../../../adapters/jwt.service";
+import { jwtService } from "../../../adapters/jwt/jwt.service";
 import { usersQueryRepository } from "../../users/users.query-repository";
 import { ApiError } from "../../../exeptions/api-error";
 
-export const authTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+export const authAccessTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.headers.authorization) {
     return next(ApiError.Unauthorized("Unauthorized"));
   }
@@ -14,7 +14,7 @@ export const authTokenMiddleware = async (req: Request, res: Response, next: Nex
     return next(ApiError.Unauthorized("Unauthorized"));
   }
 
-  const payload = await jwtService.verifyToken(token);
+  const payload = await jwtService.verifyAccessToken(token);
 
   if (!payload) {
     return next(ApiError.Unauthorized("Unauthorized"));
