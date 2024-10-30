@@ -6,7 +6,7 @@ import { paginationQueryMiddleware } from "../../global-middlewares/pagination-q
 import { inputCheckErrorsMiddleware } from "../../global-middlewares/inputCheckErrors.middleware";
 import { findBlogByBodyIdValidator, postBodyValidators } from "./middlewares/post-body.validator";
 import { findPostMiddleware } from "./middlewares/findPost.middleware";
-import { authTokenMiddleware } from "../auth/middlewares/auth-token.middleware";
+import { authAccessTokenMiddleware } from "../auth/middlewares/auth-accessToken.middleware";
 import { commentBodyValidator } from "../comments/middlewares/comment.body.validator";
 
 export const postsRouter = Router();
@@ -25,4 +25,4 @@ postsRouter.get(
   inputCheckErrorsMiddleware,
   postsController.getComments
 );
-postsRouter.post("/:id/comments", authTokenMiddleware, findPostMiddleware, commentBodyValidator, inputCheckErrorsMiddleware, postsController.createComment);
+postsRouter.post("/:id/comments", authAccessTokenMiddleware, findPostMiddleware, commentBodyValidator, inputCheckErrorsMiddleware, postsController.createComment);

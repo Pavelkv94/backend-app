@@ -7,18 +7,30 @@ import { nodemailerService } from "../../adapters/mail.service";
 import { UserInputModel } from "../users/models/users.models";
 import { usersService } from "../users/users.service";
 import { HTTP_STATUSES } from "../../types/common-types";
-import { randomUUID } from "crypto";
-import { getExpirationDate } from "../../utils/date/getExpirationDate";
+import { jwtService } from "../../adapters/jwt/jwt.service";
 
 export const authController = {
   async login(req: Request<{}, {}, LoginInputModel>, res: Response<LoginOutputModel>, next: NextFunction) {
-    const accessToken = await authService.checkCredentials(req.body);
+    try {
+      const { accessToken, refreshToken } = await authService.login(req.user.id);
 
-    if (!accessToken) {
-      return next(ApiError.Unauthorized("Unauthorized access"));
+      res.cookie("refreshToken", refreshToken, { secure: true, httpOnly: true });
+      res.status(HTTP_STATUSES.SUCCESS).send({ accessToken });
+    } catch (error) {
+      return next(ApiError.UnexpectedError(error as Error));
     }
+  },
+  async refresh(req: Request, res: Response<LoginOutputModel>, next: NextFunction) {
+    try {
+      const oldRefreshToken = req.cookies.refreshToken;
 
-    res.status(HTTP_STATUSES.SUCCESS).send({ accessToken });
+      const { accessToken, refreshToken } = await authService.refresh(oldRefreshToken, req.user.id);
+
+      res.cookie("refreshToken", refreshToken, { secure: true, httpOnly: true });
+      res.status(HTTP_STATUSES.SUCCESS).send({ accessToken });
+    } catch (error) {
+      return next(ApiError.UnexpectedError(error as Error));
+    }
   },
   async me(req: Request, res: Response<MeViewModel>, next: NextFunction) {
     const user = await usersQueryRepository.findMe(req.user.id);
@@ -70,6 +82,17 @@ export const authController = {
       const newConfirmationCode = await authService.setNewConfirmCode(user._id.toString());
 
       nodemailerService.sendLetter(req.body.email, newConfirmationCode).catch((e) => console.log(e)); //долгий запрос с await
+
+      res.sendStatus(HTTP_STATUSES.NO_CONTENT);
+    } catch (error) {
+      return next(ApiError.UnexpectedError(error as Error));
+    }
+  },
+  async logout(req: Request<{}, {}, LoginInputModel>, res: Response<LoginOutputModel>, next: NextFunction) {
+    try {
+      const { refreshToken } = req.cookies;
+
+      await jwtService.addTokenToBlackList(refreshToken);
 
       res.sendStatus(HTTP_STATUSES.NO_CONTENT);
     } catch (error) {

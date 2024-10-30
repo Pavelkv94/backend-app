@@ -24,3 +24,8 @@ export type ConfirmationInputModel = {
 export type EmailResendInputModel = {
   email: string;
 };
+
+export type JwtTokensType = {
+  accessToken: string;
+  refreshToken: string;
+};

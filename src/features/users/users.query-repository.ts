@@ -25,7 +25,7 @@ export const usersQueryRepository = {
 
     const usersFromDb = await db
       .getCollections()
-      .usersCollection.find(filter, { projection: { password: 0 } })
+      .usersCollection.find(filter, { projection: { password: 0, emailConfirmation: 0 } })
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .sort({ [sortBy]: sortDirection })
@@ -63,7 +63,7 @@ export const usersQueryRepository = {
   },
   async findUser(id: string): Promise<UserViewModel | null> {
     const objectId = new ObjectId(id);
-    const userFromDb = await db.getCollections().usersCollection.findOne({ _id: objectId }, { projection: { password: 0 } });
+    const userFromDb = await db.getCollections().usersCollection.findOne({ _id: objectId }, { projection: { password: 0, emailConfirmation: 0 } });
 
     if (!userFromDb) {
       return null;
@@ -103,7 +103,7 @@ export const usersQueryRepository = {
   },
   async findMe(user_id: string): Promise<MeViewModel | null> {
     const objectId = new ObjectId(user_id);
-    const userFromDb = await db.getCollections().usersCollection.findOne({ _id: objectId }, { projection: { password: 0, createdAt: 0, _id: 0 } });
+    const userFromDb = await db.getCollections().usersCollection.findOne({ _id: objectId }, { projection: { password: 0, createdAt: 0, _id: 0, emailConfirmation: 0 } });
 
     if (!userFromDb) {
       return null;

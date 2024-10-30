@@ -28,6 +28,10 @@ export class ApiError extends Error {
     return new ApiError(HTTP_STATUSES.NOT_FOUND, message);
   }
 
+  static BadRequest(message = "Bad Request") {
+    return new ApiError(HTTP_STATUSES.BAD_REQUEST, message);
+  }
+
   static ValidationError(errors: Array<{ field: string; message: string }>) {
     return new ApiError(HTTP_STATUSES.BAD_REQUEST, "Validation failed", errors);
   }

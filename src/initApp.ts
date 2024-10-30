@@ -10,12 +10,14 @@ import { authRouter } from "./features/auth/auth.router";
 import { commentsRouter } from "./features/comments/comments.router";
 import { errorHandlerMiddleware } from "./global-middlewares/error-handler.middleware";
 import { HTTP_STATUSES } from "./types/common-types";
+import cookieParser from "cookie-parser";
 
 export const initApp = () => {
   const app = express();
 
   config();
 
+  app.use(cookieParser())
   app.use(express.json());
   app.use(cors());
 

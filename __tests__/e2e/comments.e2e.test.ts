@@ -9,6 +9,7 @@ import { commentsManager } from "../helpers/commentsManager";
 import { usersManager } from "../helpers/usersManager";
 import { LoginInputModel } from "../../src/features/auth/models/auth.models";
 import { authManager } from "../helpers/authManager";
+import { commentQueryRepository } from "../../src/features/comments/comments.query-repository";
 
 describe("/posts", () => {
   let mongoServer: MongoMemoryServer;
@@ -47,6 +48,7 @@ describe("/posts", () => {
   });
   401;
   beforeEach(async () => {
+    jest.clearAllMocks();
     await db.dropCollection("comments");
   });
 
@@ -118,5 +120,23 @@ describe("/posts", () => {
     const getCommentResponse = await commentsManager.getComment(createCommentResponse.body.id);
     expect(getCommentResponse.status).toBe(200);
     expect(getCommentResponse.body.content).toBe(updatedComment.content);
+  });
+
+  it("shouldn't update comment", async () => {
+    const createCommentResponse = await commentsManager.createCommentWithAuthJWT(postFromDb.id, userToken, newComment);
+    expect(createCommentResponse.status).toBe(201);
+
+    const updatedComment = { content: "updated content" };
+    const updateCommentResponse = await commentsManager.updateCommentWithAuth(createCommentResponse.body.id, "userToken", updatedComment);
+    expect(updateCommentResponse.status).toBe(401);
+  });
+
+  it("shouldn't get comments with DB error", async () => {
+    const createCommentResponse = await commentsManager.createCommentWithAuthJWT(postFromDb.id, userToken, newComment);
+    expect(createCommentResponse.status).toBe(201);
+
+    commentQueryRepository.findComment = jest.fn().mockReturnValue(null);
+    const getCommentsResponse = await commentsManager.getComment(createCommentResponse.body.id);
+    expect(getCommentsResponse.status).toBe(404);
   });
 });
