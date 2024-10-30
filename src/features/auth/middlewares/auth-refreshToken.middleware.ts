@@ -1,34 +1,22 @@
 import { NextFunction, Request, Response } from "express";
-import { jwtService } from "../../../adapters/jwt/jwt.service";
 import { usersQueryRepository } from "../../users/users.query-repository";
 import { ApiError } from "../../../exeptions/api-error";
-import { jwtRepository } from "../../../adapters/jwt/jwt.repository";
+import { authService } from "../auth.service";
 
 export const authRefreshTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies.refreshToken;
+
   if (!token) {
     return next(ApiError.Unauthorized("Unauthorized"));
   }
 
-  const isInvalidToken = await jwtRepository.findInBlackList(token);
+  const user_id = await authService.checkRefreshToken(token);
 
-  if (isInvalidToken) {
+  if (!user_id) {
     return next(ApiError.Unauthorized("Unauthorized"));
   }
 
-  const payload = await jwtService.verifyRefreshToken(token);
-
-  if (!payload) {
-    return next(ApiError.Unauthorized("Unauthorized"));
-  }
-
-  const user = await usersQueryRepository.findUser(payload.user_id);
-
-  if (!user) {
-    return next(ApiError.Unauthorized("Unauthorized"));
-  }
-
-  req.user = { id: payload.user_id };
+  req.user = { id: user_id };
 
   next();
 };

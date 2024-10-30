@@ -8,18 +8,11 @@ import { UserInputModel } from "../users/models/users.models";
 import { usersService } from "../users/users.service";
 import { HTTP_STATUSES } from "../../types/common-types";
 import { jwtService } from "../../adapters/jwt/jwt.service";
-import { usersRepository } from "../users/users.repository";
 
 export const authController = {
   async login(req: Request<{}, {}, LoginInputModel>, res: Response<LoginOutputModel>, next: NextFunction) {
     try {
-      const user = await usersRepository.findUserByLoginOrEmail(req.body.loginOrEmail);
-
-      if (!user) {
-        throw new Error("Something was wrong");
-      }
-
-      const { accessToken, refreshToken } = await authService.login(user._id.toString());
+      const { accessToken, refreshToken } = await authService.login(req.user.id);
 
       res.cookie("refreshToken", refreshToken, { secure: true, httpOnly: true });
       res.status(HTTP_STATUSES.SUCCESS).send({ accessToken });
@@ -31,9 +24,7 @@ export const authController = {
     try {
       const oldRefreshToken = req.cookies.refreshToken;
 
-      await jwtService.addTokenToBlackList(oldRefreshToken);
-
-      const { accessToken, refreshToken } = await jwtService.generateTokens({ user_id: req.user.id });
+      const { accessToken, refreshToken } = await authService.refresh(oldRefreshToken, req.user.id);
 
       res.cookie("refreshToken", refreshToken, { secure: true, httpOnly: true });
       res.status(HTTP_STATUSES.SUCCESS).send({ accessToken });

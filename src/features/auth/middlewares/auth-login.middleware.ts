@@ -1,20 +1,22 @@
 import { NextFunction, Request, Response } from "express";
 import { ApiError } from "../../../exeptions/api-error";
-import { usersRepository } from "../../users/users.repository";
-import { bcryptService } from "../../../adapters/bcrypt.service";
+import { authService } from "../auth.service";
+import { jwtService } from "../../../adapters/jwt/jwt.service";
 
 export const authLoginMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-  const user = await usersRepository.findUserByLoginOrEmail(req.body.loginOrEmail);
+  const token = req.cookies.refreshToken;
 
-  if (!user) {
+  if (token) {
+    await jwtService.addTokenToBlackList(token);
+  }
+
+  const user_id = await authService.checkUserCredentials(req.body);
+
+  if (!user_id) {
     return next(ApiError.Unauthorized());
   }
 
-  const isPasswordValid = await bcryptService.checkPassword(req.body.password, user.password);
-
-  if (!isPasswordValid) {
-    return next(ApiError.Unauthorized());
-  }
+  req.user = { id: user_id };
 
   next();
 };

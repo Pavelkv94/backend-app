@@ -45,4 +45,9 @@ export const jwtService = {
 
     return !!invalidTokenId;
   },
+  async findTokenInBlackList(token: string): Promise<boolean> {
+    const invalidTokenId = await jwtRepository.findInBlackList(token);
+
+    return !!invalidTokenId;
+  },
 };

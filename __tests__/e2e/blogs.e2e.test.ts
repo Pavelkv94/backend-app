@@ -327,7 +327,7 @@ describe("/blogs", () => {
     expect(getBlogs.status).toBe(404);
   });
 
-  it("shouldn't get blog with db error", async () => {
+  it("shouldn't get blog with db error 500", async () => {
     blogsQueryRepository.findBlog = jest.fn().mockRejectedValue(new Error("Database error"));
 
     const createBlogResponse = await blogsManager.createBlogWithAuth(newBlog);
