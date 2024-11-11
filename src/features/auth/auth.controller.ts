@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { ConfirmationInputModel, EmailResendInputModel, LoginInputModel, LoginOutputModel, MeViewModel } from "./models/auth.models";
+import { ConfirmationInputModel, EmailResendInputModel, LoginInputModel, LoginOutputModel, AdditionalQueryInputModel, MeViewModel } from "./models/auth.models";
 import { authService } from "./auth.service";
 import { usersQueryRepository } from "../users/users.query-repository";
 import { ApiError } from "../../exeptions/api-error";
@@ -8,11 +8,12 @@ import { UserInputModel } from "../users/models/users.models";
 import { usersService } from "../users/users.service";
 import { HTTP_STATUSES } from "../../types/common-types";
 import { jwtService } from "../../adapters/jwt/jwt.service";
+import { securityDevicesService } from "../securityDevices/securityDevices.service";
 
 export const authController = {
-  async login(req: Request<{}, {}, LoginInputModel>, res: Response<LoginOutputModel>, next: NextFunction) {
+  async login(req: Request<{}, {}, LoginInputModel, AdditionalQueryInputModel>, res: Response<LoginOutputModel>, next: NextFunction) {
     try {
-      const { accessToken, refreshToken } = await authService.login(req.user.id);
+      const { accessToken, refreshToken } = await authService.login(req.user.id, req.user.deviceId, req.ip, req.headers["user-agent"]);
 
       res.cookie("refreshToken", refreshToken, { secure: true, httpOnly: true });
       res.status(HTTP_STATUSES.SUCCESS).send({ accessToken });
@@ -22,9 +23,7 @@ export const authController = {
   },
   async refresh(req: Request, res: Response<LoginOutputModel>, next: NextFunction) {
     try {
-      const oldRefreshToken = req.cookies.refreshToken;
-
-      const { accessToken, refreshToken } = await authService.refresh(oldRefreshToken, req.user.id);
+      const { accessToken, refreshToken } = await authService.refresh(req.ip, req.headers["user-agent"], req.user.id, req.user.deviceId);
 
       res.cookie("refreshToken", refreshToken, { secure: true, httpOnly: true });
       res.status(HTTP_STATUSES.SUCCESS).send({ accessToken });
@@ -90,9 +89,7 @@ export const authController = {
   },
   async logout(req: Request<{}, {}, LoginInputModel>, res: Response<LoginOutputModel>, next: NextFunction) {
     try {
-      const { refreshToken } = req.cookies;
-
-      await jwtService.addTokenToBlackList(refreshToken);
+      await securityDevicesService.deleteSecurityDevice(req.user.deviceId, req.user.id);
 
       res.sendStatus(HTTP_STATUSES.NO_CONTENT);
     } catch (error) {

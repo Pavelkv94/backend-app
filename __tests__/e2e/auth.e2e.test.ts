@@ -248,4 +248,21 @@ describe("/test", () => {
     const refreshResponse2 = await authManager.refresh("invalid");
     expect(refreshResponse2.status).toBe(401);
   });
+
+  it("should get error after 5 login attempts", async () => {
+    const createUserResponse = await usersManager.createUser(newUser);
+    expect(createUserResponse.status).toBe(201);
+
+    const loginData: LoginInputModel = {
+      loginOrEmail: newUser.login,
+      password: newUser.password,
+    };
+
+    for (let i = 0; i < 5; i++) {
+      const loginUserResponse = await authManager.loginUser(loginData);
+      expect(loginUserResponse.status).toBe(200);
+    }
+    const loginUserResponse2 = await authManager.loginUser(loginData);
+    expect(loginUserResponse2.status).toBe(429);
+  });
 });

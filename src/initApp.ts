@@ -12,6 +12,7 @@ import { errorHandlerMiddleware } from "./global-middlewares/error-handler.middl
 import { HTTP_STATUSES } from "./types/common-types";
 import cookieParser from "cookie-parser";
 import { apiSaveLogsMiddleware } from "./global-middlewares/apiSaveLogs.middleware";
+import { securityDevicesRouter } from "./features/securityDevices/securityDevices.router";
 
 export const initApp = () => {
   const app = express();
@@ -35,6 +36,7 @@ export const initApp = () => {
   app.use(SETTINGS.PATH.POSTS, postsRouter);
   app.use(SETTINGS.PATH.USERS, usersRouter);
   app.use(SETTINGS.PATH.COMMENTS, commentsRouter);
+  app.use(SETTINGS.PATH.SECURITY, securityDevicesRouter);
 
   app.use(SETTINGS.PATH.TESTING, testingRouter);
 

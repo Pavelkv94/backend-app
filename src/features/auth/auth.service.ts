@@ -5,21 +5,32 @@ import { randomUUID } from "crypto";
 import { getExpirationDate } from "../../utils/date/getExpirationDate";
 import { usersService } from "../users/users.service";
 import { bcryptService } from "../../adapters/bcrypt.service";
+import { securityDevicesService } from "../securityDevices/securityDevices.service";
+import { JWTPayloadModel } from "../../adapters/jwt/models/jwt.models";
 
 export const authService = {
-  async login(user_id: string): Promise<JwtTokensType> {
-    const tokens = jwtService.generateTokens({ user_id });
+  async login(user_id: string, deviceId: string, ip: string = "", userAgent: string = ""): Promise<JwtTokensType> {
+    
+    const tokens = await jwtService.generateTokens({ user_id, deviceId: deviceId || randomUUID() });
+
+    const refreshToken: JWTPayloadModel = await jwtService.decodeToken(tokens.refreshToken);
+
+    if (deviceId) {
+      await securityDevicesService.updateDevice(refreshToken, ip, userAgent);
+    } else {
+      await securityDevicesService.addDevice(refreshToken, ip, userAgent);
+    }
+    return tokens;
+  },
+  async refresh(ip: string = "", userAgent: string = "", user_id: string, deviceId: string): Promise<JwtTokensType> {
+
+    const tokens = await jwtService.generateTokens({ user_id, deviceId });
+    const refreshToken: JWTPayloadModel = await jwtService.decodeToken(tokens.refreshToken);
+    await securityDevicesService.updateDevice(refreshToken, ip, userAgent);
 
     return tokens;
   },
-  async refresh(oldRefreshToken: string, user_id: string): Promise<JwtTokensType> {
-    await jwtService.addTokenToBlackList(oldRefreshToken);
-
-    const tokens = await jwtService.generateTokens({ user_id });
-
-    return tokens;
-  },
-  async checkRefreshToken(token: string): Promise<string | null> {
+  async checkRefreshToken(token: string): Promise<{ user_id: string; deviceId: string } | null> {
     const payload = await jwtService.verifyRefreshToken(token);
 
     if (!payload) {
@@ -32,12 +43,13 @@ export const authService = {
       return null;
     }
 
-    const isInvalidToken = await jwtService.findTokenInBlackList(token);
+    const isSessionExists = await securityDevicesService.checkSessionVersion(payload)
 
-    if (!isInvalidToken) {
+    if (!isSessionExists) {
       return null;
     }
-    return user.id;
+
+    return { user_id: payload.user_id, deviceId: payload.deviceId };
   },
   async checkUserCredentials(payload: LoginInputModel): Promise<string | null> {
     const user = await usersRepository.findUserByLoginOrEmail(payload.loginOrEmail);

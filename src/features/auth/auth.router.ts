@@ -11,10 +11,10 @@ import { rateLimiterMiddleware } from "./middlewares/auth-rateLimiter.middleware
 
 export const authRouter = Router();
 
-authRouter.post("/login", authLoginBodyValidators, rateLimiterMiddleware, authLoginMiddleware, authController.login);
+authRouter.post("/login", rateLimiterMiddleware, authLoginBodyValidators, authLoginMiddleware, authController.login);
 authRouter.post("/refresh-token", authRefreshTokenMiddleware, authController.refresh);
 authRouter.get("/me", authAccessTokenMiddleware, authController.me);
 authRouter.post("/registration", authRegistrationBodyValidators, rateLimiterMiddleware, authController.registration);
-authRouter.post("/registration-confirmation", authConfirmBodyValidators, rateLimiterMiddleware, authController.registrationConfirmation);
+authRouter.post("/registration-confirmation", rateLimiterMiddleware, authConfirmBodyValidators, authController.registrationConfirmation);
 authRouter.post("/registration-email-resending", authEmailResendBodyValidators, rateLimiterMiddleware, authController.registrationEmailResending);
 authRouter.post("/logout", authRefreshTokenMiddleware, authController.logout);

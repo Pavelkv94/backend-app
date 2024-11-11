@@ -6,6 +6,7 @@ export const SETTINGS = {
     USERS: "/users",
     AUTH: "/auth",
     COMMENTS: "/comments",
+    SECURITY: "/security"
   },
   ADMIN: process.env.ADMIN || "admin:qwerty",
   JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET || "access secret",

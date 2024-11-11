@@ -29,3 +29,7 @@ export type JwtTokensType = {
   accessToken: string;
   refreshToken: string;
 };
+
+export type AdditionalQueryInputModel = {
+  user: { id: string; deviceId: string };
+};

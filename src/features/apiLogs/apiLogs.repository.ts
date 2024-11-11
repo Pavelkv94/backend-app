@@ -17,6 +17,6 @@ export const apiLogsRepository = {
       .toArray();
 
       
-    return result.length < options.limit;
+    return result.length < options.limit + 1; // + current
   },
 };
