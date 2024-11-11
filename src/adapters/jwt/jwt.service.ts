@@ -2,9 +2,11 @@ import jwt from "jsonwebtoken";
 import { SETTINGS } from "../../settings";
 import { JwtTokensType } from "../../features/auth/models/auth.models";
 import { jwtRepository } from "./jwt.repository";
+import { JWTPayloadModel } from "./models/jwt.models";
 
 type JwtPayload = {
   user_id: string;
+  deviceId: string;
 };
 
 export const jwtService = {
@@ -24,26 +26,21 @@ export const jwtService = {
       return null;
     }
   },
-  async verifyAccessToken(token: string): Promise<{ user_id: string } | null> {
+  async verifyAccessToken(token: string): Promise<{ user_id: string; deviceId: string } | null> {
     try {
-      return jwt.verify(token, SETTINGS.JWT_ACCESS_SECRET) as { user_id: string };
+      return jwt.verify(token, SETTINGS.JWT_ACCESS_SECRET) as { user_id: string; deviceId: string };
     } catch (error) {
       console.error("Token verify some error");
       return null;
     }
   },
-  async verifyRefreshToken(token: string): Promise<{ user_id: string } | null> {
+  async verifyRefreshToken(token: string): Promise<JWTPayloadModel | null> {
     try {
-      return jwt.verify(token, SETTINGS.JWT_REFRESH_SECRET) as { user_id: string };
+      return jwt.verify(token, SETTINGS.JWT_REFRESH_SECRET) as JWTPayloadModel;
     } catch (error) {
       console.error("Token verify some error");
       return null;
     }
-  },
-  async addTokenToBlackList(token: string): Promise<boolean> {
-    const invalidTokenId = await jwtRepository.addToBlackList(token);
-
-    return !!invalidTokenId;
   },
   async findTokenInBlackList(token: string): Promise<boolean> {
     const invalidTokenId = await jwtRepository.findInBlackList(token);

@@ -31,7 +31,9 @@ export class ApiError extends Error {
   static BadRequest(message = "Bad Request") {
     return new ApiError(HTTP_STATUSES.BAD_REQUEST, message);
   }
-
+  static TooManyRequests(message = "Too many requests") {
+    return new ApiError(HTTP_STATUSES.TOO_MANY_REQUESTS, message);
+  }
   static ValidationError(errors: Array<{ field: string; message: string }>) {
     return new ApiError(HTTP_STATUSES.BAD_REQUEST, "Validation failed", errors);
   }
