@@ -7,13 +7,14 @@ import { authConfirmBodyValidators } from "./middlewares/auth-confirmation-body.
 import { authEmailResendBodyValidators } from "./middlewares/auth-emailResend-body.validator";
 import { authRefreshTokenMiddleware } from "./middlewares/auth-refreshToken.middleware";
 import { authLoginMiddleware } from "./middlewares/auth-login.middleware";
+import { rateLimiterMiddleware } from "./middlewares/auth-rateLimiter.middleware";
 
 export const authRouter = Router();
 
-authRouter.post("/login", authLoginBodyValidators, authLoginMiddleware, authController.login);
+authRouter.post("/login", authLoginBodyValidators, rateLimiterMiddleware, authLoginMiddleware, authController.login);
 authRouter.post("/refresh-token", authRefreshTokenMiddleware, authController.refresh);
 authRouter.get("/me", authAccessTokenMiddleware, authController.me);
-authRouter.post("/registration", authRegistrationBodyValidators, authController.registration);
-authRouter.post("/registration-confirmation", authConfirmBodyValidators, authController.registrationConfirmation);
-authRouter.post("/registration-email-resending", authEmailResendBodyValidators, authController.registrationEmailResending);
+authRouter.post("/registration", authRegistrationBodyValidators, rateLimiterMiddleware, authController.registration);
+authRouter.post("/registration-confirmation", authConfirmBodyValidators, rateLimiterMiddleware, authController.registrationConfirmation);
+authRouter.post("/registration-email-resending", authEmailResendBodyValidators, rateLimiterMiddleware, authController.registrationEmailResending);
 authRouter.post("/logout", authRefreshTokenMiddleware, authController.logout);

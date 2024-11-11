@@ -4,6 +4,7 @@ import { PostEntityModel } from "../features/posts/models/posts.models";
 import { UserEntityModel } from "../features/users/models/users.models";
 import { CommentEntityModel } from "../features/comments/models/comments.models";
 import { TokenEntityModel } from "../adapters/jwt/models/jwt.models";
+import { ApiLogEntityModel } from "../features/apiLogs/models/apiLog.model";
 
 export const db = {
   client: {} as MongoClient,
@@ -53,6 +54,7 @@ export const db = {
       usersCollection: this.getDbName().collection<UserEntityModel>("users"),
       commentsCollection: this.getDbName().collection<CommentEntityModel>("comments"),
       tokensBlackListCollection: this.getDbName().collection<TokenEntityModel>("blackTokens"),
+      apiLogsCollection: this.getDbName().collection<ApiLogEntityModel>("apiLogs"),
 
     };
   },
