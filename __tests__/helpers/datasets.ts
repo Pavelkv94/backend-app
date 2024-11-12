@@ -40,6 +40,12 @@ export const newUser = {
   email: "example123@example.com",
 };
 
+export const newUser2 = {
+  login: "user2",
+  password: "123456782",
+  email: "user2@example.com",
+};
+
 export const newComment = {
   content: "default comment with correct length",
 };

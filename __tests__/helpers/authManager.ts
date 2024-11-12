@@ -7,6 +7,29 @@ export const authManager = {
 
     return response;
   },
+  async logoutUser(refreshToken: any) {
+    const response = await req.post(SETTINGS.PATH.AUTH + "/logout").set("Cookie", [`refreshToken=${refreshToken}`]);
+
+    return response;
+  },
+  async loginUserWithAgent(data: any, agent: string) {
+    const response = await req
+      .post(SETTINGS.PATH.AUTH + "/login")
+      .set("User-Agent", agent)
+      .send(data);
+
+    return response;
+  },
+  async loginUserWithAgentAndOldCookies(data: any, agent: string, refreshToken: any) {
+    const response = await req
+      .post(SETTINGS.PATH.AUTH + "/login")
+      .set("User-Agent", agent)
+      .set("Cookie", [`refreshToken=${refreshToken}`])
+      .send(data);
+
+    return response;
+  },
+
   async registerUser(data: any) {
     const response = await req.post(SETTINGS.PATH.AUTH + "/registration").send(data);
 
@@ -29,7 +52,7 @@ export const authManager = {
   },
 
   async refresh(refreshToken?: string) {
-    const response = await req.post(SETTINGS.PATH.AUTH + "/refresh-token").set("Cookie", [`session=${refreshToken}`]);
+    const response = await req.post(SETTINGS.PATH.AUTH + "/refresh-token").set("Cookie", [`refreshToken=${refreshToken}`]);
 
     return response;
   },

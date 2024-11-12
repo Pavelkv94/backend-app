@@ -36,7 +36,7 @@ describe("/test", () => {
   });
 
   it("should generate tokens", async () => {
-    const payload = { user_id: "1" };
+    const payload = { user_id: "1", deviceId: "12" };
     const { refreshToken, accessToken } = await jwtService.generateTokens(payload);
     const decodedAccessToken = await jwtService.decodeToken(accessToken);
     const decodedRefreshToken = await jwtService.decodeToken(refreshToken);
@@ -46,7 +46,7 @@ describe("/test", () => {
   });
 
   it("shouldn't decode tokens", async () => {
-    const payload = { user_id: "1" };
+    const payload = { user_id: "1", deviceId: "12" };
     const { refreshToken, accessToken } = await jwtService.generateTokens(payload);
     jwt.decode = jest.fn().mockReturnValue(null);
 

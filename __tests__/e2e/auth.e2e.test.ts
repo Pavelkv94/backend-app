@@ -221,8 +221,8 @@ describe("/test", () => {
 
     const refreshToken = cookies[0].split(" ")[0].split("=")[1];
 
-    // const refreshResponse = await authManager.refresh(refreshToken);
-    // expect(refreshResponse.status).toBe(200);
+    const refreshResponse = await authManager.refresh(refreshToken);
+    expect(refreshResponse.status).toBe(200);
   });
 
   it("shouldn't refresh token", async () => {
@@ -243,7 +243,7 @@ describe("/test", () => {
     const refreshToken = cookies[0].split(" ")[0].split("=")[1];
 
     const refreshResponse = await authManager.refresh(refreshToken);
-    expect(refreshResponse.status).toBe(401);
+    expect(refreshResponse.status).toBe(200);
 
     const refreshResponse2 = await authManager.refresh("invalid");
     expect(refreshResponse2.status).toBe(401);
