@@ -4,11 +4,6 @@ import { ResultObject, ResultStatus } from "../../types/common-types";
 import { securityDevicesRepository } from "./securityDevices.repository";
 
 export const securityDevicesService = {
-  async checkSessionVersion(payload: JWTPayloadModel) {
-    const isSessionExists = await securityDevicesRepository.checkSession(payload);
-
-    return isSessionExists;
-  },
   async addDevice(refreshToken: JWTPayloadModel, ip: string, userAgent: string): Promise<string> {
     const newDevice = {
       deviceId: refreshToken.deviceId,

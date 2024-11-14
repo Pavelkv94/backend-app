@@ -121,40 +121,6 @@ describe("/security/devices", () => {
     expect(deleteDevicesResponse.status).toBe(403);
   });
 
-  it("should get the same devices after relogin", async () => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    const cookies = loginResponses[0].headers["set-cookie"];
-    expect(cookies).toBeDefined();
-    const refreshToken = cookies[0].split(" ")[0].split("=")[1];
-
-    const devicesResponse = await devicesManager.getDevicesWithAuth(refreshToken);
-    expect(devicesResponse.status).toBe(200);
-    expect(devicesResponse.body.length).toBe(4);
-
-    const currentDevice = devicesResponse.body[0];
-
-    const loginData: LoginInputModel = {
-      loginOrEmail: newUser.login,
-      password: newUser.password,
-    };
-
-    const loginUserResponse = await authManager.loginUserWithAgentAndOldCookies(loginData, `agent 0`, refreshToken);
-    expect(loginUserResponse.status).toBe(200);
-
-    const newCookies = loginUserResponse.headers["set-cookie"];
-    expect(newCookies).toBeDefined();
-    const newRefreshToken = newCookies[0].split(" ")[0].split("=")[1];
-
-    const devicesResponseAfterRelogin = await devicesManager.getDevicesWithAuth(newRefreshToken);
-    expect(devicesResponseAfterRelogin.status).toBe(200);
-    expect(devicesResponseAfterRelogin.body.length).toBe(4);
-    expect(devicesResponseAfterRelogin.body[0].lastActiveDate).not.toBe(currentDevice.lastActiveDate);
-    expect(devicesResponseAfterRelogin.body[0].ip).toBe(currentDevice.ip);
-    expect(devicesResponseAfterRelogin.body[0].deviceId).toBe(currentDevice.deviceId);
-    expect(devicesResponseAfterRelogin.body[0].title).toBe(currentDevice.title);
-
-  });
   it("should logout device", async () => {
     const cookies = loginResponses[0].headers["set-cookie"];
     expect(cookies).toBeDefined();

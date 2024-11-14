@@ -11,7 +11,6 @@ import { commentsRouter } from "./features/comments/comments.router";
 import { errorHandlerMiddleware } from "./global-middlewares/error-handler.middleware";
 import { HTTP_STATUSES } from "./types/common-types";
 import cookieParser from "cookie-parser";
-import { apiSaveLogsMiddleware } from "./global-middlewares/apiSaveLogs.middleware";
 import { securityDevicesRouter } from "./features/securityDevices/securityDevices.router";
 
 export const initApp = () => {
@@ -19,13 +18,11 @@ export const initApp = () => {
 
   config();
 
-  app.set('trust proxy', true) 
-  
-  app.use(cookieParser())
+  app.set("trust proxy", true);
+
+  app.use(cookieParser());
   app.use(express.json());
   app.use(cors());
-
-  app.use(apiSaveLogsMiddleware);
 
   app.get("/", (req, res) => {
     res.status(HTTP_STATUSES.SUCCESS).json({ version: "1.1" });

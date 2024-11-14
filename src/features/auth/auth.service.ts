@@ -7,23 +7,17 @@ import { usersService } from "../users/users.service";
 import { bcryptService } from "../../adapters/bcrypt.service";
 import { securityDevicesService } from "../securityDevices/securityDevices.service";
 import { JWTPayloadModel } from "../../adapters/jwt/models/jwt.models";
+import { securityDevicesRepository } from "../securityDevices/securityDevices.repository";
 
 export const authService = {
-  async login(user_id: string, deviceId: string, ip: string = "", userAgent: string = ""): Promise<JwtTokensType> {
-    
-    const tokens = await jwtService.generateTokens({ user_id, deviceId: deviceId || randomUUID() });
-
+  async login(user_id: string, ip: string = "", userAgent: string = ""): Promise<JwtTokensType> {
+    const tokens = await jwtService.generateTokens({ user_id, deviceId: randomUUID() });
     const refreshToken: JWTPayloadModel = await jwtService.decodeToken(tokens.refreshToken);
+    await securityDevicesService.addDevice(refreshToken, ip, userAgent);
 
-    if (deviceId) {
-      await securityDevicesService.updateDevice(refreshToken, ip, userAgent);
-    } else {
-      await securityDevicesService.addDevice(refreshToken, ip, userAgent);
-    }
     return tokens;
   },
   async refresh(ip: string = "", userAgent: string = "", user_id: string, deviceId: string): Promise<JwtTokensType> {
-
     const tokens = await jwtService.generateTokens({ user_id, deviceId });
     const refreshToken: JWTPayloadModel = await jwtService.decodeToken(tokens.refreshToken);
     await securityDevicesService.updateDevice(refreshToken, ip, userAgent);
@@ -43,7 +37,7 @@ export const authService = {
       return null;
     }
 
-    const isSessionExists = await securityDevicesService.checkSessionVersion(payload)
+    const isSessionExists = await this.checkSessionVersion(payload);
 
     if (!isSessionExists) {
       return null;
@@ -79,5 +73,10 @@ export const authService = {
       throw new Error("Update User confirmation Failed");
     }
     return newConfirmationCode;
+  },
+  async checkSessionVersion(payload: JWTPayloadModel) {
+    const isSessionExists = await securityDevicesRepository.checkSession(payload);
+
+    return isSessionExists;
   },
 };

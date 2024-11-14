@@ -1,8 +1,20 @@
 import { NextFunction, Request, Response } from "express";
 import { ApiError } from "../../../exeptions/api-error";
 import { apiLogsService } from "../../apiLogs/apiLogs.service";
+import { ApiLogModel } from "../../apiLogs/models/apiLog.model";
 
 export const rateLimiterMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+  const newAPiLog: ApiLogModel = {
+    ip: req.ip || "",
+    URL: req.originalUrl || req.baseUrl,
+    date: new Date(),
+  };
+
+  const logId = await apiLogsService.saveLog(newAPiLog);
+  if (!logId) {
+    console.log("Something wrong with api log saving.");
+  }
+
   const rateLimitOptions = {
     ip: req.ip || "",
     baseUrl: req.originalUrl || req.baseUrl,

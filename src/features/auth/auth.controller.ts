@@ -13,7 +13,7 @@ import { securityDevicesService } from "../securityDevices/securityDevices.servi
 export const authController = {
   async login(req: Request<{}, {}, LoginInputModel, AdditionalQueryInputModel>, res: Response<LoginOutputModel>, next: NextFunction) {
     try {
-      const { accessToken, refreshToken } = await authService.login(req.user.id, req.user.deviceId, req.ip, req.headers["user-agent"]);
+      const { accessToken, refreshToken } = await authService.login(req.user.id, req.ip, req.headers["user-agent"]);
 
       res.cookie("refreshToken", refreshToken, { secure: true, httpOnly: true });
       res.status(HTTP_STATUSES.SUCCESS).send({ accessToken });

@@ -12,17 +12,7 @@ export const authLoginMiddleware = async (req: Request, res: Response, next: Nex
     return next(ApiError.Unauthorized());
   }
 
-  //check token
-  const token = req.cookies.refreshToken;
-
-  let deviceId = "";
-
-  if (token) {
-    const refreshTokenPayload = await jwtService.decodeToken(token);
-    deviceId = refreshTokenPayload.deviceId;
-  }
-
-  req.user = { id: user_id, deviceId };
+  req.user = { id: user_id, deviceId: "" };
 
   next();
 };
