@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { ApiError } from "../../../exeptions/api-error";
 import { apiLogsService } from "../../apiLogs/apiLogs.service";
-import { ApiLogModel } from "../../apiLogs/models/apiLog.model";
+import { ApiLogInputModel } from "../../apiLogs/models/apiLog.model";
 
 export const rateLimiterMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-  const newAPiLog: ApiLogModel = {
+  const newAPiLog: ApiLogInputModel = {
     ip: req.ip || "",
     URL: req.originalUrl || req.baseUrl,
     date: new Date(),

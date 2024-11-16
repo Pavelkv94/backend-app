@@ -1,4 +1,3 @@
-import { jwtService } from "../../adapters/jwt/jwt.service";
 import { JWTPayloadModel } from "../../adapters/jwt/models/jwt.models";
 import { ResultObject, ResultStatus } from "../../types/common-types";
 import { securityDevicesRepository } from "./securityDevices.repository";
@@ -37,9 +36,9 @@ export const securityDevicesService = {
     return isDeleted;
   },
   async deleteSecurityDevice(deviceId: string, user_id: string): Promise<ResultObject<boolean | null>> {
-    const device = await securityDevicesRepository.findDevice(deviceId);
+    const deviceOwnerId = await securityDevicesRepository.findDevice(deviceId);
 
-    const isOwner = device?.user_id === user_id;
+    const isOwner = deviceOwnerId === user_id;
 
     if (!isOwner) {
       return {

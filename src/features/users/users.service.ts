@@ -23,11 +23,22 @@ export const usersService = {
         expirationDate: getExpirationDate(30),
         isConfirmed: false,
       },
+      recoveryConfirmation: {
+        recoveryCode: "",
+        expirationDate: "",
+      },
     };
 
     const userId = await usersRepository.create(newUser);
 
     return userId;
+  },
+  async updateUserPass(user_id: string, newPass: string): Promise<boolean> {
+    const passwordhash = await bcryptService.generateHash(newPass);
+
+    const isUpdated = await usersRepository.updatePass(user_id, passwordhash);
+
+    return isUpdated;
   },
   async deleteUser(id: string): Promise<boolean> {
     const isDeleted = await usersRepository.deleteUser(id);

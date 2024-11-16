@@ -10,6 +10,7 @@ import { usersManager } from "../helpers/usersManager";
 import { LoginInputModel } from "../../src/features/auth/models/auth.models";
 import { authManager } from "../helpers/authManager";
 import { commentQueryRepository } from "../../src/features/comments/comments.query-repository";
+import { CommentModel } from "../../src/db/models/Comment.model";
 
 describe("/posts", () => {
   let mongoServer: MongoMemoryServer;
@@ -23,7 +24,7 @@ describe("/posts", () => {
 
     const url = mongoServer.getUri();
 
-    await db.run(url);
+    await db.connect(url);
     await db.drop();
 
     const createUserResponse = await usersManager.createUser(newUser);
@@ -49,13 +50,13 @@ describe("/posts", () => {
   401;
   beforeEach(async () => {
     jest.clearAllMocks();
-    await db.dropCollection("comments");
+    await CommentModel.deleteMany({});
   });
 
   afterAll(async () => {
     await db.drop();
     await mongoServer.stop();
-    await db.stop();
+    await db.disconnect();
   });
 
   it("should create and shouldn't get empty array", async () => {

@@ -1,39 +1,16 @@
-import { MongoMemoryServer } from "mongodb-memory-server";
-import { db } from "../../src/db/db";
-import { jwtRepository } from "../../src/adapters/jwt/jwt.repository";
 import { jwtService } from "../../src/adapters/jwt/jwt.service";
 import jwt from "jsonwebtoken";
 
-//! db not used should
 describe("/test", () => {
-  let mongoServer: MongoMemoryServer;
-  beforeAll(async () => {
-    // запуск виртуального сервера с временной бд
-    mongoServer = await MongoMemoryServer.create();
+  // it("should add token to black list", async () => {
+  //   const token = "token";
 
-    const url = mongoServer.getUri();
+  //   await jwtRepository.addToBlackList(token);
 
-    await db.run(url);
-  });
+  //   const tokenFromBlackList = await jwtRepository.findInBlackList(token);
 
-  afterAll(async () => {
-    await mongoServer.stop();
-    await db.stop();
-  });
-
-  afterEach(async () => {
-    await db.drop();
-  });
-
-  it("should add token to black list", async () => {
-    const token = "token";
-
-    await jwtRepository.addToBlackList(token);
-
-    const tokenFromBlackList = await jwtRepository.findInBlackList(token);
-
-    expect(token).toEqual(tokenFromBlackList!.token);
-  });
+  //   expect(token).toEqual(tokenFromBlackList!.token);
+  // });
 
   it("should generate tokens", async () => {
     const payload = { user_id: "1", deviceId: "12" };

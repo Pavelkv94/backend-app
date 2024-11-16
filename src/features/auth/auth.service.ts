@@ -46,7 +46,7 @@ export const authService = {
     return { user_id: payload.user_id, deviceId: payload.deviceId };
   },
   async checkUserCredentials(payload: LoginInputModel): Promise<string | null> {
-    const user = await usersRepository.findUserByLoginOrEmail(payload.loginOrEmail);
+    const user = await usersRepository.findUserPassByLoginOrEmail(payload.loginOrEmail);
 
     if (!user) {
       return null;
@@ -56,7 +56,7 @@ export const authService = {
     if (!isPasswordValid) {
       return null;
     }
-    return user._id.toString();
+    return user.id;
   },
   async setConfirmEmailStatus(user_id: string, status: boolean): Promise<boolean> {
     const isChanged = await usersRepository.setConfirmEmailStatus(user_id, true);
@@ -73,6 +73,17 @@ export const authService = {
       throw new Error("Update User confirmation Failed");
     }
     return newConfirmationCode;
+  },
+  async setNewRecoveryCode(user_id: string): Promise<string> {
+    const newRecoveryCode = randomUUID();
+    const newExpirationDate = getExpirationDate(30);
+
+    const isUpdatedUserRecovery = await usersRepository.setRecoveryCode(user_id, newRecoveryCode, newExpirationDate);
+
+    if (!isUpdatedUserRecovery) {
+      throw new Error("Update User recovery Failed");
+    }
+    return newRecoveryCode;
   },
   async checkSessionVersion(payload: JWTPayloadModel) {
     const isSessionExists = await securityDevicesRepository.checkSession(payload);

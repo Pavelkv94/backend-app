@@ -1,4 +1,5 @@
 import { SortDirection } from "mongodb";
+import { HydratedDocument } from "mongoose";
 
 export type PostEntityModel = {
   title: string;
@@ -45,3 +46,5 @@ export type PostValidQueryModel = {
   pageNumber: number;
   pageSize: number;
 };
+
+export type PostDocument = HydratedDocument<PostEntityModel>;

@@ -15,12 +15,12 @@ describe("/test", () => {
 
     const url = mongoServer.getUri();
 
-    await db.run(url);
+    await db.connect(url);
   });
 
   afterAll(async () => {
     await mongoServer.stop();
-    await db.stop();
+    await db.disconnect();
   });
 
   afterEach(async () => {
@@ -148,7 +148,7 @@ describe("/test", () => {
 
     const user = await usersQueryRepository.findUserByEmail(newUser.email);
 
-    const emailConfirmation = await usersQueryRepository.findEmailConfirmationByUser(user!._id.toString());
+    const emailConfirmation = await usersQueryRepository.findEmailConfirmationByUser(user!.id);
 
     const confirmResponse = await authManager.confirmation(emailConfirmation!.confirmationCode);
 
@@ -164,12 +164,12 @@ describe("/test", () => {
 
     const user = await usersQueryRepository.findUserByEmail(newUser.email);
 
-    const emailConfirmation = await usersQueryRepository.findEmailConfirmationByUser(user!._id.toString());
+    const emailConfirmation = await usersQueryRepository.findEmailConfirmationByUser(user!.id);
 
     const resendResponse = await authManager.resendEmail(user!.email);
     expect(resendResponse.status).toBe(204);
 
-    const newEmailConfirmation = await usersQueryRepository.findEmailConfirmationByUser(user!._id.toString());
+    const newEmailConfirmation = await usersQueryRepository.findEmailConfirmationByUser(user!.id);
 
     const confirmResponse = await authManager.confirmation(newEmailConfirmation!.confirmationCode);
     expect(confirmResponse.status).toBe(204);
@@ -196,11 +196,13 @@ describe("/test", () => {
 
     const user = await usersQueryRepository.findUserByEmail(newUser.email);
 
-    const emailConfirmation = await usersQueryRepository.findEmailConfirmationByUser(user!._id.toString());
+    const emailConfirmation = await usersQueryRepository.findEmailConfirmationByUser(user!.id);
 
     const confirmResponse = await authManager.confirmation(emailConfirmation!.confirmationCode);
 
     expect(confirmResponse.status).toBe(400);
+    console.log(confirmResponse.body.errorsMessages);
+    
     expect(confirmResponse.body.errorsMessages.length).toBe(1);
   });
 
@@ -264,5 +266,28 @@ describe("/test", () => {
     }
     const loginUserResponse2 = await authManager.loginUser(loginData);
     expect(loginUserResponse2.status).toBe(429);
+  });
+
+  it("should send recovery token", async () => {
+    const createUserResponse = await usersManager.createUser(newUser);
+    expect(createUserResponse.status).toBe(201);
+
+    const fakeSendMail = () => Promise.resolve(true);
+
+    nodemailerService.sendLetter = jest.fn().mockImplementation(fakeSendMail);
+
+    const passwordRecoveryResponse = await usersManager.passwordRecovery(newUser.email);
+    expect(passwordRecoveryResponse.status).toBe(204);
+  });
+  it("shouldn't send recovery token(400)", async () => {
+    const createUserResponse = await usersManager.createUser(newUser);
+    expect(createUserResponse.status).toBe(201);
+
+    const fakeSendMail = () => Promise.resolve(true);
+
+    nodemailerService.sendLetter = jest.fn().mockImplementation(fakeSendMail);
+
+    const passwordRecoveryResponse = await usersManager.passwordRecovery("123");
+    expect(passwordRecoveryResponse.status).toBe(400);
   });
 });

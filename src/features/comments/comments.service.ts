@@ -1,6 +1,5 @@
 import { ResultObject, ResultStatus } from "../../types/common-types";
 import { MeViewModel } from "../auth/models/auth.models";
-import { UserViewModel } from "../users/models/users.models";
 import { commentsRepository } from "./comments.repository";
 import { CommentEntityModel, CommentInputModel } from "./models/comments.models";
 

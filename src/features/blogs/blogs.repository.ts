@@ -1,32 +1,27 @@
-import { ObjectId, WithId } from "mongodb";
-
-import { BlogEntityModel, BlogInputModel, BlogValidQueryModel, BlogViewModel } from "./models/blogs.models";
-import { db } from "../../db/db";
+import { BlogEntityModel, BlogInputModel, BlogViewModel } from "./models/blogs.models";
+import { BlogModel } from "../../db/models/Blog.model";
+import { BlogViewDto } from "./dto";
 
 export const blogsRepository = {
   async findBlog(id: string): Promise<BlogViewModel | null> {
-    const objectId = new ObjectId(id);
-    const blogFromDb = await db.getCollections().blogsCollection.findOne({ _id: objectId });
+    const blogFromDb = await BlogModel.findOne({ _id: id });
 
     if (!blogFromDb) {
       return null;
-    } else {
-      const blog = { ...blogFromDb, id: blogFromDb._id.toString() };
-      const { _id, ...rest } = blog;
-      return rest;
     }
+    return BlogViewDto.mapToView(blogFromDb);
   },
 
   async createBlog(payload: BlogEntityModel): Promise<string> {
-    const result = await db.getCollections().blogsCollection.insertOne(payload);
-    return result.insertedId.toString();
+    const blog = new BlogModel(payload);
+    const result = await blog.save();
+
+    return result.id;
   },
 
   async updateBlog(id: string, payload: BlogInputModel): Promise<boolean> {
-    const objectId = new ObjectId(id);
-
-    const result = await db.getCollections().blogsCollection.updateOne(
-      { _id: objectId },
+    const result = await BlogModel.updateOne(
+      { _id: id },
       {
         $set: {
           name: payload.name,
@@ -39,8 +34,7 @@ export const blogsRepository = {
   },
 
   async deleteBlog(id: string): Promise<boolean> {
-    const objectId = new ObjectId(id);
-    const result = await db.getCollections().blogsCollection.deleteOne({ _id: objectId });
+    const result = await BlogModel.deleteOne({ _id: id });
     return result.deletedCount > 0;
   },
 };

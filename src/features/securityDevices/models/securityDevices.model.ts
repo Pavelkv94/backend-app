@@ -1,3 +1,5 @@
+import { HydratedDocument } from "mongoose";
+
 export type DeviceEntityModel = {
   title: string;
   expirationDate: number;
@@ -17,3 +19,5 @@ export type DeviceViewModel = {
 export type URIParamsDeviceModel = {
   id: string;
 };
+
+export type DeviceDocument = HydratedDocument<DeviceEntityModel>;

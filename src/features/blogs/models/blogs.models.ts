@@ -1,4 +1,5 @@
 import { SortDirection } from "mongodb";
+import { HydratedDocument } from "mongoose";
 
 export type BlogEntityModel = {
   name: string;
@@ -37,3 +38,5 @@ export type BlogValidQueryModel = {
   pageNumber: number;
   pageSize: number;
 };
+
+export type BlogDocument = HydratedDocument<BlogEntityModel>;

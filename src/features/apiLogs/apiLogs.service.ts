@@ -1,9 +1,9 @@
 import { apiLogsRepository } from "./apiLogs.repository";
-import { ApiLogModel } from "./models/apiLog.model";
+import { ApiLogInputModel } from "./models/apiLog.model";
 import { RateLimitOptionsModel } from "./models/rateLimitOptions.model";
 
 export const apiLogsService = {
-  async saveLog(log: ApiLogModel): Promise<string> {
+  async saveLog(log: ApiLogInputModel): Promise<string> {
     const logId = await apiLogsRepository.save(log);
     return logId;
   },

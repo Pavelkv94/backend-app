@@ -5,7 +5,7 @@ const app = initApp();
 
 const url = "mongodb://0.0.0.0:27017";
 
-db.run(url);
+db.connect(url);
 
 const PORT = process.env.PORT || 3003;
 app.listen(PORT, () => {

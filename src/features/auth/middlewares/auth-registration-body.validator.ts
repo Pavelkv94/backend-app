@@ -16,6 +16,7 @@ const login = body("login")
     }
     return true;
   });
+  
 const password = body("password")
   .notEmpty()
   .withMessage("password is required")

@@ -1,22 +1,15 @@
-import { db } from "../../db/db";
-import { DeviceEntityModel, DeviceViewModel } from "./models/securityDevices.model";
+import { SecurityDeviceModel } from "../../db/models/SecurityDevice.model";
+import { DeviceViewDto } from "./dto";
+import { DeviceViewModel } from "./models/securityDevices.model";
 
 export const securityDevicesQueryRepository = {
-  async findDevice(device_id: string) {
-    const deviceFromDb = await db.getCollections().devicesCollection.findOne({ deviceId: device_id });
+  async findDevice(device_id: string): Promise<boolean> {
+    const deviceFromDb = await SecurityDeviceModel.findOne({ deviceId: device_id });
     return !!deviceFromDb;
   },
   async getSecurityDevices(user_id: string): Promise<DeviceViewModel[]> {
-    const result = await db.getCollections().devicesCollection.find({ user_id }).toArray();
+    const devices = await SecurityDeviceModel.find({ user_id });
 
-    return this.mapSecurityDevicesToOutput(result);
-  },
-  mapSecurityDevicesToOutput(devices: DeviceEntityModel[]): DeviceViewModel[] {
-    return devices.map((device) => ({
-      title: device.title,
-      ip: device.ip,
-      deviceId: device.deviceId,
-      lastActiveDate: device.lastActiveDate,
-    }));
+    return DeviceViewDto.mapToViewArray(devices);
   },
 };

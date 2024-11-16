@@ -1,4 +1,5 @@
 import { SortDirection } from "mongodb";
+import { HydratedDocument } from "mongoose";
 
 export type CommentInputModel = {
   content: string;
@@ -35,3 +36,5 @@ export type CommentValidQueryModel = {
 export type URIParamsCommentModel = {
   id: string;
 };
+
+export type CommentDocument = HydratedDocument<CommentEntityModel>;

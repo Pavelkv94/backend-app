@@ -1,7 +1,7 @@
-import { ObjectId, WithId } from "mongodb";
-import { BlogEntityModel, BlogValidQueryModel, BlogViewModel } from "./models/blogs.models";
-import { db } from "../../db/db";
+import { BlogValidQueryModel, BlogViewModel } from "./models/blogs.models";
 import { OutputDataWithPagination } from "../../types/common-types";
+import { BlogModel } from "../../db/models/Blog.model";
+import { BlogViewDto } from "./dto";
 
 export const blogsQueryRepository = {
   async findAllBlogs(query: BlogValidQueryModel): Promise<OutputDataWithPagination<BlogViewModel>> {
@@ -13,15 +13,12 @@ export const blogsQueryRepository = {
       filter.name = { $regex: searchNameTerm, $options: "i" };
     }
 
-    const blogsFromDb = await db
-      .getCollections()
-      .blogsCollection.find(filter)
+    const blogsFromDb = await BlogModel.find(filter)
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
-      .sort({ [sortBy]: sortDirection })
-      .toArray();
+      .sort({ [sortBy]: sortDirection });
 
-    const blogsView = this.mapBlogsToOutput(blogsFromDb);
+    const blogsView = BlogViewDto.mapToViewArray(blogsFromDb);
 
     const blogsCount = await this.getBlogsCount(searchNameTerm || null);
 
@@ -41,24 +38,15 @@ export const blogsQueryRepository = {
       filter.name = { $regex: searchNameTerm, $options: "i" };
     }
 
-    return await db.getCollections().blogsCollection.countDocuments(filter);
+    return await BlogModel.countDocuments(filter);
   },
 
   async findBlog(id: string): Promise<BlogViewModel | null> {
-    const objectId = new ObjectId(id);
-    
-    const blogFromDb = await db.getCollections().blogsCollection.findOne({ _id: objectId });
+    const blogFromDb = await BlogModel.findOne({ _id: id });
 
     if (!blogFromDb) {
       return null;
-    } else {
-      const blog = { ...blogFromDb, id: blogFromDb._id.toString() };
-      const { _id, ...rest } = blog;
-      return rest;
     }
-  },
-
-  mapBlogsToOutput(blogs: WithId<BlogEntityModel>[]): BlogViewModel[] {
-    return blogs.map((blog) => ({ ...blog, id: blog._id.toString() })).map(({ _id, ...rest }) => rest);
+    return BlogViewDto.mapToView(blogFromDb);
   },
 };

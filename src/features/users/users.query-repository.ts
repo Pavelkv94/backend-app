@@ -1,8 +1,8 @@
-import { ObjectId, WithId } from "mongodb";
-import { db } from "../../db/db";
-import { EmailConfirmationEntityType, UserEntityModelWithoutPassword, UsersValidInputQueryModel, UserViewModel } from "./models/users.models";
+import { EmailConfirmationEntityType, ExpandedUserViewModel, UsersValidInputQueryModel, UserViewModel } from "./models/users.models";
 import { OutputDataWithPagination } from "../../types/common-types";
 import { MeViewModel } from "../auth/models/auth.models";
+import { UserModel } from "../../db/models/User.model";
+import { MeDto, UserViewDto } from "./dto";
 
 export const usersQueryRepository = {
   async findAllUsers(query: UsersValidInputQueryModel): Promise<OutputDataWithPagination<UserViewModel>> {
@@ -23,15 +23,12 @@ export const usersQueryRepository = {
       filter = {};
     }
 
-    const usersFromDb = await db
-      .getCollections()
-      .usersCollection.find(filter, { projection: { password: 0, emailConfirmation: 0 } })
+    const usersFromDb = await UserModel.find(filter)
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
-      .sort({ [sortBy]: sortDirection })
-      .toArray();
+      .sort({ [sortBy]: sortDirection });
 
-    const usersView = this.mapUsersToOutput(usersFromDb);
+    const usersView = UserViewDto.mapToViewArray(usersFromDb);
 
     const usersCount = await this.getUsersCount(searchLoginTerm, searchEmailTerm);
 
@@ -59,60 +56,62 @@ export const usersQueryRepository = {
       filter = {};
     }
 
-    return db.getCollections().usersCollection.countDocuments(filter);
+    return UserModel.countDocuments(filter);
   },
   async findUser(id: string): Promise<UserViewModel | null> {
-    const objectId = new ObjectId(id);
-    const userFromDb = await db.getCollections().usersCollection.findOne({ _id: objectId }, { projection: { password: 0, emailConfirmation: 0 } });
+    const userFromDb = await UserModel.findOne({ _id: id });
 
     if (!userFromDb) {
       return null;
-    } else {
-      const user = { ...userFromDb, id: userFromDb._id.toString() };
-      const { _id, ...rest } = user;
-      return rest;
     }
+
+    const { emailConfirmation, recoveryConfirmation, ...rest } = UserViewDto.mapToView(userFromDb);
+
+    return rest;
   },
-  async findUserByEmail(email: string): Promise<WithId<UserEntityModelWithoutPassword> | null> {
-    const userFromDb = await db.getCollections().usersCollection.findOne({ email: email }, { projection: { password: 0 } });
+  async findUserByEmail(email: string): Promise<ExpandedUserViewModel | null> {
+    const userFromDb = await UserModel.findOne({ email: email });
 
     if (!userFromDb) {
       return null;
-    } else {
-      return userFromDb;
     }
+
+    return UserViewDto.mapToView(userFromDb);
   },
   async findEmailConfirmationByUser(id: string): Promise<EmailConfirmationEntityType | null> {
-    const objectId = new ObjectId(id);
-    const userFromDb = await db.getCollections().usersCollection.findOne({ _id: objectId });
+    const userFromDb = await UserModel.findOne({ _id: id });
 
     if (!userFromDb) {
       return null;
-    } else {
-      return userFromDb.emailConfirmation;
     }
+    const { emailConfirmation } = UserViewDto.mapToView(userFromDb);
+
+    return emailConfirmation;
   },
-  async findUserByEmailConfirmation(code: string): Promise<WithId<UserEntityModelWithoutPassword> | null> {
-    const userFromDb = await db.getCollections().usersCollection.findOne({ "emailConfirmation.confirmationCode": code }, { projection: { password: 0 } });
+  async findUserByEmailConfirmation(code: string): Promise<ExpandedUserViewModel | null> {
+    const userFromDb = await UserModel.findOne({ "emailConfirmation.confirmationCode": code });
 
     if (!userFromDb) {
       return null;
-    } else {
-      return userFromDb;
     }
+    return UserViewDto.mapToView(userFromDb);
+  },
+  async findUserByRecoveryCode(code: string): Promise<ExpandedUserViewModel | null> {
+    const userFromDb = await UserModel.findOne({ "recoveryConfirmation.recoveryCode": code });
+
+    if (!userFromDb) {
+      return null;
+    }
+    return UserViewDto.mapToView(userFromDb);
   },
   async findMe(user_id: string): Promise<MeViewModel | null> {
-    const objectId = new ObjectId(user_id);
-    const userFromDb = await db.getCollections().usersCollection.findOne({ _id: objectId }, { projection: { password: 0, createdAt: 0, _id: 0, emailConfirmation: 0 } });
+    const userFromDb = await UserModel.findOne({ _id: user_id });
 
     if (!userFromDb) {
       return null;
-    } else {
-      const user = { ...userFromDb, userId: user_id };
-      return user;
     }
-  },
-  mapUsersToOutput(users: WithId<UserEntityModelWithoutPassword>[]): UserViewModel[] {
-    return users.map((user) => ({ ...user, id: user._id.toString() })).map(({ _id, ...rest }) => rest);
+    const meDto = new MeDto(userFromDb);
+
+    return meDto;
   },
 };

@@ -1,62 +1,31 @@
-import { MongoClient } from "mongodb";
-import { BlogEntityModel } from "../features/blogs/models/blogs.models";
-import { PostEntityModel } from "../features/posts/models/posts.models";
-import { UserEntityModel } from "../features/users/models/users.models";
-import { CommentEntityModel } from "../features/comments/models/comments.models";
-import { TokenEntityModel } from "../adapters/jwt/models/jwt.models";
-import { ApiLogEntityModel } from "../features/apiLogs/models/apiLog.model";
-import { DeviceEntityModel } from "../features/securityDevices/models/securityDevices.model";
+import mongoose from "mongoose";
 
 export const db = {
-  client: {} as MongoClient,
-  getDbName() {
-    return this.client.db(process.env.DB_NAME);
-  },
-  async run(url: string) {
+  async connect(url: string) {
     try {
-      this.client = new MongoClient(url);
-      await this.client.connect();
-      await this.getDbName().command({ ping: 1 });
-      console.log("connected to MongoDB");
+      await mongoose.connect(url, {
+        dbName: process.env.DB_NAME,
+      });
+      console.log("Connected to MongoDB with Mongoose");
     } catch (error) {
-      await this.client.close();
-      console.log(`Mongo connect Error: ${error}`);
+      console.error(`Mongoose connect Error: ${error}`);
     }
   },
-  async stop() {
-    await this.client.close();
+
+  async disconnect() {
+    await mongoose.connection.close()
     console.log("Mongo connection closed");
   },
   async drop() {
     try {
-      const collections = await this.getDbName().listCollections().toArray();
-
-      for (const collection of collections) {
-        const collectionName = collection.name;
-        await this.getDbName().collection(collectionName).deleteMany({});
+      const collections = mongoose.connection.collections;
+      for (const key in collections) {
+        await collections[key].deleteMany({});
       }
+      console.log("Dropped all collections");
     } catch (error) {
-      console.log("Mongo drop db Error: " + error);
-      await this.stop();
+      console.error("Mongoose drop db Error: " + error);
+      await this.disconnect();
     }
-  },
-  async dropCollection(collectionName: string) {
-    try {
-      await this.getDbName().collection(collectionName).deleteMany({});
-    } catch (error) {
-      console.log("Mongo drop collection Error: " + error);
-      await this.stop();
-    }
-  },
-  getCollections() {
-    return {
-      blogsCollection: this.getDbName().collection<BlogEntityModel>("blogs"),
-      postsCollection: this.getDbName().collection<PostEntityModel>("posts"),
-      usersCollection: this.getDbName().collection<UserEntityModel>("users"),
-      commentsCollection: this.getDbName().collection<CommentEntityModel>("comments"),
-      tokensBlackListCollection: this.getDbName().collection<TokenEntityModel>("blackTokens"),
-      apiLogsCollection: this.getDbName().collection<ApiLogEntityModel>("apiLogs"),
-      devicesCollection: this.getDbName().collection<DeviceEntityModel>("devices"),
-    };
   },
 };

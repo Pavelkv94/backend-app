@@ -8,6 +8,8 @@ import { authEmailResendBodyValidators } from "./middlewares/auth-emailResend-bo
 import { authRefreshTokenMiddleware } from "./middlewares/auth-refreshToken.middleware";
 import { authLoginMiddleware } from "./middlewares/auth-login.middleware";
 import { rateLimiterMiddleware } from "./middlewares/auth-rateLimiter.middleware";
+import { authEmailValidators } from "./middlewares/auth-email.validator";
+import { authRecoveryBodyValidators } from "./middlewares/auth-recovery.validator";
 
 export const authRouter = Router();
 
@@ -18,3 +20,5 @@ authRouter.post("/registration", authRegistrationBodyValidators, rateLimiterMidd
 authRouter.post("/registration-confirmation", rateLimiterMiddleware, authConfirmBodyValidators, authController.registrationConfirmation);
 authRouter.post("/registration-email-resending", authEmailResendBodyValidators, rateLimiterMiddleware, authController.registrationEmailResending);
 authRouter.post("/logout", authRefreshTokenMiddleware, authController.logout);
+authRouter.post("/password-recovery", rateLimiterMiddleware, authEmailValidators, authController.passwordRecovery);
+authRouter.post("/new-password", rateLimiterMiddleware, authRecoveryBodyValidators, authController.newPassword);

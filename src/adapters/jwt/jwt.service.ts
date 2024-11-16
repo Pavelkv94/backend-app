@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import { SETTINGS } from "../../settings";
 import { JwtTokensType } from "../../features/auth/models/auth.models";
-import { jwtRepository } from "./jwt.repository";
 import { JWTPayloadModel } from "./models/jwt.models";
 
 type JwtPayload = {
@@ -41,10 +40,5 @@ export const jwtService = {
       console.error("Token verify some error");
       return null;
     }
-  },
-  async findTokenInBlackList(token: string): Promise<boolean> {
-    const invalidTokenId = await jwtRepository.findInBlackList(token);
-
-    return !!invalidTokenId;
   },
 };

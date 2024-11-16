@@ -14,12 +14,12 @@ describe("/test", () => {
 
     const url = mongoServer.getUri();
 
-    await db.run(url);
+    await db.connect(url);
   });
 
   afterAll(async () => {
     await mongoServer.stop();
-    await db.stop();
+    await db.disconnect();
   });
 
   afterEach(async () => {

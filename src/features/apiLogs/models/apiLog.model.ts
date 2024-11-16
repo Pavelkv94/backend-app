@@ -1,4 +1,4 @@
-export type ApiLogModel = {
+export type ApiLogInputModel = {
   ip: string;
   URL: string;
   date: Date;

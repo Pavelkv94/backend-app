@@ -1,9 +1,14 @@
 import { SortDirection } from "mongodb";
+import { HydratedDocument } from "mongoose";
 
 export type EmailConfirmationEntityType = {
   confirmationCode: string;
   expirationDate: string;
   isConfirmed: boolean;
+};
+export type RecoveryPasswordEntityType = {
+  recoveryCode: string;
+  expirationDate: string;
 };
 export type UserEntityModel = {
   login: string;
@@ -11,15 +16,24 @@ export type UserEntityModel = {
   password: string;
   createdAt: string;
   emailConfirmation: EmailConfirmationEntityType;
+  recoveryConfirmation: RecoveryPasswordEntityType;
 };
 
-export type UserEntityModelWithoutPassword = Omit<UserEntityModel, "password">;
+export type UserPasswordModel = {
+  password: string;
+  id: string;
+};
 
 export type UserViewModel = {
   id: string;
   login: string;
   email: string;
   createdAt: string;
+};
+
+export type ExpandedUserViewModel = UserViewModel & {
+  emailConfirmation: EmailConfirmationEntityType;
+  recoveryConfirmation: RecoveryPasswordEntityType;
 };
 
 export type UserInputModel = {
@@ -49,3 +63,5 @@ export type UsersValidInputQueryModel = {
   searchLoginTerm: string;
   searchEmailTerm: string;
 };
+
+export type UserDocument = HydratedDocument<UserEntityModel>;

@@ -1,6 +1,7 @@
 import { body } from "express-validator";
 import { db } from "../../../db/db";
 import { inputCheckErrorsMiddleware } from "../../../global-middlewares/inputCheckErrors.middleware";
+import { UserModel } from "../../../db/models/User.model";
 
 type UniqueField = {
   login?: string;
@@ -8,7 +9,7 @@ type UniqueField = {
 };
 
 export const isUserUniqueField = async (field: UniqueField) => {
-  const existingUser = await db.getDbName().collection("users").findOne(field);
+  const existingUser = await UserModel.findOne(field);
   return !existingUser;
 };
 

@@ -39,4 +39,10 @@ export const usersManager = {
 
     return response;
   },
+
+  async passwordRecovery(email: string) {
+    const response = await req.post(`${SETTINGS.PATH.AUTH}/password-recovery`).send({ email });
+
+    return response;
+  },
 };

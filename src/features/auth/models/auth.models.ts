@@ -33,3 +33,8 @@ export type JwtTokensType = {
 export type AdditionalQueryInputModel = {
   user: { id: string; deviceId: string };
 };
+
+export type RecoveryPasswordInputModel = {
+  newPassword: string;
+  recoveryCode: string;
+};

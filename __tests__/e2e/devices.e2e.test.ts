@@ -15,7 +15,7 @@ describe("/security/devices", () => {
 
     const url = mongoServer.getUri();
 
-    await db.run(url);
+    await db.connect(url);
   });
 
   let loginResponses: any = [];
@@ -37,7 +37,7 @@ describe("/security/devices", () => {
   });
   afterAll(async () => {
     await mongoServer.stop();
-    await db.stop();
+    await db.disconnect();
   });
 
   afterEach(async () => {
@@ -55,6 +55,7 @@ describe("/security/devices", () => {
     const refreshToken = cookies[0].split(" ")[0].split("=")[1];
 
     const devicesResponse = await devicesManager.getDevicesWithAuth(refreshToken);
+    
     expect(devicesResponse.status).toBe(200);
     expect(devicesResponse.body.length).toBe(4);
   });

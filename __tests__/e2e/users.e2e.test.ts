@@ -13,7 +13,7 @@ describe("/users", () => {
 
     const url = mongoServer.getUri();
 
-    await db.run(url);
+    await db.connect(url);
   });
 
   beforeEach(async () => {
@@ -22,7 +22,7 @@ describe("/users", () => {
 
   afterAll(async () => {
     await mongoServer.stop();
-    await db.stop();
+    await db.disconnect();
   });
 
   afterEach(async () => {
@@ -49,7 +49,10 @@ describe("/users", () => {
     const createUserResponse = await usersManager.createUser(newUser);
     expect(createUserResponse.status).toBe(201);
 
+    expect(Object.keys(createUserResponse.body).length).toBe(4);
+
     const getUsersResponse = await usersManager.getUsersWithAuth();
+
     expect(getUsersResponse.body.items.length).toBe(1);
     expect(getUsersResponse.body.items[0].login).toBe(newUser.login);
     expect(getUsersResponse.body.items[0].email).toBe(newUser.email);

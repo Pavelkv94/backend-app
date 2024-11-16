@@ -6,6 +6,7 @@ import { postsManager } from "../helpers/postsManager";
 import { BlogInputModel } from "../../src/features/blogs/models/blogs.models";
 import { blogsQueryRepository } from "../../src/features/blogs/blogs.query-repository";
 import { blogsService } from "../../src/features/blogs/blogs.service";
+import { BlogModel } from "../../src/db/models/Blog.model";
 
 describe("/blogs", () => {
   let mongoServer: MongoMemoryServer;
@@ -15,18 +16,18 @@ describe("/blogs", () => {
 
     const url = mongoServer.getUri();
 
-    await db.run(url);
+    await db.connect(url);
     await db.drop();
   });
 
   beforeEach(async () => {
     jest.clearAllMocks();
-    await db.dropCollection("blogs");
+    await BlogModel.deleteMany({});
   });
 
   afterAll(async () => {
     await mongoServer.stop();
-    await db.stop();
+    await db.disconnect();
   });
 
   it("should create and shouldn't get empty array", async () => {

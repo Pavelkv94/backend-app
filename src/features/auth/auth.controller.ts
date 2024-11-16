@@ -1,5 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import { ConfirmationInputModel, EmailResendInputModel, LoginInputModel, LoginOutputModel, AdditionalQueryInputModel, MeViewModel } from "./models/auth.models";
+import {
+  ConfirmationInputModel,
+  EmailResendInputModel,
+  LoginInputModel,
+  LoginOutputModel,
+  AdditionalQueryInputModel,
+  MeViewModel,
+  RecoveryPasswordInputModel,
+} from "./models/auth.models";
 import { authService } from "./auth.service";
 import { usersQueryRepository } from "../users/users.query-repository";
 import { ApiError } from "../../exeptions/api-error";
@@ -7,7 +15,6 @@ import { nodemailerService } from "../../adapters/mail.service";
 import { UserInputModel } from "../users/models/users.models";
 import { usersService } from "../users/users.service";
 import { HTTP_STATUSES } from "../../types/common-types";
-import { jwtService } from "../../adapters/jwt/jwt.service";
 import { securityDevicesService } from "../securityDevices/securityDevices.service";
 
 export const authController = {
@@ -49,7 +56,7 @@ export const authController = {
         return next(ApiError.NotFound("The requested user was not found"));
       }
       if (userId) {
-        nodemailerService.sendLetter(req.body.email, emailConfirmation.confirmationCode).catch((e) => console.log(e)); //долгий запрос с await
+        nodemailerService.sendLetter(req.body.email, emailConfirmation.confirmationCode, "activationAcc").catch((e) => console.log(e)); //долгий запрос с await
       }
 
       res.sendStatus(HTTP_STATUSES.NO_CONTENT);
@@ -65,7 +72,7 @@ export const authController = {
         return next(ApiError.NotFound("The requested user was not found or code invalid"));
       }
 
-      await authService.setConfirmEmailStatus(user._id.toString(), true);
+      await authService.setConfirmEmailStatus(user.id, true);
       res.sendStatus(HTTP_STATUSES.NO_CONTENT);
     } catch (error) {
       return next(ApiError.UnexpectedError(error as Error));
@@ -78,9 +85,9 @@ export const authController = {
         return next(ApiError.NotFound("The requested user was not found or email invalid"));
       }
 
-      const newConfirmationCode = await authService.setNewConfirmCode(user._id.toString());
+      const newConfirmationCode = await authService.setNewConfirmCode(user.id);
 
-      nodemailerService.sendLetter(req.body.email, newConfirmationCode).catch((e) => console.log(e)); //долгий запрос с await
+      nodemailerService.sendLetter(req.body.email, newConfirmationCode, "activationAcc").catch((e) => console.log(e)); //долгий запрос с await
 
       res.sendStatus(HTTP_STATUSES.NO_CONTENT);
     } catch (error) {
@@ -91,6 +98,42 @@ export const authController = {
     try {
       await securityDevicesService.deleteSecurityDevice(req.user.deviceId, req.user.id);
 
+      res.sendStatus(HTTP_STATUSES.NO_CONTENT);
+    } catch (error) {
+      return next(ApiError.UnexpectedError(error as Error));
+    }
+  },
+  async passwordRecovery(req: Request<{}, {}, EmailResendInputModel>, res: Response, next: NextFunction) {
+    try {
+      const user = await usersQueryRepository.findUserByEmail(req.body.email);
+
+      if (!user) {
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT);
+        return;
+      }
+
+      const newConfirmationCode = await authService.setNewRecoveryCode(user.id);
+
+      nodemailerService.sendLetter(req.body.email, newConfirmationCode, "recoveryPass").catch((e) => console.log(e)); //долгий запрос с await
+
+      res.sendStatus(HTTP_STATUSES.NO_CONTENT);
+    } catch (error) {
+      return next(ApiError.UnexpectedError(error as Error));
+    }
+  },
+  async newPassword(req: Request<{}, {}, RecoveryPasswordInputModel>, res: Response<LoginOutputModel>, next: NextFunction) {
+    try {
+      const user = await usersQueryRepository.findUserByRecoveryCode(req.body.recoveryCode);
+
+      if (!user) {
+        return next(ApiError.NotFound("The requested user was not found or code invalid"));
+      }
+
+      const isUpdated = await usersService.updateUserPass(user.id, req.body.newPassword);
+
+      if (!isUpdated) {
+        throw new Error("Update User password Failed");
+      }
       res.sendStatus(HTTP_STATUSES.NO_CONTENT);
     } catch (error) {
       return next(ApiError.UnexpectedError(error as Error));

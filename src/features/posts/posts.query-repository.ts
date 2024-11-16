@@ -1,8 +1,7 @@
-import { InsertOneResult, ObjectId, WithId } from "mongodb";
-import { db } from "../../db/db";
-import { PostEntityModel, PostInputModel, PostValidQueryModel, PostViewModel } from "./models/posts.models";
-import { blogsRepository } from "../blogs/blogs.repository";
+import { PostValidQueryModel, PostViewModel } from "./models/posts.models";
 import { OutputDataWithPagination } from "../../types/common-types";
+import { PostModel } from "../../db/models/Post.model";
+import { PostViewDto } from "./dto";
 
 export const postsQueryRepository = {
   async findAllPosts(query: PostValidQueryModel, blog_id?: string): Promise<OutputDataWithPagination<PostViewModel>> {
@@ -10,15 +9,12 @@ export const postsQueryRepository = {
 
     const filter: any = blog_id ? { blogId: blog_id } : {};
 
-    const postsFromDb = await db
-      .getCollections()
-      .postsCollection.find(filter)
+    const postsFromDb = await PostModel.find(filter)
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
-      .sort({ [sortBy]: sortDirection })
-      .toArray();
+      .sort({ [sortBy]: sortDirection });
 
-    const postsView = this.mapPostsToOutput(postsFromDb);
+    const postsView = PostViewDto.mapToViewArray(postsFromDb);
 
     const postsCount = await this.getPostsCount(blog_id);
 
@@ -32,25 +28,16 @@ export const postsQueryRepository = {
   },
 
   async findPost(id: string): Promise<PostViewModel | null> {
-    const objectId = new ObjectId(id);
-
-    const postFromDb = await db.getCollections().postsCollection.findOne({ _id: objectId });
+    const postFromDb = await PostModel.findOne({ _id: id });
 
     if (!postFromDb) {
       return null;
-    } else {
-      const post = { ...postFromDb, id: postFromDb._id.toString() };
-      const { _id, ...rest } = post;
-      return rest;
     }
+    return PostViewDto.mapToView(postFromDb);
   },
   async getPostsCount(blog_id?: string): Promise<number> {
     const filter: any = blog_id ? { blogId: blog_id } : {};
 
-    return db.getCollections().postsCollection.countDocuments(filter);
-  },
-
-  mapPostsToOutput(posts: WithId<PostEntityModel>[]): PostViewModel[] {
-    return posts.map((post) => ({ ...post, id: post._id.toString() })).map(({ _id, ...rest }) => rest);
+    return PostModel.countDocuments(filter);
   },
 };

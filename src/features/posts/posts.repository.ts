@@ -1,33 +1,28 @@
-import { InsertOneResult, ObjectId, WithId } from "mongodb";
-import { db } from "../../db/db";
-import { PostEntityModel, PostInputModel, PostValidQueryModel, PostViewModel } from "./models/posts.models";
+import { PostEntityModel, PostInputModel, PostViewModel } from "./models/posts.models";
 import { blogsRepository } from "../blogs/blogs.repository";
+import { PostModel } from "../../db/models/Post.model";
+import { PostViewDto } from "./dto";
 
 export const postsRepository = {
   async findPost(id: string): Promise<PostViewModel | null> {
-    const objectId = new ObjectId(id);
-
-    const postFromDb = await db.getCollections().postsCollection.findOne({ _id: objectId });
+    const postFromDb = await PostModel.findOne({ _id: id });
 
     if (!postFromDb) {
       return null;
-    } else {
-      const post = { ...postFromDb, id: postFromDb._id.toString() };
-      const { _id, ...rest } = post;
-      return rest;
     }
+    return PostViewDto.mapToView(postFromDb);
   },
   async createPost(payload: PostEntityModel): Promise<string> {
-    const result = await db.getCollections().postsCollection.insertOne(payload);
+    const post = new PostModel(payload);
+    const result = await post.save();
 
-    return result.insertedId.toString();
+    return result.id;
   },
   async updatePost(id: string, payload: PostInputModel): Promise<boolean> {
     const blog = await blogsRepository.findBlog(payload.blogId);
-    const objectId = new ObjectId(id);
 
-    const result = await db.getCollections().postsCollection.updateOne(
-      { _id: objectId },
+    const result = await PostModel.updateOne(
+      { _id: id },
       {
         $set: {
           title: payload.title,
@@ -42,9 +37,7 @@ export const postsRepository = {
   },
 
   async deletePost(id: string): Promise<boolean> {
-    const objectId = new ObjectId(id);
-
-    const result = await db.getCollections().postsCollection.deleteOne({ _id: objectId });
+    const result = await PostModel.deleteOne({ _id: id });
 
     return result.deletedCount > 0;
   },

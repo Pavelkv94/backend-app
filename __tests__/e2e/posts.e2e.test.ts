@@ -5,6 +5,7 @@ import { postsManager } from "../helpers/postsManager";
 import { db } from "../../src/db/db";
 import { BlogViewModel } from "../../src/features/blogs/models/blogs.models";
 import { PostInputModel } from "../../src/features/posts/models/posts.models";
+import { PostModel } from "../../src/db/models/Post.model";
 
 describe("/posts", () => {
   let mongoServer: MongoMemoryServer;
@@ -15,7 +16,7 @@ describe("/posts", () => {
 
     const url = mongoServer.getUri();
 
-    await db.run(url);
+    await db.connect(url);
 
     const createBlogResponse = await blogsManager.createBlogWithAuth(newBlog);
     blogFromDb = createBlogResponse.body;
@@ -23,13 +24,13 @@ describe("/posts", () => {
   });
 
   beforeEach(async () => {
-    await db.dropCollection("posts");
+    await PostModel.deleteMany({});
   });
 
   afterAll(async () => {
     await db.drop();
     await mongoServer.stop();
-    await db.stop();
+    await db.disconnect();
   });
 
   it("should create and shouldn't get empty array", async () => {

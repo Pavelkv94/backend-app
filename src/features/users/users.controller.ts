@@ -30,7 +30,7 @@ export const usersController = {
       const newUserId = await usersService.create(req.body);
       await authService.setConfirmEmailStatus(newUserId, true);
       const newUser = await usersQueryRepository.findUser(newUserId);
-
+      
       if (!newUser) {
         return next(ApiError.NotFound("The requested user was not found"));
       }

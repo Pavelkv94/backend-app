@@ -1,6 +1,5 @@
 import { body } from "express-validator";
 import { usersQueryRepository } from "../../users/users.query-repository";
-import { hasDateExpired } from "../../../utils/date/hasDateExpired";
 import { inputCheckErrorsMiddleware } from "../../../global-middlewares/inputCheckErrors.middleware";
 
 const userEmailInputValidator = body("email")
