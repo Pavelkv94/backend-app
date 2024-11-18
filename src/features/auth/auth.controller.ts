@@ -49,8 +49,8 @@ export const authController = {
   },
   async registration(req: Request<{}, {}, UserInputModel>, res: Response, next: NextFunction) {
     try {
-      const userId = await usersService.create(req.body);
-      const emailConfirmation = await usersQueryRepository.findEmailConfirmationByUser(userId);
+      const userId = await usersService.create(req.body); //! user
+      const emailConfirmation = await usersQueryRepository.findEmailConfirmationByUser(userId); //! needn't
 
       if (!userId || !emailConfirmation) {
         return next(ApiError.NotFound("The requested user was not found"));

@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import { UserEntityModel, UserPasswordModel, UserViewModel } from "./models/users.models";
 import { UserModel } from "../../db/models/User.model";
 import { UserViewDto } from "./dto";
@@ -30,13 +29,11 @@ export const usersRepository = {
     return result.id;
   },
   async deleteUser(id: string): Promise<boolean> {
-    const objectId = new ObjectId(id);
-    const result = await UserModel.deleteOne({ _id: objectId });
+    const result = await UserModel.deleteOne({ _id: id });
     return result.deletedCount > 0;
   },
   async setConfirmEmailStatus(user_id: string, status: boolean): Promise<boolean> {
-    const objectId = new ObjectId(user_id);
-    const result = await UserModel.updateOne({ _id: objectId }, { $set: { "emailConfirmation.isConfirmed": status } });
+    const result = await UserModel.updateOne({ _id: user_id }, { $set: { "emailConfirmation.isConfirmed": status } });
 
     return result.matchedCount > 0;
   },
