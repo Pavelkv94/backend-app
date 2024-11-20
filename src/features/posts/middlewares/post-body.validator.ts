@@ -1,5 +1,5 @@
 import { body } from "express-validator";
-import { blogsRepository } from "../../blogs/blogs.repository";
+import { blogsRepository } from "../../blogs/repositories/blogs.repository";
 import { inputCheckErrorsMiddleware } from "../../../global-middlewares/inputCheckErrors.middleware";
 
 // title: string // max 30

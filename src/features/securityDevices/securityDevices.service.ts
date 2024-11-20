@@ -1,8 +1,9 @@
 import { JWTPayloadModel } from "../../adapters/jwt/models/jwt.models";
 import { ResultObject, ResultStatus } from "../../types/common-types";
-import { securityDevicesRepository } from "./securityDevices.repository";
+import { securityDeviceRepository, SecurityDeviceRepository } from "./securityDevices.repository";
 
-export const securityDevicesService = {
+export class SecurityDeviceService {
+  constructor(public securityDeviceRepository: SecurityDeviceRepository) {}
   async addDevice(refreshToken: JWTPayloadModel, ip: string, userAgent: string): Promise<string> {
     const newDevice = {
       deviceId: refreshToken.deviceId,
@@ -13,10 +14,10 @@ export const securityDevicesService = {
       ip: ip,
     };
 
-    const deviceId = await securityDevicesRepository.addDevice(newDevice);
+    const deviceId = await this.securityDeviceRepository.addDevice(newDevice);
 
     return deviceId;
-  },
+  }
   async updateDevice(refreshToken: JWTPayloadModel, ip: string, userAgent: string): Promise<boolean> {
     const newDevice = {
       deviceId: refreshToken.deviceId,
@@ -27,16 +28,16 @@ export const securityDevicesService = {
       ip: ip,
     };
 
-    const isUpdated = await securityDevicesRepository.updateDevice(newDevice);
+    const isUpdated = await this.securityDeviceRepository.updateDevice(newDevice);
     return isUpdated;
-  },
+  }
   async deleteOtherSecurityDevices(user_id: string, deviceId: string): Promise<boolean> {
-    const isDeleted = await securityDevicesRepository.deleteDevices(user_id, deviceId);
+    const isDeleted = await this.securityDeviceRepository.deleteDevices(user_id, deviceId);
 
     return isDeleted;
-  },
+  }
   async deleteSecurityDevice(deviceId: string, user_id: string): Promise<ResultObject<boolean | null>> {
-    const deviceOwnerId = await securityDevicesRepository.findDevice(deviceId);
+    const deviceOwnerId = await this.securityDeviceRepository.findDevice(deviceId);
 
     const isOwner = deviceOwnerId === user_id;
 
@@ -47,10 +48,12 @@ export const securityDevicesService = {
         data: null,
       };
     }
-    const isDeleted = await securityDevicesRepository.deleteDevice(deviceId, user_id);
+    const isDeleted = await this.securityDeviceRepository.deleteDevice(deviceId, user_id);
     return {
       status: isDeleted ? ResultStatus.SUCCESS : ResultStatus.FORBIDDEN,
       data: isDeleted,
     };
-  },
-};
+  }
+}
+
+export const securityDeviceService = new SecurityDeviceService(securityDeviceRepository);

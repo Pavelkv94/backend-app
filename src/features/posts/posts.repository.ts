@@ -1,5 +1,5 @@
 import { PostEntityModel, PostInputModel, PostViewModel } from "./models/posts.models";
-import { blogsRepository } from "../blogs/blogs.repository";
+import { blogsRepository } from "../blogs/repositories/blogs.repository";
 import { PostModel } from "../../db/models/Post.model";
 import { PostViewDto } from "./dto";
 

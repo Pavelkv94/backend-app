@@ -1,5 +1,5 @@
-import { BlogEntityModel, BlogInputModel, BlogViewModel } from "./models/blogs.models";
-import { BlogModel } from "../../db/models/Blog.model";
+import { BlogDocument, BlogEntityModel, BlogInputModel, BlogViewModel } from "../models/blogs.models";
+import { BlogModel } from "../../../db/models/Blog.model";
 import { BlogViewDto } from "./dto";
 
 export const blogsRepository = {
@@ -12,8 +12,7 @@ export const blogsRepository = {
     return BlogViewDto.mapToView(blogFromDb);
   },
 
-  async createBlog(payload: BlogEntityModel): Promise<string> {
-    const blog = new BlogModel(payload);
+  async save(blog: BlogDocument): Promise<string> {
     const result = await blog.save();
 
     return result.id;

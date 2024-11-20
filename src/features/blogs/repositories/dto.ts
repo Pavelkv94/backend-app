@@ -1,4 +1,4 @@
-import { BlogDocument, BlogViewModel } from "./models/blogs.models";
+import { BlogDocument, BlogViewModel } from "../models/blogs.models";
 
 export class BlogViewDto {
   id: string;

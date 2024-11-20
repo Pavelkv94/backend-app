@@ -6,7 +6,7 @@ import { SortDirection } from "mongodb";
 import { postsQueryRepository } from "./posts.query-repository";
 import { CommentInputModel, CommentInputQueryModel, CommentViewModel } from "../comments/models/comments.models";
 import { commentsService } from "../comments/comments.service";
-import { usersQueryRepository } from "../users/users.query-repository";
+import { userQueryRepository } from "../users/repositories/users.query-repository";
 import { commentQueryRepository } from "../comments/comments.query-repository";
 import { IdType } from "../auth/models/auth.models";
 import { ApiError } from "../../exeptions/api-error";
@@ -112,7 +112,7 @@ export const postsController = {
     next: NextFunction
   ) {
     try {
-      const user = await usersQueryRepository.findMe(req.user.id);
+      const user = await userQueryRepository.findMe(req.user.id);
 
       if (!user) {
         return next(ApiError.NotFound("The requested user was not found"));

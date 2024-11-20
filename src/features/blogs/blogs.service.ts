@@ -1,7 +1,10 @@
 import { BlogEntityModel, BlogInputModel, BlogValidQueryModel, BlogViewModel } from "./models/blogs.models";
-import { blogsRepository } from "./blogs.repository";
+import { BlogRepository, blogRepository } from "./repositories/blogs.repository";
+import { BlogModel } from "../../db/models/Blog.model";
 
-export const blogsService = {
+export class BlogService {
+  constructor(public blogRepository: BlogRepository) {}
+
   async createBlog(payload: BlogInputModel): Promise<string> {
     const newBlog: BlogEntityModel = {
       name: payload.name,
@@ -10,20 +13,25 @@ export const blogsService = {
       isMembership: false,
       createdAt: new Date().toISOString(),
     };
-    const id: string = await blogsRepository.createBlog(newBlog);
+
+    const blog = new BlogModel(newBlog);
+
+    const id: string = await this.blogRepository.save(blog);
 
     return id;
-  },
+  }
 
   async updateBlog(id: string, payload: BlogInputModel): Promise<boolean> {
-    const isUpdated = await blogsRepository.updateBlog(id, payload);
+    const isUpdated = await this.blogRepository.updateBlog(id, payload);
 
     return isUpdated;
-  },
+  }
 
   async deleteBlog(id: string): Promise<boolean> {
-    const isDeletedBlog = await blogsRepository.deleteBlog(id);
+    const isDeletedBlog = await this.blogRepository.deleteBlog(id);
 
     return isDeletedBlog;
-  },
-};
+  }
+}
+
+export const blogService = new BlogService(blogRepository);

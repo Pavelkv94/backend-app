@@ -1,9 +1,9 @@
-import { BlogValidQueryModel, BlogViewModel } from "./models/blogs.models";
-import { OutputDataWithPagination } from "../../types/common-types";
-import { BlogModel } from "../../db/models/Blog.model";
+import { BlogValidQueryModel, BlogViewModel } from "../models/blogs.models";
+import { OutputDataWithPagination } from "../../../types/common-types";
+import { BlogModel } from "../../../db/models/Blog.model";
 import { BlogViewDto } from "./dto";
 
-export const blogsQueryRepository = {
+export class BlogQueryRepository {
   async findAllBlogs(query: BlogValidQueryModel): Promise<OutputDataWithPagination<BlogViewModel>> {
     const { pageSize, pageNumber, searchNameTerm, sortBy, sortDirection } = query;
 
@@ -29,7 +29,7 @@ export const blogsQueryRepository = {
       totalCount: blogsCount,
       items: blogsView,
     };
-  },
+  }
 
   async getBlogsCount(searchNameTerm: string | null): Promise<number> {
     const filter: any = {};
@@ -39,7 +39,7 @@ export const blogsQueryRepository = {
     }
 
     return await BlogModel.countDocuments(filter);
-  },
+  }
 
   async findBlog(id: string): Promise<BlogViewModel | null> {
     const blogFromDb = await BlogModel.findOne({ _id: id });
@@ -48,5 +48,7 @@ export const blogsQueryRepository = {
       return null;
     }
     return BlogViewDto.mapToView(blogFromDb);
-  },
+  }
 };
+
+export const blogQueryRepository = new BlogQueryRepository()

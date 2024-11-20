@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import { PostEntityModel, PostForBlogInputModel, PostInputModel, PostValidQueryModel, PostViewModel } from "./models/posts.models";
 import { postsRepository } from "./posts.repository";
 import { blogsService } from "../blogs/blogs.service";
-import { blogsRepository } from "../blogs/blogs.repository";
+import { blogsRepository } from "../blogs/repositories/blogs.repository";
 
 export const postsService = {
   async createPost(payload: PostInputModel): Promise<string> {

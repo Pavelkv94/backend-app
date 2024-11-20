@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { blogsQueryRepository } from "../blogs.query-repository";
+import { blogsQueryRepository } from "../repositories/blogs.query-repository";
 import { ApiError } from "../../../exeptions/api-error";
 
 export const findBlogByParamIdMiddleware = async (req: Request, res: Response, next: NextFunction) => {
