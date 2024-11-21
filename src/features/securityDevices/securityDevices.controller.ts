@@ -3,7 +3,7 @@ import { AdditionalQueryInputModel } from "../auth/models/auth.models";
 import { ApiError } from "../../exeptions/api-error";
 import { DeviceViewModel, URIParamsDeviceModel } from "./models/securityDevices.model";
 import { HTTP_STATUSES, ResultStatus } from "../../types/common-types";
-import { securityDeviceQueryRepository, SecurityDeviceQueryRepository } from "./securityDevices.query-repository";
+import { securityDeviceQueryRepository, SecurityDeviceQueryRepository } from "./repositories/securityDevices.query-repository";
 import { securityDeviceService, SecurityDeviceService } from "./securityDevices.service";
 
 export class SecurityDeviceController {

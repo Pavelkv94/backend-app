@@ -1,9 +1,9 @@
-import { CommentValidQueryModel, CommentViewModel } from "./models/comments.models";
-import { OutputDataWithPagination } from "../../types/common-types";
-import { CommentModel } from "../../db/models/Comment.model";
+import { CommentModel } from "../../../db/models/Comment.model";
+import { OutputDataWithPagination } from "../../../types/common-types";
+import { CommentValidQueryModel, CommentViewModel } from "../models/comments.models";
 import { CommentViewDto } from "./dto";
 
-export const commentQueryRepository = {
+export class CommentQueryRepository {
   async findAllComments(id: string, query: CommentValidQueryModel): Promise<OutputDataWithPagination<CommentViewModel>> {
     const { pageSize, pageNumber, sortBy, sortDirection } = query;
 
@@ -25,7 +25,7 @@ export const commentQueryRepository = {
       totalCount: commentsCount,
       items: commentsView,
     };
-  },
+  }
   async findComment(id: string): Promise<CommentViewModel | null> {
     const commentFromDb = await CommentModel.findOne({ _id: id });
 
@@ -33,10 +33,12 @@ export const commentQueryRepository = {
       return null;
     }
     return CommentViewDto.mapToView(commentFromDb);
-  },
+  }
   async getCommentsCount(id: string) {
     const filter: any = { postId: id };
 
     return await CommentModel.countDocuments(filter);
-  },
-};
+  }
+}
+
+export const commentQueryRepository = new CommentQueryRepository();

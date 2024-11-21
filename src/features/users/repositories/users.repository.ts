@@ -1,12 +1,6 @@
 import { UserDocument, UserEntityModel, UserPasswordModel, UserViewModel } from "../models/users.models";
 import { UserModel } from "../../../db/models/User.model";
 
-// без ТС
-// interface IUserRepository {
-//   save() {}
-// }
-// export class UserRepository implements IUserRepository {}
-
 export class UserRepository {
   async findUserById(id: string): Promise<string | null> {
     const userFromDb = await UserModel.findOne({ _id: id });

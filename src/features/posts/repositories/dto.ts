@@ -1,4 +1,4 @@
-import { PostDocument, PostViewModel } from "./models/posts.models";
+import { PostDocument, PostViewModel } from "../models/posts.models";
 
 export class PostViewDto {
   id: string;

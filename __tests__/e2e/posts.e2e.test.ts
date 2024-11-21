@@ -105,6 +105,7 @@ describe("/posts", () => {
     expect(createPostResponse.status).toBe(201);
 
     const res = await postsManager.deletePostWithAuth(createPostResponse.body.id);
+    console.log(res.body)
     expect(res.status).toBe(204);
 
     const getPostsResponse = await postsManager.getPosts();

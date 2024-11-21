@@ -1,4 +1,4 @@
-import { EmailConfirmationEntityType, RecoveryPasswordEntityType, UserDocument, UserViewModel } from "../models/users.models";
+import { UserDocument, UserViewModel } from "../models/users.models";
 
 export class UserViewDto {
   email: string;

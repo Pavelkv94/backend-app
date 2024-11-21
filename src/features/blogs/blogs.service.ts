@@ -1,9 +1,13 @@
 import { BlogEntityModel, BlogInputModel, BlogValidQueryModel, BlogViewModel } from "./models/blogs.models";
-import { BlogRepository, blogRepository } from "./repositories/blogs.repository";
+import { blogRepository, IBlogRepository } from "./repositories/blogs.repository";
 import { BlogModel } from "../../db/models/Blog.model";
-
-export class BlogService {
-  constructor(public blogRepository: BlogRepository) {}
+export interface IBlogService {
+  createBlog(payload: BlogInputModel): Promise<string>;
+  updateBlog(id: string, payload: BlogInputModel): Promise<string | null>;
+  deleteBlog(id: string): Promise<boolean>;
+}
+class BlogService implements IBlogService {
+  constructor(public blogRepository: IBlogRepository) {}
 
   async createBlog(payload: BlogInputModel): Promise<string> {
     const newBlog: BlogEntityModel = {
@@ -21,10 +25,19 @@ export class BlogService {
     return id;
   }
 
-  async updateBlog(id: string, payload: BlogInputModel): Promise<boolean> {
-    const isUpdated = await this.blogRepository.updateBlog(id, payload);
+  async updateBlog(id: string, payload: BlogInputModel): Promise<string | null> {
+    const blog = await this.blogRepository.findBlog(id);
+    if (!blog) {
+      return null;
+    }
 
-    return isUpdated;
+    blog.name = payload.name;
+    blog.description = payload.description;
+    blog.websiteUrl = payload.websiteUrl;
+
+    const updatedBlogId = await this.blogRepository.save(blog);
+
+    return updatedBlogId;
   }
 
   async deleteBlog(id: string): Promise<boolean> {

@@ -1,16 +1,21 @@
 import { NextFunction, Request, Response } from "express";
 import { BlogInputModel, BlogInputQueryModel, BlogViewModel, URIParamsBlogModel } from "./models/blogs.models";
-import { BlogService, blogService } from "./blogs.service";
-import { SortDirection, WithId } from "mongodb";
+import { blogService, IBlogService } from "./blogs.service";
+import { SortDirection } from "mongodb";
 import { HTTP_STATUSES, OutputDataWithPagination } from "../../types/common-types";
 import { PostForBlogInputModel, PostInputQueryModel, PostViewModel } from "../posts/models/posts.models";
-import { postsService } from "../posts/posts.service";
-import { BlogQueryRepository, blogQueryRepository } from "./repositories/blogs.query-repository";
-import { postsQueryRepository } from "../posts/posts.query-repository";
+import { blogQueryRepository, IBlogQueryRepository } from "./repositories/blogs.query-repository";
 import { ApiError } from "../../exeptions/api-error";
+import { postService, PostService } from "../posts/posts.service";
+import { postQueryRepository, PostQueryRepository } from "../posts/repositories/posts.query-repository";
 
 export class BlogController {
-  constructor(public blogService: BlogService, public blogQueryRepository: BlogQueryRepository) {}
+  constructor(
+    public blogService: IBlogService,
+    public blogQueryRepository: IBlogQueryRepository,
+    public postService: PostService,
+    public postQueryRepository: PostQueryRepository
+  ) {}
 
   async getBlogs(req: Request<{}, {}, {}, BlogInputQueryModel>, res: Response<OutputDataWithPagination<BlogViewModel>>, next: NextFunction) {
     try {
@@ -44,7 +49,8 @@ export class BlogController {
 
   async createBlog(req: Request<any, any, BlogInputModel>, res: Response<BlogViewModel>, next: NextFunction) {
     try {
-      const newBlogId = await this.blogService.createBlog(req.body); //todo can return blogViewModel
+      const newBlogId = await this.blogService.createBlog(req.body);
+
       const newBlog = await this.blogQueryRepository.findBlog(newBlogId);
 
       if (!newBlog) {
@@ -59,9 +65,9 @@ export class BlogController {
 
   async updateBlog(req: Request<any, any, BlogInputModel>, res: Response<BlogViewModel>, next: NextFunction) {
     try {
-      const isUpdated = await this.blogService.updateBlog(req.params.id, req.body);
+      const updatedBlogId = await this.blogService.updateBlog(req.params.id, req.body);
 
-      if (!isUpdated) {
+      if (!updatedBlogId) {
         return next(ApiError.NotFound("The requested resource was not found"));
       } else {
         res.sendStatus(HTTP_STATUSES.NO_CONTENT);
@@ -97,7 +103,7 @@ export class BlogController {
         sortDirection: req.query.sortDirection as SortDirection,
       };
       const blog = await this.blogQueryRepository.findBlog(req.params.id);
-      const posts = await postsQueryRepository.findAllPosts(queryData, blog!.id);
+      const posts = await this.postQueryRepository.findAllPosts(queryData, blog!.id);
 
       res.status(HTTP_STATUSES.SUCCESS).json(posts);
     } catch (error) {
@@ -107,17 +113,21 @@ export class BlogController {
 
   async createBlogPost(req: Request<URIParamsBlogModel, {}, PostForBlogInputModel>, res: Response<PostViewModel>, next: NextFunction) {
     try {
-      const newPost = await postsService.createForBlog(req.body, req.params.id);
+      const newPostId = await this.postService.createForBlog(req.body, req.params.id);
+      if (!newPostId) {
+        return next(ApiError.NotFound("The requested new post was not found"));
+      }
 
+      const newPost = await this.postQueryRepository.findPost(newPostId);
       if (!newPost) {
         return next(ApiError.NotFound("The requested new post was not found"));
-      } else {
-        res.status(201).json(newPost);
       }
+
+      res.status(201).json(newPost);
     } catch (error) {
       return next(ApiError.UnexpectedError(error as Error));
     }
   }
 }
 
-export const blogController = new BlogController(blogService, blogQueryRepository);
+export const blogController = new BlogController(blogService, blogQueryRepository, postService, postQueryRepository);

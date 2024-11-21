@@ -21,12 +21,10 @@ export class UserController {
         searchLoginTerm: req.query.searchLoginTerm,
         searchEmailTerm: req.query.searchEmailTerm,
       };
-      console.log("ATTENTION: ", this.userQueryRepository)
       const users = await this.userQueryRepository.findAllUsers(queryData);
 
       res.status(HTTP_STATUSES.SUCCESS).json(users);
     } catch (error) {
-      console.log("ATTENTION: ", this.userQueryRepository)
 
       return next(ApiError.UnexpectedError(error as Error));
     }

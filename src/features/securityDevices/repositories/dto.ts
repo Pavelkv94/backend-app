@@ -1,4 +1,4 @@
-import { DeviceDocument, DeviceViewModel } from "./models/securityDevices.model";
+import { DeviceDocument, DeviceViewModel } from "../models/securityDevices.model";
 
 export class DeviceViewDto {
   title: string;

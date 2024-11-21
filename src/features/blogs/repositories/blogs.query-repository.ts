@@ -3,7 +3,13 @@ import { OutputDataWithPagination } from "../../../types/common-types";
 import { BlogModel } from "../../../db/models/Blog.model";
 import { BlogViewDto } from "./dto";
 
-export class BlogQueryRepository {
+export interface IBlogQueryRepository {
+  findAllBlogs(query: BlogValidQueryModel): Promise<OutputDataWithPagination<BlogViewModel>>;
+  getBlogsCount(searchNameTerm: string | null): Promise<number>;
+  findBlog(id: string): Promise<BlogViewModel | null>;
+}
+
+class BlogQueryRepository implements IBlogQueryRepository {
   async findAllBlogs(query: BlogValidQueryModel): Promise<OutputDataWithPagination<BlogViewModel>> {
     const { pageSize, pageNumber, searchNameTerm, sortBy, sortDirection } = query;
 
@@ -49,6 +55,6 @@ export class BlogQueryRepository {
     }
     return BlogViewDto.mapToView(blogFromDb);
   }
-};
+}
 
-export const blogQueryRepository = new BlogQueryRepository()
+export const blogQueryRepository = new BlogQueryRepository();

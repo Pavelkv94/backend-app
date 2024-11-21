@@ -1,6 +1,5 @@
-import { JWTPayloadModel } from "../../adapters/jwt/models/jwt.models";
-import { SecurityDeviceModel } from "../../db/models/SecurityDevice.model";
-import { DeviceEntityModel } from "./models/securityDevices.model";
+import { SecurityDeviceModel } from "../../../db/models/SecurityDevice.model";
+import { DeviceEntityModel } from "../models/securityDevices.model";
 
 export class SecurityDeviceRepository {
   async findDevice(deviceId: string): Promise<string | null> {
@@ -27,13 +26,6 @@ export class SecurityDeviceRepository {
     );
 
     return result.matchedCount > 0;
-  }
-  async checkSession(payload: JWTPayloadModel): Promise<boolean> {
-    const lastActiveDate = new Date(payload.iat * 1000).toISOString();
-
-    const result = await SecurityDeviceModel.findOne({ user_id: payload.user_id, deviceId: payload.deviceId, lastActiveDate: lastActiveDate });
-
-    return !!result;
   }
 
   async deleteDevices(user_id: string, deviceId: string) {

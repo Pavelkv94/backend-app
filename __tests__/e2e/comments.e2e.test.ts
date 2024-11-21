@@ -9,7 +9,7 @@ import { commentsManager } from "../helpers/commentsManager";
 import { usersManager } from "../helpers/usersManager";
 import { LoginInputModel } from "../../src/features/auth/models/auth.models";
 import { authManager } from "../helpers/authManager";
-import { commentQueryRepository } from "../../src/features/comments/comments.query-repository";
+import { commentQueryRepository } from "../../src/features/comments/repositories/comments.query-repository";
 import { CommentModel } from "../../src/db/models/Comment.model";
 
 describe("/posts", () => {

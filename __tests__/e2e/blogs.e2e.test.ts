@@ -4,8 +4,8 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import { blogsManager } from "../helpers/blogsManager";
 import { postsManager } from "../helpers/postsManager";
 import { BlogInputModel } from "../../src/features/blogs/models/blogs.models";
-import { blogsQueryRepository } from "../../src/features/blogs/blogs.query-repository";
-import { blogsService } from "../../src/features/blogs/blogs.service";
+import { blogQueryRepository } from "../../src/features/blogs/repositories/blogs.query-repository";
+import { blogService } from "../../src/features/blogs/blogs.service";
 import { BlogModel } from "../../src/db/models/Blog.model";
 
 describe("/blogs", () => {
@@ -126,7 +126,7 @@ describe("/blogs", () => {
   });
 
   it("shouldn't del", async () => {
-    blogsService.deleteBlog = jest.fn().mockReturnValue(false);
+    blogService.deleteBlog = jest.fn().mockReturnValue(false);
     const res = await blogsManager.deleteBlogWithAuth(fakeId);
 
     expect(res.status).toBe(404);
@@ -297,13 +297,13 @@ describe("/blogs", () => {
       description: "d2",
       websiteUrl: "http://some2.com",
     };
-    blogsService.updateBlog = jest.fn().mockReturnValue(false);
+    blogService.updateBlog = jest.fn().mockReturnValue(false);
 
     const updateRes = await blogsManager.updateBlogWithAuth(updatedBlog, createResponse.body.id);
 
     expect(updateRes.status).toBe(404);
 
-    blogsService.updateBlog = jest.fn().mockRejectedValue(new Error("Database error"));
+    blogService.updateBlog = jest.fn().mockRejectedValue(new Error("Database error"));
 
     const updateRes2 = await blogsManager.updateBlogWithAuth(updatedBlog, createResponse.body.id);
 
@@ -314,7 +314,7 @@ describe("/blogs", () => {
     const createBlogResponse = await blogsManager.createBlogWithAuth(newBlog);
     expect(createBlogResponse.status).toBe(201);
 
-    blogsQueryRepository.findAllBlogs = jest.fn().mockRejectedValue(new Error("Database error"));
+    blogQueryRepository.findAllBlogs = jest.fn().mockRejectedValue(new Error("Database error"));
     const getBlogs = await blogsManager.getBlogs();
     expect(getBlogs.status).toBe(500);
   });
@@ -323,24 +323,24 @@ describe("/blogs", () => {
     const createBlogResponse = await blogsManager.createBlogWithAuth(newBlog);
     expect(createBlogResponse.status).toBe(201);
 
-    blogsQueryRepository.findBlog = jest.fn().mockReturnValue(null);
+    blogQueryRepository.findBlog = jest.fn().mockReturnValue(null);
     const getBlogs = await blogsManager.getBlog(createBlogResponse.body.id);
     expect(getBlogs.status).toBe(404);
   });
 
   it("shouldn't get blog with db error 500", async () => {
-    blogsQueryRepository.findBlog = jest.fn().mockRejectedValue(new Error("Database error"));
+    blogQueryRepository.findBlog = jest.fn().mockRejectedValue(new Error("Database error"));
 
     const createBlogResponse = await blogsManager.createBlogWithAuth(newBlog);
     expect(createBlogResponse.status).toBe(500);
   });
   it("shouldn't create blogs with db error", async () => {
-    blogsQueryRepository.findBlog = jest.fn().mockReturnValue(null);
+    blogQueryRepository.findBlog = jest.fn().mockReturnValue(null);
 
     const res = await blogsManager.createBlogWithAuth(newBlog);
     expect(res.status).toBe(404);
 
-    blogsQueryRepository.findBlog = jest.fn().mockRejectedValue(new Error("Database error"));
+    blogQueryRepository.findBlog = jest.fn().mockRejectedValue(new Error("Database error"));
 
     const res2 = await blogsManager.createBlogWithAuth(newBlog);
     expect(res2.status).toBe(500);

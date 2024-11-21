@@ -4,8 +4,9 @@ import { usersManager } from "../helpers/usersManager";
 import { createString, newUser } from "../helpers/datasets";
 import { LoginInputModel } from "../../src/features/auth/models/auth.models";
 import { nodemailerService } from "../../src/adapters/mail.service";
-import { usersQueryRepository } from "../../src/features/users/users.query-repository";
+import { userQueryRepository } from "../../src/features/users/repositories/users.query-repository";
 import { authManager } from "../helpers/authManager";
+import { userRepository } from "../../src/features/users/repositories/users.repository";
 
 describe("/test", () => {
   let mongoServer: MongoMemoryServer;
@@ -146,11 +147,11 @@ describe("/test", () => {
     const registrationResponse = await authManager.registerUser(newUser);
     expect(registrationResponse.status).toBe(204);
 
-    const user = await usersQueryRepository.findUserByEmail(newUser.email);
+    const user = await userQueryRepository.findUserByEmail(newUser.email);
 
-    const emailConfirmation = await usersQueryRepository.findEmailConfirmationByUser(user!.id);
+    const confirmationCode = await userRepository.findConfirmationCodeByUserId(user!.id);
 
-    const confirmResponse = await authManager.confirmation(emailConfirmation!.confirmationCode);
+    const confirmResponse = await authManager.confirmation(confirmationCode!);
 
     expect(confirmResponse.status).toBe(204);
   });
@@ -162,19 +163,19 @@ describe("/test", () => {
     const registrationResponse = await authManager.registerUser(newUser);
     expect(registrationResponse.status).toBe(204);
 
-    const user = await usersQueryRepository.findUserByEmail(newUser.email);
+    const user = await userQueryRepository.findUserByEmail(newUser.email);
 
-    const emailConfirmation = await usersQueryRepository.findEmailConfirmationByUser(user!.id);
+    const confirmationCode = await userRepository.findConfirmationCodeByUserId(user!.id);
 
     const resendResponse = await authManager.resendEmail(user!.email);
     expect(resendResponse.status).toBe(204);
 
-    const newEmailConfirmation = await usersQueryRepository.findEmailConfirmationByUser(user!.id);
+    const newEmailConfirmation = await userRepository.findConfirmationCodeByUserId(user!.id);
 
-    const confirmResponse = await authManager.confirmation(newEmailConfirmation!.confirmationCode);
+    const confirmResponse = await authManager.confirmation(newEmailConfirmation!);
     expect(confirmResponse.status).toBe(204);
 
-    expect(emailConfirmation!.confirmationCode).not.toBe(newEmailConfirmation!.confirmationCode);
+    expect(confirmationCode).not.toBe(newEmailConfirmation);
   });
 
   it("shouldn't register user with wrong confirmation code", async () => {
@@ -194,11 +195,11 @@ describe("/test", () => {
     const createUserResponse = await usersManager.createUser(newUser);
     expect(createUserResponse.status).toBe(201);
 
-    const user = await usersQueryRepository.findUserByEmail(newUser.email);
+    const user = await userQueryRepository.findUserByEmail(newUser.email);
 
-    const emailConfirmation = await usersQueryRepository.findEmailConfirmationByUser(user!.id);
+    const confirmationCode = await userRepository.findConfirmationCodeByUserId(user!.id);
 
-    const confirmResponse = await authManager.confirmation(emailConfirmation!.confirmationCode);
+    const confirmResponse = await authManager.confirmation(confirmationCode!);
 
     expect(confirmResponse.status).toBe(400);
     console.log(confirmResponse.body.errorsMessages);

@@ -1,5 +1,5 @@
 import { body } from "express-validator";
-import { blogsRepository } from "../../blogs/repositories/blogs.repository";
+import { blogRepository } from "../../blogs/repositories/blogs.repository";
 import { inputCheckErrorsMiddleware } from "../../../global-middlewares/inputCheckErrors.middleware";
 
 // title: string // max 30
@@ -23,7 +23,7 @@ const postContentInputValidator = body("content")
   .withMessage("no more than 1000 symbols");
 
 export const findBlogByBodyIdValidator = body("blogId").custom(async (blogId) => {
-  const blog = await blogsRepository.findBlog(blogId);
+  const blog = await blogRepository.findBlog(blogId);
   if (!blog) {
     throw new Error("no blog!");
   }

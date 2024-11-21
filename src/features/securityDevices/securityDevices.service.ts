@@ -1,6 +1,6 @@
 import { JWTPayloadModel } from "../../adapters/jwt/models/jwt.models";
 import { ResultObject, ResultStatus } from "../../types/common-types";
-import { securityDeviceRepository, SecurityDeviceRepository } from "./securityDevices.repository";
+import { securityDeviceRepository, SecurityDeviceRepository } from "./repositories/securityDevices.repository";
 
 export class SecurityDeviceService {
   constructor(public securityDeviceRepository: SecurityDeviceRepository) {}

@@ -1,4 +1,4 @@
-import { CommentDocument, CommentViewModel } from "./models/comments.models";
+import { CommentDocument, CommentViewModel } from "../models/comments.models";
 
 export class CommentViewDto {
   id: string;

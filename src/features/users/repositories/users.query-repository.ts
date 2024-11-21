@@ -104,7 +104,7 @@ export class UserQueryRepository {
     return userFromDb.emailConfirmation;
   }
   async findRecoveryByCode(code: string): Promise<RecoveryPasswordEntityType | null> {
-    const userFromDb = await UserModel.findOne({ recoveryCode: code }).lean();
+    const userFromDb = await UserModel.findOne({ "recoveryConfirmation.recoveryCode": code }).lean();
 
     if (!userFromDb) {
       return null;

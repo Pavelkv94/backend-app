@@ -5,10 +5,10 @@ import { getExpirationDate } from "../../utils/date/getExpirationDate";
 import { bcryptService } from "../../adapters/bcrypt.service";
 import { securityDeviceService } from "../securityDevices/securityDevices.service";
 import { JWTPayloadModel } from "../../adapters/jwt/models/jwt.models";
-import { securityDeviceRepository } from "../securityDevices/securityDevices.repository";
 import { UserService, userService } from "../users/users.service";
 import { UserRepository, userRepository } from "../users/repositories/users.repository";
 import { UserInputModel } from "../users/models/users.models";
+import { SecurityDeviceModel } from "../../db/models/SecurityDevice.model";
 
 export class AuthService {
   constructor(public userService: UserService, public userRepository: UserRepository) {}
@@ -96,9 +96,11 @@ export class AuthService {
     return newRecoveryCode;
   }
   async checkSessionVersion(payload: JWTPayloadModel): Promise<boolean> {
-    const isSessionExists = await securityDeviceRepository.checkSession(payload);
+    const lastActiveDate = new Date(payload.iat * 1000).toISOString();
 
-    return isSessionExists;
+    const result = await SecurityDeviceModel.findOne({ user_id: payload.user_id, deviceId: payload.deviceId, lastActiveDate: lastActiveDate });
+
+    return !!result;
   }
   async setNewPassword(recoveryCode: string, newPassword: string): Promise<boolean> {
     const userId = await this.userRepository.findUserByRecoveryCode(recoveryCode);
