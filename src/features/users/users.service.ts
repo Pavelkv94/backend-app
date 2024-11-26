@@ -6,7 +6,7 @@ import { UserModel } from "../../db/models/User.model";
 import { userRepository, UserRepository } from "./repositories/users.repository";
 
 export class UserService {
-  constructor(public userRepository: UserRepository) {}
+  constructor(private userRepository: UserRepository) {}
 
   async findUser(user_id: string): Promise<string | null> {
     const userId = await this.userRepository.findUserById(user_id);

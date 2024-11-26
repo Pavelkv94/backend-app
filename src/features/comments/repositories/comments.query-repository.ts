@@ -1,10 +1,11 @@
 import { CommentModel } from "../../../db/models/Comment.model";
+import { LikeModel } from "../../../db/models/Like.model";
 import { OutputDataWithPagination } from "../../../types/common-types";
 import { CommentValidQueryModel, CommentViewModel } from "../models/comments.models";
 import { CommentViewDto } from "./dto";
 
 export class CommentQueryRepository {
-  async findAllComments(id: string, query: CommentValidQueryModel): Promise<OutputDataWithPagination<CommentViewModel>> {
+  async findAllComments(id: string, query: CommentValidQueryModel, userId: string | null): Promise<OutputDataWithPagination<CommentViewModel>> {
     const { pageSize, pageNumber, sortBy, sortDirection } = query;
 
     const filter: any = { postId: id };
@@ -14,8 +15,18 @@ export class CommentQueryRepository {
       .limit(pageSize)
       .sort({ [sortBy]: sortDirection });
 
-    const commentsView = CommentViewDto.mapToViewArray(commentsFromDb);
+      
+    const commentsView = await Promise.all(
+      commentsFromDb.map(async (comment) => {
+        const filter = userId ? { user_id: userId, parent_id: comment.id } : { parent_id: comment.id };
 
+        const like = await LikeModel.findOne(filter);
+        const likes = await LikeModel.find({});
+
+        const myStatus = like && like.user_id === userId ? like.status : "None";
+        return CommentViewDto.mapToView(comment, myStatus);
+      })
+    );
     const commentsCount = await this.getCommentsCount(id);
 
     return {
@@ -26,13 +37,20 @@ export class CommentQueryRepository {
       items: commentsView,
     };
   }
-  async findComment(id: string): Promise<CommentViewModel | null> {
+  async findComment(id: string, userId: string | null): Promise<CommentViewModel | null> {
     const commentFromDb = await CommentModel.findOne({ _id: id });
 
     if (!commentFromDb) {
       return null;
     }
-    return CommentViewDto.mapToView(commentFromDb);
+
+    const likeFilter = userId ? { user_id: userId, parent_id: commentFromDb.id } : { parent_id: commentFromDb.id };
+
+    const like = await LikeModel.findOne(likeFilter);
+
+    const myStatus = like && like.user_id === userId ? like.status : "None";
+
+    return CommentViewDto.mapToView(commentFromDb, myStatus);
   }
   async getCommentsCount(id: string) {
     const filter: any = { postId: id };

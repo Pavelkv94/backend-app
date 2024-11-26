@@ -1,5 +1,5 @@
 import { CommentModel } from "../../../db/models/Comment.model";
-import { CommentDocument, CommentViewModel } from "../models/comments.models";
+import { CommentDocument } from "../models/comments.models";
 
 export class CommentRepository {
   async findComment(id: string): Promise<CommentDocument | null> {

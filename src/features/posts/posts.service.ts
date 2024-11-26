@@ -5,7 +5,7 @@ import { postRepository, PostRepository } from "./repositories/posts.repository"
 import { PostModel } from "../../db/models/Post.model";
 
 export class PostService {
-  constructor(public blogRepository: IBlogRepository, public postRepository: PostRepository) {}
+  constructor(private blogRepository: IBlogRepository, private postRepository: PostRepository) {}
 
   async createPost(payload: PostInputModel): Promise<string> {
     const blog = await this.blogRepository.findBlog(payload.blogId);

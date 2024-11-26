@@ -3,7 +3,7 @@ import { ApiLogInputModel } from "./models/apiLog.model";
 import { RateLimitOptionsModel } from "./models/rateLimitOptions.model";
 
 export class ApiLogsService {
-  constructor(public apiLogsRepository: ApiLogsRepository) {}
+  constructor(private apiLogsRepository: ApiLogsRepository) {}
 
   async saveLog(log: ApiLogInputModel): Promise<string> {
     const logId = await this.apiLogsRepository.save(log);

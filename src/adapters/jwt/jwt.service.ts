@@ -8,15 +8,15 @@ type JwtPayload = {
   deviceId: string;
 };
 
-export const jwtService = {
+export class JwtService {
   async generateTokens(payload: JwtPayload): Promise<JwtTokensType> {
-    const accessToken = jwt.sign(payload, SETTINGS.JWT_ACCESS_SECRET, { expiresIn: "10s" });
-    const refreshToken = jwt.sign(payload, SETTINGS.JWT_REFRESH_SECRET, { expiresIn: "20s" });
+    const accessToken = jwt.sign(payload, SETTINGS.JWT_ACCESS_SECRET, { expiresIn: "5m" });
+    const refreshToken = jwt.sign(payload, SETTINGS.JWT_REFRESH_SECRET, { expiresIn: "10m" });
     return {
       accessToken,
       refreshToken,
     };
-  },
+  }
   async decodeToken(token: string): Promise<any> {
     try {
       return jwt.decode(token);
@@ -24,7 +24,7 @@ export const jwtService = {
       console.error("Can't decode token", e);
       return null;
     }
-  },
+  }
   async verifyAccessToken(token: string): Promise<{ user_id: string; deviceId: string } | null> {
     try {
       return jwt.verify(token, SETTINGS.JWT_ACCESS_SECRET) as { user_id: string; deviceId: string };
@@ -32,7 +32,7 @@ export const jwtService = {
       console.error("Token verify some error");
       return null;
     }
-  },
+  }
   async verifyRefreshToken(token: string): Promise<JWTPayloadModel | null> {
     try {
       return jwt.verify(token, SETTINGS.JWT_REFRESH_SECRET) as JWTPayloadModel;
@@ -40,5 +40,7 @@ export const jwtService = {
       console.error("Token verify some error");
       return null;
     }
-  },
+  }
 };
+
+export const jwtService = new JwtService();

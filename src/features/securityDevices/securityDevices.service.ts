@@ -3,7 +3,7 @@ import { ResultObject, ResultStatus } from "../../types/common-types";
 import { securityDeviceRepository, SecurityDeviceRepository } from "./repositories/securityDevices.repository";
 
 export class SecurityDeviceService {
-  constructor(public securityDeviceRepository: SecurityDeviceRepository) {}
+  constructor(private securityDeviceRepository: SecurityDeviceRepository) {}
   async addDevice(refreshToken: JWTPayloadModel, ip: string, userAgent: string): Promise<string> {
     const newDevice = {
       deviceId: refreshToken.deviceId,

@@ -1,11 +1,12 @@
 import { CommentModel } from "../../db/models/Comment.model";
 import { ResultObject, ResultStatus } from "../../types/common-types";
 import { MeViewModel } from "../auth/models/auth.models";
+import { LikeDocument, LikeStatusType } from "../likes/models/like.model";
 import { CommentEntityModel, CommentInputModel } from "./models/comments.models";
 import { commentRepository, CommentRepository } from "./repositories/comments.repository";
 
 export class CommentService {
-  constructor(public commentRepository: CommentRepository) {}
+  constructor(private commentRepository: CommentRepository) {}
 
   async createComment(post_id: string, payload: CommentInputModel, user: MeViewModel): Promise<string> {
     const commentDto: CommentEntityModel = {
@@ -16,6 +17,10 @@ export class CommentService {
         userLogin: user.login,
       },
       createdAt: new Date().toISOString(),
+      likesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+      },
     };
     const comment = new CommentModel(commentDto);
 
@@ -78,6 +83,35 @@ export class CommentService {
       status: isDeletedComment ? ResultStatus.SUCCESS : ResultStatus.FORBIDDEN,
       data: isDeletedComment,
     };
+  }
+  async updateCommentLikesCount(commentId: string, likeDocument: LikeDocument | null, newStatus: LikeStatusType): Promise<boolean> {
+    const comment = await this.commentRepository.findComment(commentId);
+
+    if (!comment) {
+      throw new Error("Something was wrong.");
+    }
+
+    const likesCounter = (prevStatus: LikeStatusType, newStatus: LikeStatusType) => {
+      if (prevStatus === "Like") comment.likesInfo.likesCount -= 1;
+      if (prevStatus === "Dislike") comment.likesInfo.dislikesCount -= 1;
+      if (newStatus === "Like") comment.likesInfo.likesCount += 1;
+      if (newStatus === "Dislike") comment.likesInfo.dislikesCount += 1;
+    };
+
+    if (!likeDocument) {
+      //first like
+      likesCounter("None", newStatus);
+    } else {
+      //existing like
+      likesCounter(likeDocument.status, newStatus);
+    }
+
+    const updatedCommentId = await this.commentRepository.save(comment);
+
+    if (!updatedCommentId) {
+      return false;
+    }
+    return true;
   }
 }
 

@@ -1,5 +1,5 @@
 import { JwtTokensType, LoginInputModel } from "./models/auth.models";
-import { jwtService } from "../../adapters/jwt/jwt.service";
+import { JwtService, jwtService } from "../../adapters/jwt/jwt.service";
 import { randomUUID } from "crypto";
 import { getExpirationDate } from "../../utils/date/getExpirationDate";
 import { bcryptService } from "../../adapters/bcrypt.service";
@@ -11,7 +11,7 @@ import { UserInputModel } from "../users/models/users.models";
 import { SecurityDeviceModel } from "../../db/models/SecurityDevice.model";
 
 export class AuthService {
-  constructor(public userService: UserService, public userRepository: UserRepository) {}
+  constructor(private userService: UserService, private userRepository: UserRepository, private jwtService: JwtService) {}
 
   async registration(payload: UserInputModel): Promise<string | null> {
     const newUserId = await this.userService.create(payload);
@@ -21,21 +21,21 @@ export class AuthService {
   }
 
   async login(user_id: string, ip: string = "", userAgent: string = ""): Promise<JwtTokensType> {
-    const tokens = await jwtService.generateTokens({ user_id, deviceId: randomUUID() });
-    const refreshToken: JWTPayloadModel = await jwtService.decodeToken(tokens.refreshToken);
+    const tokens = await this.jwtService.generateTokens({ user_id, deviceId: randomUUID() });
+    const refreshToken: JWTPayloadModel = await this.jwtService.decodeToken(tokens.refreshToken);
     await securityDeviceService.addDevice(refreshToken, ip, userAgent);
 
     return tokens;
   }
   async refresh(ip: string = "", userAgent: string = "", user_id: string, deviceId: string): Promise<JwtTokensType> {
-    const tokens = await jwtService.generateTokens({ user_id, deviceId });
-    const refreshToken: JWTPayloadModel = await jwtService.decodeToken(tokens.refreshToken);
+    const tokens = await this.jwtService.generateTokens({ user_id, deviceId });
+    const refreshToken: JWTPayloadModel = await this.jwtService.decodeToken(tokens.refreshToken);
     await securityDeviceService.updateDevice(refreshToken, ip, userAgent);
 
     return tokens;
   }
   async checkRefreshToken(token: string): Promise<{ user_id: string; deviceId: string } | null> {
-    const payload = await jwtService.verifyRefreshToken(token);
+    const payload = await this.jwtService.verifyRefreshToken(token);
 
     if (!payload) {
       return null;
@@ -114,4 +114,4 @@ export class AuthService {
     return isUpdated;
   }
 }
-export const authService = new AuthService(userService, userRepository);
+export const authService = new AuthService(userService, userRepository, jwtService);

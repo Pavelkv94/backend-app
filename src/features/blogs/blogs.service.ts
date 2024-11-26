@@ -7,7 +7,7 @@ export interface IBlogService {
   deleteBlog(id: string): Promise<boolean>;
 }
 class BlogService implements IBlogService {
-  constructor(public blogRepository: IBlogRepository) {}
+  constructor(private blogRepository: IBlogRepository) {}
 
   async createBlog(payload: BlogInputModel): Promise<string> {
     const newBlog: BlogEntityModel = {

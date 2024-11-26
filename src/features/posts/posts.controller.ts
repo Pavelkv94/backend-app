@@ -10,6 +10,7 @@ import { ApiError } from "../../exeptions/api-error";
 import { userQueryRepository, UserQueryRepository } from "../users/repositories/users.query-repository";
 import { commentQueryRepository, CommentQueryRepository } from "../comments/repositories/comments.query-repository";
 import { commentService, CommentService } from "../comments/comments.service";
+import { jwtService, JwtService } from "../../adapters/jwt/jwt.service";
 
 export class PostController {
   constructor(
@@ -17,7 +18,8 @@ export class PostController {
     public postService: PostService,
     public commentQueryRepository: CommentQueryRepository,
     public commentService: CommentService,
-    public userQueryRepository: UserQueryRepository
+    public userQueryRepository: UserQueryRepository,
+    public jwtService: JwtService
   ) {}
 
   async getPosts(req: Request<{}, {}, {}, PostInputQueryModel>, res: Response<OutputDataWithPagination<PostViewModel>>, next: NextFunction) {
@@ -107,7 +109,19 @@ export class PostController {
         sortDirection: req.query.sortDirection as SortDirection,
       };
 
-      const comments = await this.commentQueryRepository.findAllComments(req.params.id, queryData);
+      let userId = null;
+
+      if (req.headers.authorization) {
+        const [authType, token] = req.headers.authorization.split(" ");
+        if (authType === "Bearer") {
+          const payload = await this.jwtService.verifyAccessToken(token);
+          if (payload) {
+            userId = payload.user_id;
+          }
+        }
+      }
+
+      const comments = await this.commentQueryRepository.findAllComments(req.params.id, queryData, userId);
 
       res.status(HTTP_STATUSES.SUCCESS).json(comments);
     } catch (error) {
@@ -123,7 +137,7 @@ export class PostController {
       }
 
       const newCommentId = await this.commentService.createComment(req.params.id, req.body, user);
-      const newComment = await this.commentQueryRepository.findComment(newCommentId);
+      const newComment = await this.commentQueryRepository.findComment(newCommentId, user.userId);
 
       if (!newComment) {
         return next(ApiError.NotFound("The requested comment was not found"));
@@ -136,4 +150,4 @@ export class PostController {
   }
 }
 
-export const postController = new PostController(postQueryRepository, postService, commentQueryRepository, commentService, userQueryRepository);
+export const postController = new PostController(postQueryRepository, postService, commentQueryRepository, commentService, userQueryRepository, jwtService);

@@ -1,5 +1,6 @@
 import { SortDirection } from "mongodb";
 import { HydratedDocument } from "mongoose";
+import { LikeInfoType } from "../../likes/models/like.model";
 
 export type CommentInputModel = {
   content: string;
@@ -13,6 +14,7 @@ export type CommentEntityModel = {
     userLogin: string;
   };
   createdAt: string;
+  likesInfo: LikeInfoType;
 };
 
 export type CommentViewModel = Omit<CommentEntityModel, "postId"> & {
