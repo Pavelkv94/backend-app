@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { postsController } from "./posts.controller";
+import { postController } from "./posts.controller";
 import { adminMiddleware } from "../../global-middlewares/admin.middleware";
 import { sortQueryMiddleware } from "../../global-middlewares/sort-query.middleware";
 import { paginationQueryMiddleware } from "../../global-middlewares/pagination-query.middleware";
@@ -11,11 +11,11 @@ import { commentBodyValidator } from "../comments/middlewares/comment.body.valid
 
 export const postsRouter = Router();
 
-postsRouter.get("/", paginationQueryMiddleware, sortQueryMiddleware, inputCheckErrorsMiddleware, postsController.getPosts);
-postsRouter.get("/:id", findPostMiddleware, postsController.getPost);
-postsRouter.post("/", adminMiddleware, findBlogByBodyIdValidator, postBodyValidators, postsController.createPost);
-postsRouter.put("/:id", adminMiddleware, findPostMiddleware, findBlogByBodyIdValidator, postBodyValidators, postsController.updatePost);
-postsRouter.delete("/:id", adminMiddleware, findPostMiddleware, postsController.deletePost);
+postsRouter.get("/", paginationQueryMiddleware, sortQueryMiddleware, inputCheckErrorsMiddleware, postController.getPosts.bind(postController));
+postsRouter.get("/:id", findPostMiddleware, postController.getPost.bind(postController));
+postsRouter.post("/", adminMiddleware, findBlogByBodyIdValidator, postBodyValidators, postController.createPost.bind(postController));
+postsRouter.put("/:id", adminMiddleware, findPostMiddleware, findBlogByBodyIdValidator, postBodyValidators, postController.updatePost.bind(postController));
+postsRouter.delete("/:id", adminMiddleware, findPostMiddleware, postController.deletePost.bind(postController));
 
 postsRouter.get(
   "/:id/comments",
@@ -23,6 +23,13 @@ postsRouter.get(
   ...paginationQueryMiddleware,
   ...sortQueryMiddleware,
   inputCheckErrorsMiddleware,
-  postsController.getComments
+  postController.getComments.bind(postController)
 );
-postsRouter.post("/:id/comments", authAccessTokenMiddleware, findPostMiddleware, commentBodyValidator, inputCheckErrorsMiddleware, postsController.createComment);
+postsRouter.post(
+  "/:id/comments",
+  authAccessTokenMiddleware,
+  findPostMiddleware,
+  commentBodyValidator,
+  inputCheckErrorsMiddleware,
+  postController.createComment.bind(postController)
+);

@@ -1,6 +1,6 @@
 import { body } from "express-validator";
-import { usersQueryRepository } from "../../users/users.query-repository";
 import { inputCheckErrorsMiddleware } from "../../../global-middlewares/inputCheckErrors.middleware";
+import { userQueryRepository } from "../../users/repositories/users.query-repository";
 
 const userEmailInputValidator = body("email")
   .isString()
@@ -9,12 +9,13 @@ const userEmailInputValidator = body("email")
   .isEmail()
   .withMessage("Invalid email")
   .custom(async (email) => {
-    const user = await usersQueryRepository.findUserByEmail(email);
+    const emailConfirmation = await userQueryRepository.findEmailConfirmationByEmail(email);
 
-    if (!user) {
+    if (!emailConfirmation) {
       throw new Error("User not exist");
     }
-    if (user.emailConfirmation.isConfirmed) {
+
+    if (emailConfirmation.isConfirmed) {
       throw new Error("Email is already confirmed");
     }
     return true;

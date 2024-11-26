@@ -1,16 +1,16 @@
 import { body } from "express-validator";
-import { usersQueryRepository } from "../../users/users.query-repository";
+import { userQueryRepository } from "../../users/repositories/users.query-repository";
 import { hasDateExpired } from "../../../utils/date/hasDateExpired";
 import { inputCheckErrorsMiddleware } from "../../../global-middlewares/inputCheckErrors.middleware";
 
 const code = body("recoveryCode").custom(async (code) => {
-  const user = await usersQueryRepository.findUserByRecoveryCode(code);
+  const recoveryConfirmation = await userQueryRepository.findRecoveryByCode(code);
 
-  if (!user) {
+  if (!recoveryConfirmation) {
     throw new Error("The requested user was not found or code invalid");
   }
 
-  if (hasDateExpired(user.recoveryConfirmation.expirationDate)) {
+  if (!recoveryConfirmation.expirationDate || hasDateExpired(recoveryConfirmation.expirationDate)) {
     throw new Error("Your recovery link is expired. Resend recovery email.");
   }
   return true;

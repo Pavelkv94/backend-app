@@ -1,20 +1,16 @@
-import { EmailConfirmationEntityType, RecoveryPasswordEntityType, UserDocument, UserViewModel } from "./models/users.models";
+import { UserDocument, UserViewModel } from "../models/users.models";
 
 export class UserViewDto {
   email: string;
   id: string;
   login: string;
   createdAt: string;
-  emailConfirmation: EmailConfirmationEntityType;
-  recoveryConfirmation: RecoveryPasswordEntityType;
 
   constructor(model: UserDocument) {
     this.id = model._id.toString();
     this.login = model.login;
     this.email = model.email;
     this.createdAt = model.createdAt;
-    this.emailConfirmation = model.emailConfirmation;
-    this.recoveryConfirmation = model.recoveryConfirmation;
   }
 
   static mapToView(user: UserDocument): UserViewDto {
@@ -22,14 +18,11 @@ export class UserViewDto {
   }
 
   static mapToViewArray(users: UserDocument[]): UserViewModel[] {
-    return users.map((user) => {
-      const { emailConfirmation, recoveryConfirmation, ...rest } = this.mapToView(user);
-      return rest;
-    });
+    return users.map((user) => this.mapToView(user));
   }
 }
 
-export class MeDto {
+export class MeViewDto {
   email: string;
   userId: string;
   login: string;

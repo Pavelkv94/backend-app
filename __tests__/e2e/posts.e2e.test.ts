@@ -91,6 +91,8 @@ describe("/posts", () => {
     expect(createPostResponse.status).toBe(201);
 
     const res = await postsManager.getPost(createPostResponse.body.id);
+    console.log(res.body);
+    
     expect(res.status).toBe(200);
     expect(res.body.title).toBe(newPost.title);
     expect(res.body.shortDescription).toBe(newPost.shortDescription);
@@ -105,6 +107,7 @@ describe("/posts", () => {
     expect(createPostResponse.status).toBe(201);
 
     const res = await postsManager.deletePostWithAuth(createPostResponse.body.id);
+    console.log(res.body)
     expect(res.status).toBe(204);
 
     const getPostsResponse = await postsManager.getPosts();

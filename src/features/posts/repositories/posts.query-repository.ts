@@ -1,9 +1,9 @@
-import { PostValidQueryModel, PostViewModel } from "./models/posts.models";
-import { OutputDataWithPagination } from "../../types/common-types";
-import { PostModel } from "../../db/models/Post.model";
+import { PostModel } from "../../../db/models/Post.model";
+import { OutputDataWithPagination } from "../../../types/common-types";
+import { PostValidQueryModel, PostViewModel } from "../models/posts.models";
 import { PostViewDto } from "./dto";
 
-export const postsQueryRepository = {
+export class PostQueryRepository {
   async findAllPosts(query: PostValidQueryModel, blog_id?: string): Promise<OutputDataWithPagination<PostViewModel>> {
     const { pageSize, pageNumber, sortBy, sortDirection } = query;
 
@@ -25,7 +25,7 @@ export const postsQueryRepository = {
       totalCount: postsCount,
       items: postsView,
     };
-  },
+  }
 
   async findPost(id: string): Promise<PostViewModel | null> {
     const postFromDb = await PostModel.findOne({ _id: id });
@@ -34,10 +34,12 @@ export const postsQueryRepository = {
       return null;
     }
     return PostViewDto.mapToView(postFromDb);
-  },
+  }
   async getPostsCount(blog_id?: string): Promise<number> {
     const filter: any = blog_id ? { blogId: blog_id } : {};
 
     return PostModel.countDocuments(filter);
-  },
-};
+  }
+}
+
+export const postQueryRepository = new PostQueryRepository();

@@ -1,48 +1,68 @@
 import { ObjectId } from "mongodb";
-import { PostEntityModel, PostForBlogInputModel, PostInputModel, PostValidQueryModel, PostViewModel } from "./models/posts.models";
-import { postsRepository } from "./posts.repository";
-import { blogsService } from "../blogs/blogs.service";
-import { blogsRepository } from "../blogs/blogs.repository";
+import { PostDocument, PostEntityModel, PostForBlogInputModel, PostInputModel, PostValidQueryModel, PostViewModel } from "./models/posts.models";
+import { blogRepository, IBlogRepository } from "../blogs/repositories/blogs.repository";
+import { postRepository, PostRepository } from "./repositories/posts.repository";
+import { PostModel } from "../../db/models/Post.model";
 
-export const postsService = {
+export class PostService {
+  constructor(private blogRepository: IBlogRepository, private postRepository: PostRepository) {}
+
   async createPost(payload: PostInputModel): Promise<string> {
-    const blog = await blogsRepository.findBlog(payload.blogId);
+    const blog = await this.blogRepository.findBlog(payload.blogId);
 
-    const newPost: PostEntityModel = {
+    const postDto: PostEntityModel = {
       ...payload,
       blogName: blog!.name,
       createdAt: new Date().toISOString(),
     };
 
-    const postId: string = await postsRepository.createPost(newPost);
+    const post = new PostModel(postDto);
+
+    const postId: string = await this.postRepository.save(post);
 
     return postId;
-  },
+  }
 
-  async createForBlog(payload: PostForBlogInputModel, blog_id: string): Promise<PostViewModel | null> {
-    const blog = await blogsRepository.findBlog(blog_id);
+  async createForBlog(payload: PostForBlogInputModel, blog_id: string): Promise<string | null> {
+    const blog = await this.blogRepository.findBlog(blog_id);
 
-    const newPost: PostEntityModel = {
+    const postDto: PostEntityModel = {
       ...payload,
       blogName: blog!.name,
       blogId: blog_id,
       createdAt: new Date().toISOString(),
     };
 
-    const postId = await postsRepository.createPost(newPost);
+    const post = new PostModel(postDto);
 
-    const post = await postsRepository.findPost(postId);
+    const postId: string = await this.postRepository.save(post);
 
-    return post;
-  },
+    return postId;
+  }
 
-  async updatePost(id: string, payload: PostInputModel): Promise<boolean> {
-    const isUpdated = await postsRepository.updatePost(id, payload);
-    return isUpdated;
-  },
+  async updatePost(id: string, payload: PostInputModel): Promise<string | null> {
+    const post = await this.postRepository.findPost(id);
+    const blog = await this.blogRepository.findBlog(payload.blogId);
+
+    if (!post || !blog) {
+      return null;
+    }
+
+    post.title = payload.title;
+    post.shortDescription = payload.shortDescription;
+    post.content = payload.content;
+    post.blogId = payload.blogId;
+    post.blogName = blog.name;
+
+    const updatedPostId = await this.postRepository.save(post);
+
+    return updatedPostId;
+  }
 
   async deletePost(id: string): Promise<boolean> {
-    const isDeleted = await postsRepository.deletePost(id);
+    const isDeleted = await this.postRepository.deletePost(id);
     return isDeleted;
-  },
-};
+  }
+}
+
+export const postService = new PostService(blogRepository, postRepository);

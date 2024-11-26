@@ -1,4 +1,5 @@
 import { CommentInputModel } from "../../src/features/comments/models/comments.models";
+import { LikeInputModel } from "../../src/features/likes/models/like.model";
 import { SETTINGS } from "../../src/settings";
 import { req } from "./test-helpers";
 
@@ -9,12 +10,22 @@ export const commentsManager = {
     return response;
   },
 
+  async getCommentsWithAuth(post_id: string, token: string) {
+    const response = await req.get(`${SETTINGS.PATH.POSTS}/${post_id}/comments`).set({ Authorization: "Bearer " + token });;
+
+    return response;
+  },
+
   async getComment(id: string) {
     const response = await req.get(`${SETTINGS.PATH.COMMENTS}/${id}`);
 
     return response;
   },
+  async getCommentWithAuth(id: string, token: string) {
+    const response = await req.get(`${SETTINGS.PATH.COMMENTS}/${id}`).set({ Authorization: "Bearer " + token });
 
+    return response;
+  },
   async createCommentWithAuthJWT(post_id: string, token: string, payload: any) {
     const response = await req
       .post(`${SETTINGS.PATH.POSTS}/${post_id}/comments`)
@@ -30,7 +41,10 @@ export const commentsManager = {
     return response;
   },
   async updateCommentWithAuth(id: string, token: string, payload: CommentInputModel) {
-    const response = await req.put(`${SETTINGS.PATH.COMMENTS}/${id}`).set({ Authorization: "Bearer " + token }).send(payload);
+    const response = await req
+      .put(`${SETTINGS.PATH.COMMENTS}/${id}`)
+      .set({ Authorization: "Bearer " + token })
+      .send(payload);
 
     return response;
   },
@@ -48,6 +62,14 @@ export const commentsManager = {
     const response = await req
       .post(`${SETTINGS.PATH.POSTS}/${post_id}/comments`)
       .set({ Authorization: "Bearer " + "123" })
+      .send(payload);
+
+    return response;
+  },
+  async likeComment(comment_id: string, token: string, payload: LikeInputModel) {
+    const response = await req
+      .put(`${SETTINGS.PATH.COMMENTS}/${comment_id}/like-status`)
+      .set({ Authorization: "Bearer " + token })
       .send(payload);
 
     return response;

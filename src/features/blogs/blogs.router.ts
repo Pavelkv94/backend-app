@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { adminMiddleware } from "../../global-middlewares/admin.middleware";
-import { blogsController } from "./blogs.controller";
+import { blogController } from "./blogs.controller";
 import { blogBodyValidators } from "./middlewares/blog-body.validator";
 import { inputCheckErrorsMiddleware } from "../../global-middlewares/inputCheckErrors.middleware";
 import { sortQueryMiddleware } from "../../global-middlewares/sort-query.middleware";
@@ -11,11 +11,18 @@ import { findBlogByParamIdMiddleware } from "./middlewares/findBlogByParamId.mid
 
 export const blogsRouter = Router();
 
-blogsRouter.get("/", paginationQueryMiddleware, sortQueryMiddleware, blogQueryMiddleware, inputCheckErrorsMiddleware, blogsController.getBlogs);
-blogsRouter.get("/:id", findBlogByParamIdMiddleware, blogsController.getBlog);
-blogsRouter.post("/", adminMiddleware, blogBodyValidators, blogsController.createBlog);
-blogsRouter.put("/:id", adminMiddleware, findBlogByParamIdMiddleware, blogBodyValidators, blogsController.updateBlog);
-blogsRouter.delete("/:id", adminMiddleware, findBlogByParamIdMiddleware, blogsController.deleteBlog);
+blogsRouter.get(
+  "/",
+  paginationQueryMiddleware,
+  sortQueryMiddleware,
+  blogQueryMiddleware,
+  inputCheckErrorsMiddleware,
+  blogController.getBlogs.bind(blogController)
+);
+blogsRouter.get("/:id", findBlogByParamIdMiddleware, blogController.getBlog.bind(blogController));
+blogsRouter.post("/", adminMiddleware, blogBodyValidators, blogController.createBlog.bind(blogController));
+blogsRouter.put("/:id", adminMiddleware, findBlogByParamIdMiddleware, blogBodyValidators, blogController.updateBlog.bind(blogController));
+blogsRouter.delete("/:id", adminMiddleware, findBlogByParamIdMiddleware, blogController.deleteBlog.bind(blogController));
 
 blogsRouter.get(
   "/:id/posts",
@@ -23,6 +30,6 @@ blogsRouter.get(
   ...paginationQueryMiddleware,
   ...sortQueryMiddleware,
   inputCheckErrorsMiddleware,
-  blogsController.getBlogPosts
+  blogController.getBlogPosts.bind(blogController)
 );
-blogsRouter.post("/:id/posts", adminMiddleware, findBlogByParamIdMiddleware, ...postBodyValidators, blogsController.createBlogPost);
+blogsRouter.post("/:id/posts", adminMiddleware, findBlogByParamIdMiddleware, ...postBodyValidators, blogController.createBlogPost.bind(blogController));

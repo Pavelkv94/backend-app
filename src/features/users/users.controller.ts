@@ -1,13 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import { URIParamsUserModel, UserInputModel, UsersInputQueryModel, UsersValidInputQueryModel, UserViewModel } from "./models/users.models";
 import { HTTP_STATUSES, OutputDataWithPagination } from "../../types/common-types";
-import { usersService } from "./users.service";
-import { usersQueryRepository } from "./users.query-repository";
+import { userService, UserService } from "./users.service";
+import { userQueryRepository, UserQueryRepository } from "./repositories/users.query-repository";
 import { SortDirection } from "mongodb";
 import { ApiError } from "../../exeptions/api-error";
 import { authService } from "../auth/auth.service";
 
-export const usersController = {
+export class UserController {
+  constructor(public userService: UserService, public userQueryRepository: UserQueryRepository) {
+
+  }
   async getUsers(req: Request<{}, {}, {}, UsersInputQueryModel>, res: Response<OutputDataWithPagination<UserViewModel>>, next: NextFunction) {
     try {
       const queryData: UsersValidInputQueryModel = {
@@ -18,31 +21,33 @@ export const usersController = {
         searchLoginTerm: req.query.searchLoginTerm,
         searchEmailTerm: req.query.searchEmailTerm,
       };
+      const users = await this.userQueryRepository.findAllUsers(queryData);
 
-      const users = await usersQueryRepository.findAllUsers(queryData);
       res.status(HTTP_STATUSES.SUCCESS).json(users);
     } catch (error) {
+
       return next(ApiError.UnexpectedError(error as Error));
     }
-  },
+  }
   async createUser(req: Request<{}, {}, UserInputModel>, res: Response<UserViewModel>, next: NextFunction) {
     try {
-      const newUserId = await usersService.create(req.body);
-      await authService.setConfirmEmailStatus(newUserId, true);
-      const newUser = await usersQueryRepository.findUser(newUserId);
-      
+      const userId = await this.userService.create(req.body);
+      const newUser = await this.userQueryRepository.findUserById(userId);
+
       if (!newUser) {
         return next(ApiError.NotFound("The requested user was not found"));
       }
+
+      await authService.setConfirmEmailStatus(newUser.id, true);
 
       res.status(201).json(newUser);
     } catch (error) {
       return next(ApiError.UnexpectedError(error as Error));
     }
-  },
+  }
   async deleteUser(req: Request<URIParamsUserModel>, res: Response, next: NextFunction) {
     try {
-      const isDeletedUser = await usersService.deleteUser(req.params.id);
+      const isDeletedUser = await this.userService.deleteUser(req.params.id);
 
       if (!isDeletedUser) {
         return next(ApiError.NotFound("The requested user was not found"));
@@ -52,5 +57,7 @@ export const usersController = {
     } catch (error) {
       return next(ApiError.UnexpectedError(error as Error));
     }
-  },
+  }
 };
+
+export const userController = new UserController(userService, userQueryRepository);

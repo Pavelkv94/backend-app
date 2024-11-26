@@ -7,8 +7,8 @@ export type EmailConfirmationEntityType = {
   isConfirmed: boolean;
 };
 export type RecoveryPasswordEntityType = {
-  recoveryCode: string;
-  expirationDate: string;
+  recoveryCode: string | null;
+  expirationDate: string | null;
 };
 export type UserEntityModel = {
   login: string;
@@ -31,10 +31,10 @@ export type UserViewModel = {
   createdAt: string;
 };
 
-export type ExpandedUserViewModel = UserViewModel & {
-  emailConfirmation: EmailConfirmationEntityType;
-  recoveryConfirmation: RecoveryPasswordEntityType;
-};
+// export type ExpandedUserViewModel = UserViewModel & {
+//   emailConfirmation: EmailConfirmationEntityType;
+//   recoveryConfirmation: RecoveryPasswordEntityType;
+// };
 
 export type UserInputModel = {
   login: string;

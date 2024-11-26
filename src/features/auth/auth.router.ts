@@ -13,12 +13,12 @@ import { authRecoveryBodyValidators } from "./middlewares/auth-recovery.validato
 
 export const authRouter = Router();
 
-authRouter.post("/login", rateLimiterMiddleware, authLoginBodyValidators, authLoginMiddleware, authController.login);
-authRouter.post("/refresh-token", authRefreshTokenMiddleware, authController.refresh);
-authRouter.get("/me", authAccessTokenMiddleware, authController.me);
-authRouter.post("/registration", authRegistrationBodyValidators, rateLimiterMiddleware, authController.registration);
-authRouter.post("/registration-confirmation", rateLimiterMiddleware, authConfirmBodyValidators, authController.registrationConfirmation);
-authRouter.post("/registration-email-resending", authEmailResendBodyValidators, rateLimiterMiddleware, authController.registrationEmailResending);
-authRouter.post("/logout", authRefreshTokenMiddleware, authController.logout);
-authRouter.post("/password-recovery", rateLimiterMiddleware, authEmailValidators, authController.passwordRecovery);
-authRouter.post("/new-password", rateLimiterMiddleware, authRecoveryBodyValidators, authController.newPassword);
+authRouter.post("/login", rateLimiterMiddleware, authLoginBodyValidators, authLoginMiddleware, authController.login.bind(authController));
+authRouter.post("/refresh-token", authRefreshTokenMiddleware, authController.refresh.bind(authController));
+authRouter.get("/me", authAccessTokenMiddleware, authController.me.bind(authController));
+authRouter.post("/registration", authRegistrationBodyValidators, rateLimiterMiddleware, authController.registration.bind(authController));
+authRouter.post("/registration-confirmation", rateLimiterMiddleware, authConfirmBodyValidators, authController.registrationConfirmation.bind(authController));
+authRouter.post("/registration-email-resending", authEmailResendBodyValidators, rateLimiterMiddleware, authController.registrationEmailResending.bind(authController));
+authRouter.post("/logout", authRefreshTokenMiddleware, authController.logout.bind(authController));
+authRouter.post("/password-recovery", rateLimiterMiddleware, authEmailValidators, authController.passwordRecovery.bind(authController));
+authRouter.post("/new-password", rateLimiterMiddleware, authRecoveryBodyValidators, authController.setNewPassword.bind(authController));

@@ -10,6 +10,10 @@ const CommentSchema = new Schema<WithId<CommentEntityModel>>({
     userLogin: { type: String, require: true },
   },
   createdAt: { type: String, require: true },
+  likesInfo: {
+    likesCount: { type: Number, require: true },
+    dislikesCount: { type: Number, require: true },
+  },
 });
 
 export const CommentModel = model<WithId<CommentEntityModel>>("comments", CommentSchema);

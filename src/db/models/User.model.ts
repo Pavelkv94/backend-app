@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 import { WithId } from "mongodb";
-import { UserDocument, UserEntityModel, UserViewModel } from "../../features/users/models/users.models";
+import { UserEntityModel } from "../../features/users/models/users.models";
 
 const UserSchema = new Schema<WithId<UserEntityModel>>({
   login: { type: String, require: true },
@@ -13,8 +13,8 @@ const UserSchema = new Schema<WithId<UserEntityModel>>({
     isConfirmed: { type: Boolean, require: true },
   },
   recoveryConfirmation: {
-    recoveryCode: { type: String, require: false },
-    expirationDate: { type: String, require: false },
+    recoveryCode: { type: String, require: false, default: null },
+    expirationDate: { type: String, require: false, default: null },
   },
 });
 

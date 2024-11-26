@@ -49,3 +49,4 @@ export const newUser2 = {
 export const newComment = {
   content: "default comment with correct length",
 };
+export const initLikesInfo = { likesCount: 0, dislikesCount: 0, myStatus: "None" };
