@@ -2,7 +2,7 @@ import { JwtTokensType, LoginInputModel } from "./models/auth.models";
 import { JwtService, jwtService } from "../../adapters/jwt/jwt.service";
 import { randomUUID } from "crypto";
 import { getExpirationDate } from "../../utils/date/getExpirationDate";
-import { bcryptService } from "../../adapters/bcrypt.service";
+import { BcryptService, bcryptService } from "../../adapters/bcrypt.service";
 import { securityDeviceService } from "../securityDevices/securityDevices.service";
 import { JWTPayloadModel } from "../../adapters/jwt/models/jwt.models";
 import { UserService, userService } from "../users/users.service";
@@ -11,7 +11,7 @@ import { UserInputModel } from "../users/models/users.models";
 import { SecurityDeviceModel } from "../../db/models/SecurityDevice.model";
 
 export class AuthService {
-  constructor(private userService: UserService, private userRepository: UserRepository, private jwtService: JwtService) {}
+  constructor(private userService: UserService, private userRepository: UserRepository, private jwtService: JwtService, private bcryptService: BcryptService) {}
 
   async registration(payload: UserInputModel): Promise<string | null> {
     const newUserId = await this.userService.create(payload);
@@ -61,7 +61,7 @@ export class AuthService {
     if (!user) {
       return null;
     }
-    const isPasswordValid = await bcryptService.checkPassword(payload.password, user.password);
+    const isPasswordValid = await this.bcryptService.checkPassword(payload.password, user.password);
 
     if (!isPasswordValid) {
       return null;
@@ -114,4 +114,4 @@ export class AuthService {
     return isUpdated;
   }
 }
-export const authService = new AuthService(userService, userRepository, jwtService);
+export const authService = new AuthService(userService, userRepository, jwtService, bcryptService);

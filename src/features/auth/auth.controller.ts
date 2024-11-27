@@ -11,13 +11,13 @@ import {
 import { AuthService, authService } from "./auth.service";
 import { userQueryRepository, UserQueryRepository } from "../users/repositories/users.query-repository";
 import { ApiError } from "../../exeptions/api-error";
-import { nodemailerService } from "../../adapters/mail.service";
+import { NodemailerService, nodemailerService } from "../../adapters/mail.service";
 import { UserInputModel } from "../users/models/users.models";
 import { HTTP_STATUSES } from "../../types/common-types";
 import { SecurityDeviceService, securityDeviceService } from "../securityDevices/securityDevices.service";
 
 export class AuthController {
-  constructor(private userQueryRepository: UserQueryRepository, public authService: AuthService, public securityDevicesService: SecurityDeviceService) {}
+  constructor(private userQueryRepository: UserQueryRepository, public authService: AuthService, public securityDevicesService: SecurityDeviceService, private nodemailerService: NodemailerService) {}
 
   async login(req: Request<{}, {}, LoginInputModel, AdditionalQueryInputModel>, res: Response<LoginOutputModel>, next: NextFunction) {
     try {
@@ -56,7 +56,7 @@ export class AuthController {
         return next(ApiError.NotFound("The requested user was not found"));
       }
       if (confirmationCode) {
-        nodemailerService.sendLetter(req.body.email, confirmationCode, "activationAcc").catch((e) => console.log(e)); //долгий запрос с await
+        this.nodemailerService.sendLetter(req.body.email, confirmationCode, "activationAcc").catch((e) => console.log(e)); //долгий запрос с await
       }
 
       res.sendStatus(HTTP_STATUSES.NO_CONTENT);
@@ -87,7 +87,7 @@ export class AuthController {
 
       const newConfirmationCode = await this.authService.setNewConfirmCode(user.id);
 
-      nodemailerService.sendLetter(req.body.email, newConfirmationCode, "activationAcc").catch((e) => console.log(e)); //долгий запрос с await
+      this.nodemailerService.sendLetter(req.body.email, newConfirmationCode, "activationAcc").catch((e) => console.log(e)); //долгий запрос с await
 
       res.sendStatus(HTTP_STATUSES.NO_CONTENT);
     } catch (error) {
@@ -114,7 +114,7 @@ export class AuthController {
 
       const newConfirmationCode = await authService.setNewRecoveryCode(user.id);
 
-      nodemailerService.sendLetter(req.body.email, newConfirmationCode, "recoveryPass").catch((e) => console.log(e)); //долгий запрос с await
+      this.nodemailerService.sendLetter(req.body.email, newConfirmationCode, "recoveryPass").catch((e) => console.log(e)); //долгий запрос с await
 
       res.sendStatus(HTTP_STATUSES.NO_CONTENT);
     } catch (error) {
@@ -135,4 +135,4 @@ export class AuthController {
   }
 }
 
-export const authController = new AuthController(userQueryRepository, authService, securityDeviceService);
+export const authController = new AuthController(userQueryRepository, authService, securityDeviceService, nodemailerService);

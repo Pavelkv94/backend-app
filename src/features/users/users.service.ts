@@ -1,12 +1,12 @@
 import { UserEntityModel, UserInputModel, UserViewModel } from "./models/users.models";
-import { bcryptService } from "../../adapters/bcrypt.service";
+import { BcryptService, bcryptService } from "../../adapters/bcrypt.service";
 import { randomUUID } from "crypto";
 import { getExpirationDate } from "../../utils/date/getExpirationDate";
 import { UserModel } from "../../db/models/User.model";
 import { userRepository, UserRepository } from "./repositories/users.repository";
 
 export class UserService {
-  constructor(private userRepository: UserRepository) {}
+  constructor(private userRepository: UserRepository, private bcryptService: BcryptService) {}
 
   async findUser(user_id: string): Promise<string | null> {
     const userId = await this.userRepository.findUserById(user_id);
@@ -14,7 +14,7 @@ export class UserService {
     return userId;
   }
   async create(payload: UserInputModel): Promise<string> {
-    const passwordhash = await bcryptService.generateHash(payload.password);
+    const passwordhash = await this.bcryptService.generateHash(payload.password);
 
     const newUser: UserEntityModel = {
       login: payload.login,
@@ -38,7 +38,7 @@ export class UserService {
     return userId;
   }
   async updateUserPass(user_id: string, newPass: string): Promise<boolean> {
-    const passwordhash = await bcryptService.generateHash(newPass);
+    const passwordhash = await this.bcryptService.generateHash(newPass);
 
     const isUpdated = await this.userRepository.updatePass(user_id, passwordhash);
 
@@ -50,4 +50,4 @@ export class UserService {
   }
 }
 
-export const userService = new UserService(userRepository);
+export const userService = new UserService(userRepository, bcryptService);

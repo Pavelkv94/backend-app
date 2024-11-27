@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 
 type MailPurposeType = "activationAcc" | "recoveryPass";
 
-export const nodemailerService = {
+export class NodemailerService {
   async sendLetter(email: string, confirmationCode: string, purpose: MailPurposeType): Promise<void> {
     const isActivation = purpose === "activationAcc";
 
@@ -39,5 +39,7 @@ export const nodemailerService = {
       html: htmlText,
     };
     await transporter.sendMail(mailOptions);
-  },
-};
+  }
+}
+
+export const nodemailerService = new NodemailerService();
