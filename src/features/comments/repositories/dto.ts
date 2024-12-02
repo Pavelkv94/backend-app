@@ -24,7 +24,7 @@ export class CommentViewDto {
     this.likesInfo = {
       likesCount: model.likesInfo.likesCount,
       dislikesCount: model.likesInfo.dislikesCount,
-      myStatus: myStatus, // Include user's like/dislike status
+      myStatus: myStatus, //external
     };
   }
 

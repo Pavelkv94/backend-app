@@ -1,12 +1,13 @@
 import { CommentModel } from "../../db/models/Comment.model";
 import { ResultObject, ResultStatus } from "../../types/common-types";
 import { MeViewModel } from "../auth/models/auth.models";
+import { likeService, LikeService } from "../likes/like.service";
 import { LikeDocument, LikeStatusType } from "../likes/models/like.model";
-import { CommentEntityModel, CommentInputModel } from "./models/comments.models";
+import { CommentDocument, CommentEntityModel, CommentInputModel } from "./models/comments.models";
 import { commentRepository, CommentRepository } from "./repositories/comments.repository";
 
 export class CommentService {
-  constructor(private commentRepository: CommentRepository) {}
+  constructor(private commentRepository: CommentRepository, private likeService: LikeService) {}
 
   async createComment(post_id: string, payload: CommentInputModel, user: MeViewModel): Promise<string> {
     const commentDto: CommentEntityModel = {
@@ -84,26 +85,19 @@ export class CommentService {
       data: isDeletedComment,
     };
   }
-  async updateCommentLikesCount(commentId: string, likeDocument: LikeDocument | null, newStatus: LikeStatusType): Promise<boolean> {
+  private async updateCommentLikesCount(commentId: string, likeDocument: LikeDocument | null, newStatus: LikeStatusType): Promise<boolean> {
     const comment = await this.commentRepository.findComment(commentId);
 
     if (!comment) {
       throw new Error("Something was wrong.");
     }
 
-    const likesCounter = (prevStatus: LikeStatusType, newStatus: LikeStatusType) => {
-      if (prevStatus === "Like") comment.likesInfo.likesCount -= 1;
-      if (prevStatus === "Dislike") comment.likesInfo.dislikesCount -= 1;
-      if (newStatus === "Like") comment.likesInfo.likesCount += 1;
-      if (newStatus === "Dislike") comment.likesInfo.dislikesCount += 1;
-    };
-
     if (!likeDocument) {
       //first like
-      likesCounter("None", newStatus);
+      this.likesCounter("None", newStatus, comment);
     } else {
       //existing like
-      likesCounter(likeDocument.status, newStatus);
+      this.likesCounter(likeDocument.status, newStatus, comment);
     }
 
     const updatedCommentId = await this.commentRepository.save(comment);
@@ -113,6 +107,26 @@ export class CommentService {
     }
     return true;
   }
+  async changeLikeStatus(userId: string, commentId: string, newStatus: LikeStatusType) {
+    const likeDocument = await this.likeService.findLike(userId, commentId);
+
+    const isCalculatedCommentLikes = await this.updateCommentLikesCount(commentId, likeDocument, newStatus);
+
+    if (!isCalculatedCommentLikes) {
+      throw new Error("Comment likes caclulating is failed");
+    }
+    if (likeDocument) {
+      await this.likeService.updateLike(likeDocument, newStatus);
+    } else {
+      await this.likeService.createLike(userId, commentId, newStatus);
+    }
+  }
+  private async likesCounter(prevStatus: LikeStatusType, newStatus: LikeStatusType, comment: CommentDocument) {
+    if (prevStatus === "Like") comment.likesInfo.likesCount -= 1;
+    if (prevStatus === "Dislike") comment.likesInfo.dislikesCount -= 1;
+    if (newStatus === "Like") comment.likesInfo.likesCount += 1;
+    if (newStatus === "Dislike") comment.likesInfo.dislikesCount += 1;
+  }
 }
 
-export const commentService = new CommentService(commentRepository);
+export const commentService = new CommentService(commentRepository, likeService);

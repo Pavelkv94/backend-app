@@ -83,19 +83,7 @@ export class CommentController {
       const commentId = req.params.id;
       const newStatus = req.body.likeStatus;
 
-      const likeDocument = await this.likeService.findLike(userId, commentId);
-
-      const isCalculatedCommentLikes = await this.commentService.updateCommentLikesCount(commentId, likeDocument, newStatus);
-
-      if (!isCalculatedCommentLikes) {
-        throw new Error("Comment likes caclulating is failed");
-      }
-
-      if (likeDocument) {
-        await this.likeService.updateLike(likeDocument, newStatus);
-      } else {
-        await this.likeService.createLike(userId, commentId, newStatus);
-      }
+      await commentService.changeLikeStatus(userId, commentId, newStatus);
 
       res.sendStatus(204);
     } catch (error) {
