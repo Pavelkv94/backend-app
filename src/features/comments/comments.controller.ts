@@ -87,7 +87,6 @@ export class CommentController {
 
       res.sendStatus(204);
     } catch (error) {
-      commentRepository;
       return next(ApiError.UnexpectedError(error as Error));
     }
   }

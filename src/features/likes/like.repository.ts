@@ -2,8 +2,8 @@ import { LikeModel } from "../../db/models/Like.model";
 import { LikeDocument } from "./models/like.model";
 
 export class LikeRepository {
-  async findLike(userId: string, commentId: string): Promise<LikeDocument | null> {
-    const like = await LikeModel.findOne({ user_id: userId, parent_id: commentId });
+  async findLike(userId: string, parent_id: string): Promise<LikeDocument | null> {
+    const like = await LikeModel.findOne({ user_id: userId, parent_id: parent_id });
 
     if(!like) {
       return null

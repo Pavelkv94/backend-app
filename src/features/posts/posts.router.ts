@@ -8,6 +8,7 @@ import { findBlogByBodyIdValidator, postBodyValidators } from "./middlewares/pos
 import { findPostMiddleware } from "./middlewares/findPost.middleware";
 import { authAccessTokenMiddleware } from "../auth/middlewares/auth-accessToken.middleware";
 import { commentBodyValidator } from "../comments/middlewares/comment.body.validator";
+import { likeBodyValidator } from "../likes/middlewares/like-body.validator";
 
 export const postsRouter = Router();
 
@@ -17,6 +18,8 @@ postsRouter.post("/", adminMiddleware, findBlogByBodyIdValidator, postBodyValida
 postsRouter.put("/:id", adminMiddleware, findPostMiddleware, findBlogByBodyIdValidator, postBodyValidators, postController.updatePost.bind(postController));
 postsRouter.delete("/:id", adminMiddleware, findPostMiddleware, postController.deletePost.bind(postController));
 
+postsRouter.put("/:id/like-status", authAccessTokenMiddleware, likeBodyValidator, findPostMiddleware, postController.changeLikeStatus.bind(postController));
+
 postsRouter.get(
   "/:id/comments",
   findPostMiddleware,
@@ -25,6 +28,7 @@ postsRouter.get(
   inputCheckErrorsMiddleware,
   postController.getComments.bind(postController)
 );
+
 postsRouter.post(
   "/:id/comments",
   authAccessTokenMiddleware,

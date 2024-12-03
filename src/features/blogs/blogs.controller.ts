@@ -8,13 +8,15 @@ import { blogQueryRepository, IBlogQueryRepository } from "./repositories/blogs.
 import { ApiError } from "../../exeptions/api-error";
 import { postService, PostService } from "../posts/posts.service";
 import { postQueryRepository, PostQueryRepository } from "../posts/repositories/posts.query-repository";
+import { jwtService, JwtService } from "../../adapters/jwt/jwt.service";
 
 export class BlogController {
   constructor(
     public blogService: IBlogService,
     public blogQueryRepository: IBlogQueryRepository,
     public postService: PostService,
-    public postQueryRepository: PostQueryRepository
+    public postQueryRepository: PostQueryRepository,
+    public jwtService: JwtService
   ) {}
 
   async getBlogs(req: Request<{}, {}, {}, BlogInputQueryModel>, res: Response<OutputDataWithPagination<BlogViewModel>>, next: NextFunction) {
@@ -102,8 +104,21 @@ export class BlogController {
         sortBy: req.query.sortBy,
         sortDirection: req.query.sortDirection as SortDirection,
       };
+
+      let userId = null;
+
+      if (req.headers.authorization) {
+        const [authType, token] = req.headers.authorization.split(" ");
+        if (authType === "Bearer") {
+          const payload = await this.jwtService.verifyAccessToken(token);
+          if (payload) {
+            userId = payload.user_id;
+          }
+        }
+      }
+
       const blog = await this.blogQueryRepository.findBlog(req.params.id);
-      const posts = await this.postQueryRepository.findAllPosts(queryData, blog!.id);
+      const posts = await this.postQueryRepository.findAllPosts(queryData, userId, blog!.id);
 
       res.status(HTTP_STATUSES.SUCCESS).json(posts);
     } catch (error) {
@@ -118,7 +133,19 @@ export class BlogController {
         return next(ApiError.NotFound("The requested new post was not found"));
       }
 
-      const newPost = await this.postQueryRepository.findPost(newPostId);
+      let userId = null;
+
+      if (req.headers.authorization) {
+        const [authType, token] = req.headers.authorization.split(" ");
+        if (authType === "Bearer") {
+          const payload = await this.jwtService.verifyAccessToken(token);
+          if (payload) {
+            userId = payload.user_id;
+          }
+        }
+      }
+
+      const newPost = await this.postQueryRepository.findPost(newPostId, userId);
       if (!newPost) {
         return next(ApiError.NotFound("The requested new post was not found"));
       }
@@ -130,4 +157,4 @@ export class BlogController {
   }
 }
 
-export const blogController = new BlogController(blogService, blogQueryRepository, postService, postQueryRepository);
+export const blogController = new BlogController(blogService, blogQueryRepository, postService, postQueryRepository, jwtService);

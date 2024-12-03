@@ -2,14 +2,14 @@ import { UserDocument, UserEntityModel, UserPasswordModel, UserViewModel } from 
 import { UserModel } from "../../../db/models/User.model";
 
 export class UserRepository {
-  async findUserById(id: string): Promise<string | null> {
+  async findUserById(id: string): Promise<UserDocument | null> {
     const userFromDb = await UserModel.findOne({ _id: id });
 
     if (!userFromDb) {
       return null;
     }
 
-    return userFromDb.id;
+    return userFromDb;
   }
   async save(user: UserDocument): Promise<string> {
     const result = await user.save();

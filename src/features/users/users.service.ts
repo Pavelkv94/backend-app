@@ -9,9 +9,9 @@ export class UserService {
   constructor(private userRepository: UserRepository, private bcryptService: BcryptService) {}
 
   async findUser(user_id: string): Promise<string | null> {
-    const userId = await this.userRepository.findUserById(user_id);
+    const user = await this.userRepository.findUserById(user_id);
 
-    return userId;
+    return user ? user.id : null;
   }
   async create(payload: UserInputModel): Promise<string> {
     const passwordhash = await this.bcryptService.generateHash(payload.password);

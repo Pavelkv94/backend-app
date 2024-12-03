@@ -11,6 +11,7 @@ import { userQueryRepository, UserQueryRepository } from "../users/repositories/
 import { commentQueryRepository, CommentQueryRepository } from "../comments/repositories/comments.query-repository";
 import { commentService, CommentService } from "../comments/comments.service";
 import { jwtService, JwtService } from "../../adapters/jwt/jwt.service";
+import { LikeInputModel } from "../likes/models/like.model";
 
 export class PostController {
   constructor(
@@ -31,7 +32,19 @@ export class PostController {
         sortDirection: req.query.sortDirection as SortDirection,
       };
 
-      const posts = await this.postQueryRepository.findAllPosts(queryData);
+      let userId = null;
+
+      if (req.headers.authorization) {
+        const [authType, token] = req.headers.authorization.split(" ");
+        if (authType === "Bearer") {
+          const payload = await this.jwtService.verifyAccessToken(token);
+          if (payload) {
+            userId = payload.user_id;
+          }
+        }
+      }
+
+      const posts = await this.postQueryRepository.findAllPosts(queryData, userId);
 
       res.status(HTTP_STATUSES.SUCCESS).json(posts);
     } catch (error) {
@@ -41,7 +54,19 @@ export class PostController {
 
   async getPost(req: Request<URIParamsPostModel>, res: Response<PostViewModel>, next: NextFunction) {
     try {
-      const post = await this.postQueryRepository.findPost(req.params.id);
+      let userId = null;
+
+      if (req.headers.authorization) {
+        const [authType, token] = req.headers.authorization.split(" ");
+        if (authType === "Bearer") {
+          const payload = await this.jwtService.verifyAccessToken(token);
+          if (payload) {
+            userId = payload.user_id;
+          }
+        }
+      }
+
+      const post = await this.postQueryRepository.findPost(req.params.id, userId);
 
       if (!post) {
         return next(ApiError.NotFound("The requested resource was not found"));
@@ -55,8 +80,20 @@ export class PostController {
 
   async createPost(req: Request<any, any, PostInputModel>, res: Response<PostViewModel>, next: NextFunction) {
     try {
+      let userId = null;
+
+      if (req.headers.authorization) {
+        const [authType, token] = req.headers.authorization.split(" ");
+        if (authType === "Bearer") {
+          const payload = await this.jwtService.verifyAccessToken(token);
+          if (payload) {
+            userId = payload.user_id;
+          }
+        }
+      }
+
       const newPostId = await this.postService.createPost(req.body);
-      const newPost = await this.postQueryRepository.findPost(newPostId);
+      const newPost = await this.postQueryRepository.findPost(newPostId, userId);
 
       if (!newPost) {
         return next(ApiError.NotFound("The requested post was not found"));
@@ -144,6 +181,20 @@ export class PostController {
       }
 
       res.status(201).send(newComment);
+    } catch (error) {
+      return next(ApiError.UnexpectedError(error as Error));
+    }
+  }
+
+  async changeLikeStatus(req: Request<URIParamsPostModel, {}, LikeInputModel>, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user.id;
+      const postId = req.params.id;
+      const newStatus = req.body.likeStatus;
+
+      await postService.changeLikeStatus(userId, postId, newStatus);
+
+      res.sendStatus(204);
     } catch (error) {
       return next(ApiError.UnexpectedError(error as Error));
     }

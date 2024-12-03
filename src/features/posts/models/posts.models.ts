@@ -1,5 +1,6 @@
 import { SortDirection } from "mongodb";
 import { HydratedDocument } from "mongoose";
+import { ExtendedLikeInfoType, NewestLikeType } from "../../likes/models/like.model";
 
 export type PostEntityModel = {
   title: string;
@@ -8,6 +9,7 @@ export type PostEntityModel = {
   blogId: string;
   blogName: string;
   createdAt: string;
+  extendedLikesInfo: ExtendedLikeInfoType;
 };
 
 export type PostViewModel = {

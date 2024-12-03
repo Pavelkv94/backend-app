@@ -4,6 +4,7 @@ import { LikeEntityModel } from "../../features/likes/models/like.model";
 
 const LikeSchema = new Schema<WithId<LikeEntityModel>>({
   user_id: { type: String, require: true },
+  user_login: { type: String, require: true },
   parent_id: { type: String, require: true },
   status: { type: String, require: true, default: "None" },
   updatedAt: { type: String, required: true },

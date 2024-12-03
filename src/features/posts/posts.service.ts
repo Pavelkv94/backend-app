@@ -1,11 +1,12 @@
-import { ObjectId } from "mongodb";
 import { PostDocument, PostEntityModel, PostForBlogInputModel, PostInputModel, PostValidQueryModel, PostViewModel } from "./models/posts.models";
 import { blogRepository, IBlogRepository } from "../blogs/repositories/blogs.repository";
 import { postRepository, PostRepository } from "./repositories/posts.repository";
 import { PostModel } from "../../db/models/Post.model";
+import { LikeDocument, LikeStatusType } from "../likes/models/like.model";
+import { likeService, LikeService } from "../likes/like.service";
 
 export class PostService {
-  constructor(private blogRepository: IBlogRepository, private postRepository: PostRepository) {}
+  constructor(private blogRepository: IBlogRepository, private postRepository: PostRepository, private likeService: LikeService) {}
 
   async createPost(payload: PostInputModel): Promise<string> {
     const blog = await this.blogRepository.findBlog(payload.blogId);
@@ -14,6 +15,11 @@ export class PostService {
       ...payload,
       blogName: blog!.name,
       createdAt: new Date().toISOString(),
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        newestLikes: [],
+      },
     };
 
     const post = new PostModel(postDto);
@@ -31,6 +37,11 @@ export class PostService {
       blogName: blog!.name,
       blogId: blog_id,
       createdAt: new Date().toISOString(),
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        newestLikes: [],
+      },
     };
 
     const post = new PostModel(postDto);
@@ -63,6 +74,51 @@ export class PostService {
     const isDeleted = await this.postRepository.deletePost(id);
     return isDeleted;
   }
+
+  async changeLikeStatus(userId: string, postId: string, newStatus: LikeStatusType) {
+    const likeDocument = await this.likeService.findLike(userId, postId);
+
+    const isCalculatedCommentLikes = await this.updatePostLikesCount(postId, likeDocument, newStatus);
+
+    if (!isCalculatedCommentLikes) {
+      throw new Error("Comment likes caclulating is failed");
+    }
+    if (likeDocument) {
+      await this.likeService.updateLike(likeDocument, newStatus);
+    } else {
+      await this.likeService.createLike(userId, postId, newStatus);
+    }
+  }
+
+  private async updatePostLikesCount(postId: string, likeDocument: LikeDocument | null, newStatus: LikeStatusType): Promise<boolean> {
+    const post = await this.postRepository.findPost(postId);
+
+    if (!post) {
+      throw new Error("Something was wrong.");
+    }
+
+    if (!likeDocument) {
+      //first like
+      this.likesCounter("None", newStatus, post);
+    } else {
+      //existing like
+      this.likesCounter(likeDocument.status, newStatus, post);
+    }
+
+    const updatedPostId = await this.postRepository.save(post);
+
+    if (!updatedPostId) {
+      return false;
+    }
+    return true;
+  }
+
+  private async likesCounter(prevStatus: LikeStatusType, newStatus: LikeStatusType, post: PostDocument) {
+    if (prevStatus === "Like") post.extendedLikesInfo.likesCount -= 1;
+    if (prevStatus === "Dislike") post.extendedLikesInfo.dislikesCount -= 1;
+    if (newStatus === "Like") post.extendedLikesInfo.likesCount += 1;
+    if (newStatus === "Dislike") post.extendedLikesInfo.dislikesCount += 1;
+  }
 }
 
-export const postService = new PostService(blogRepository, postRepository);
+export const postService = new PostService(blogRepository, postRepository, likeService);
