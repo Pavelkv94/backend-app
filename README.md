@@ -1,5 +1,7 @@
 # backend-app
 
+Lessons:
+
 1. videos api
 2. input validation
 3. blogs and posts in mongodb
