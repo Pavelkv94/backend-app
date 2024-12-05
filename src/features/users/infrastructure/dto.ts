@@ -1,4 +1,4 @@
-import { UserDocument, UserViewModel } from "../models/users.models";
+import { UserViewModel, UserDocument } from "../domain/users.models";
 
 export class UserViewDto {
   email: string;

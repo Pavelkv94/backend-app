@@ -5,10 +5,10 @@ import { getExpirationDate } from "../../utils/date/getExpirationDate";
 import { BcryptService, bcryptService } from "../../adapters/bcrypt.service";
 import { securityDeviceService } from "../securityDevices/securityDevices.service";
 import { JWTPayloadModel } from "../../adapters/jwt/models/jwt.models";
-import { UserService, userService } from "../users/users.service";
-import { UserRepository, userRepository } from "../users/repositories/users.repository";
-import { UserInputModel } from "../users/models/users.models";
+import { UserService, userService } from "../users/application/users.service";
 import { SecurityDeviceModel } from "../../db/models/SecurityDevice.model";
+import { UserInputModel } from "../users/domain/users.models";
+import { userRepository, UserRepository } from "../users/infrastructure/users.repository";
 
 export class AuthService {
   constructor(private userService: UserService, private userRepository: UserRepository, private jwtService: JwtService, private bcryptService: BcryptService) {}
@@ -69,30 +69,42 @@ export class AuthService {
     return user.id;
   }
   async setConfirmEmailStatus(user_id: string, status: boolean): Promise<boolean> {
-    const isChanged = await this.userRepository.setConfirmEmailStatus(user_id, status);
+    const user = await this.userRepository.findUserById(user_id);
+    if (!user) {
+      return false;
+    }
+    user.setConfirmEmailStatus(status);
+    await this.userRepository.save(user);
 
-    return isChanged;
+    return true;
   }
   async setNewConfirmCode(user_id: string): Promise<string> {
     const newConfirmationCode = randomUUID();
     const newExpirationDate = getExpirationDate(30);
 
-    const isUpdatedUserConfirmation = await this.userRepository.setConfirmCode(user_id, newConfirmationCode, newExpirationDate);
+    const user = await this.userRepository.findUserById(user_id);
 
-    if (!isUpdatedUserConfirmation) {
-      throw new Error("Update User confirmation Failed");
+    if (!user) {
+      throw new Error("Something was wrong");
     }
+
+    user.setConfirmCode(newConfirmationCode, newExpirationDate);
+    await this.userRepository.save(user);
+
     return newConfirmationCode;
   }
   async setNewRecoveryCode(user_id: string): Promise<string> {
     const newRecoveryCode = randomUUID();
     const newExpirationDate = getExpirationDate(30);
 
-    const isUpdatedUserRecovery = await this.userRepository.setRecoveryCode(user_id, newRecoveryCode, newExpirationDate);
+    const user = await this.userRepository.findUserById(user_id);
 
-    if (!isUpdatedUserRecovery) {
-      throw new Error("Update User recovery Failed");
+    if (!user) {
+      throw new Error("Something was wrong");
     }
+
+    user.setRecoveryCode(newRecoveryCode, newExpirationDate);
+
     return newRecoveryCode;
   }
   async checkSessionVersion(payload: JWTPayloadModel): Promise<boolean> {

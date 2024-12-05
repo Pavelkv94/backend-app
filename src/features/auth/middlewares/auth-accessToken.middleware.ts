@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { jwtService } from "../../../adapters/jwt/jwt.service";
-import { userQueryRepository } from "../../users/repositories/users.query-repository";
 import { ApiError } from "../../../exeptions/api-error";
+import { userQueryRepository } from "../../users/infrastructure/users.query-repository";
 
 export const authAccessTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.headers.authorization) {

@@ -4,9 +4,9 @@ import { usersManager } from "../helpers/usersManager";
 import { createString, newUser } from "../helpers/datasets";
 import { LoginInputModel } from "../../src/features/auth/models/auth.models";
 import { nodemailerService } from "../../src/adapters/mail.service";
-import { userQueryRepository } from "../../src/features/users/repositories/users.query-repository";
 import { authManager } from "../helpers/authManager";
-import { userRepository } from "../../src/features/users/repositories/users.repository";
+import { userQueryRepository } from "../../src/features/users/infrastructure/users.query-repository";
+import { userRepository } from "../../src/features/users/infrastructure/users.repository";
 
 describe("/test", () => {
   let mongoServer: MongoMemoryServer;
@@ -174,7 +174,7 @@ describe("/test", () => {
 
     const confirmResponse = await authManager.confirmation(newEmailConfirmation!);
     expect(confirmResponse.status).toBe(204);
-
+    
     expect(confirmationCode).not.toBe(newEmailConfirmation);
   });
 

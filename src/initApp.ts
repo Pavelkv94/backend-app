@@ -4,7 +4,7 @@ import { SETTINGS } from "./settings";
 import { postsRouter } from "./features/posts/posts.router";
 import { blogsRouter } from "./features/blogs/blogs.router";
 import { config } from "dotenv";
-import { usersRouter } from "./features/users/users.router";
+import { usersRouter } from "./features/users/api/users.router";
 import { testingRouter } from "./features/testing/testing.router";
 import { authRouter } from "./features/auth/auth.router";
 import { commentsRouter } from "./features/comments/comments.router";

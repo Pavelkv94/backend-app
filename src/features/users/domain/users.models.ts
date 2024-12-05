@@ -1,5 +1,6 @@
 import { SortDirection } from "mongodb";
 import { HydratedDocument } from "mongoose";
+import { IUserMethods } from "./User.entity";
 
 export type EmailConfirmationEntityType = {
   confirmationCode: string;
@@ -31,11 +32,6 @@ export type UserViewModel = {
   createdAt: string;
 };
 
-// export type ExpandedUserViewModel = UserViewModel & {
-//   emailConfirmation: EmailConfirmationEntityType;
-//   recoveryConfirmation: RecoveryPasswordEntityType;
-// };
-
 export type UserInputModel = {
   login: string;
   password: string;
@@ -64,4 +60,5 @@ export type UsersValidInputQueryModel = {
   searchEmailTerm: string;
 };
 
-export type UserDocument = HydratedDocument<UserEntityModel>;
+export type UserDocument = HydratedDocument<UserEntityModel, IUserMethods>;
+

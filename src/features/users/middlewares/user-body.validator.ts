@@ -1,7 +1,6 @@
 import { body } from "express-validator";
-import { db } from "../../../db/db";
 import { inputCheckErrorsMiddleware } from "../../../global-middlewares/inputCheckErrors.middleware";
-import { UserModel } from "../../../db/models/User.model";
+import { UserModel } from "../domain/User.entity";
 
 type UniqueField = {
   login?: string;

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { userRepository } from "../repositories/users.repository";
 import { ApiError } from "../../../exeptions/api-error";
+import { userRepository } from "../infrastructure/users.repository";
 
 export const findUserMiddleware = (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
   const user = userRepository.findUserById(req.params.id);

@@ -1,8 +1,8 @@
-import { EmailConfirmationEntityType, RecoveryPasswordEntityType, UsersValidInputQueryModel, UserViewModel } from "../models/users.models";
 import { OutputDataWithPagination } from "../../../types/common-types";
 import { MeViewModel } from "../../auth/models/auth.models";
-import { UserModel } from "../../../db/models/User.model";
 import { MeViewDto, UserViewDto } from "./dto";
+import { EmailConfirmationEntityType, RecoveryPasswordEntityType, UsersValidInputQueryModel, UserViewModel } from "../domain/users.models";
+import { UserModel } from "../domain/User.entity";
 
 export class UserQueryRepository {
   async findAllUsers(query: UsersValidInputQueryModel): Promise<OutputDataWithPagination<UserViewModel>> {

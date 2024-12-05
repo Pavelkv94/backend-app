@@ -9,12 +9,12 @@ import {
   RecoveryPasswordInputModel,
 } from "./models/auth.models";
 import { AuthService, authService } from "./auth.service";
-import { userQueryRepository, UserQueryRepository } from "../users/repositories/users.query-repository";
 import { ApiError } from "../../exeptions/api-error";
 import { NodemailerService, nodemailerService } from "../../adapters/mail.service";
-import { UserInputModel } from "../users/models/users.models";
 import { HTTP_STATUSES } from "../../types/common-types";
 import { SecurityDeviceService, securityDeviceService } from "../securityDevices/securityDevices.service";
+import { userQueryRepository, UserQueryRepository } from "../users/infrastructure/users.query-repository";
+import { UserInputModel } from "../users/domain/users.models";
 
 export class AuthController {
   constructor(private userQueryRepository: UserQueryRepository, public authService: AuthService, public securityDevicesService: SecurityDeviceService, private nodemailerService: NodemailerService) {}

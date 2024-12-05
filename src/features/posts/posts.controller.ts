@@ -7,11 +7,11 @@ import { PostQueryRepository, postQueryRepository } from "./repositories/posts.q
 import { CommentInputModel, CommentInputQueryModel, CommentViewModel } from "../comments/models/comments.models";
 import { IdType } from "../auth/models/auth.models";
 import { ApiError } from "../../exeptions/api-error";
-import { userQueryRepository, UserQueryRepository } from "../users/repositories/users.query-repository";
 import { commentQueryRepository, CommentQueryRepository } from "../comments/repositories/comments.query-repository";
 import { commentService, CommentService } from "../comments/comments.service";
 import { jwtService, JwtService } from "../../adapters/jwt/jwt.service";
 import { LikeInputModel } from "../likes/models/like.model";
+import { userQueryRepository, UserQueryRepository } from "../users/infrastructure/users.query-repository";
 
 export class PostController {
   constructor(

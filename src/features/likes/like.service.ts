@@ -1,5 +1,5 @@
 import { LikeModel } from "../../db/models/Like.model";
-import { userRepository, UserRepository } from "../users/repositories/users.repository";
+import { userRepository, UserRepository } from "../users/infrastructure/users.repository";
 import { likeRepository, LikeRepository } from "./like.repository";
 import { LikeDocument, LikeStatusType } from "./models/like.model";
 

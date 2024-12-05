@@ -14,3 +14,5 @@ Lessons:
 10. password recovery, connect mongoose
 11. likes for comments
 12. likes for posts, DDD
+12.1 users - DDD
+12.2 inversify

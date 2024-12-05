@@ -1,7 +1,7 @@
 import { body } from "express-validator";
 import { hasDateExpired } from "../../../utils/date/hasDateExpired";
 import { inputCheckErrorsMiddleware } from "../../../global-middlewares/inputCheckErrors.middleware";
-import { userQueryRepository } from "../../users/repositories/users.query-repository";
+import { userQueryRepository } from "../../users/infrastructure/users.query-repository";
 
 const code = body("code").custom(async (code) => {
   const emailConfirmation = await userQueryRepository.findEmailConfirmationByCode(code);

@@ -1,7 +1,7 @@
 import { body } from "express-validator";
-import { userQueryRepository } from "../../users/repositories/users.query-repository";
 import { hasDateExpired } from "../../../utils/date/hasDateExpired";
 import { inputCheckErrorsMiddleware } from "../../../global-middlewares/inputCheckErrors.middleware";
+import { userQueryRepository } from "../../users/infrastructure/users.query-repository";
 
 const code = body("recoveryCode").custom(async (code) => {
   const recoveryConfirmation = await userQueryRepository.findRecoveryByCode(code);

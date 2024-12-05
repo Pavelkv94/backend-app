@@ -2,8 +2,8 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import { db } from "../../src/db/db";
 import { usersManager } from "../helpers/usersManager";
 import { createString, fakeId, newUser } from "../helpers/datasets";
-import { userRepository } from "../../src/features/users/repositories/users.repository";
-import { userQueryRepository } from "../../src/features/users/repositories/users.query-repository";
+import { userRepository } from "../../src/features/users/infrastructure/users.repository";
+import { userQueryRepository } from "../../src/features/users/infrastructure/users.query-repository";
 
 describe("/users", () => {
   let mongoServer: MongoMemoryServer;
