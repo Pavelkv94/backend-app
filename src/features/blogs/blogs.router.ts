@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { adminMiddleware } from "../../global-middlewares/admin.middleware";
-import { blogController } from "./blogs.controller";
 import { blogBodyValidators } from "./middlewares/blog-body.validator";
 import { inputCheckErrorsMiddleware } from "../../global-middlewares/inputCheckErrors.middleware";
 import { sortQueryMiddleware } from "../../global-middlewares/sort-query.middleware";
@@ -8,8 +7,12 @@ import { paginationQueryMiddleware } from "../../global-middlewares/pagination-q
 import { postBodyValidators } from "../posts/middlewares/post-body.validator";
 import { blogQueryMiddleware } from "./middlewares/blog-query.middleware";
 import { findBlogByParamIdMiddleware } from "./middlewares/findBlogByParamId.middleware";
+import { container } from "../../composition.root";
+import { BlogController } from "./blogs.controller";
 
 export const blogsRouter = Router();
+
+const blogController = container.resolve(BlogController);
 
 blogsRouter.get(
   "/",

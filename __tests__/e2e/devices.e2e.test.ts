@@ -5,7 +5,6 @@ import { newUser, newUser2 } from "../helpers/datasets";
 import { LoginInputModel } from "../../src/features/auth/models/auth.models";
 import { authManager } from "../helpers/authManager";
 import { devicesManager } from "../helpers/devicesManager";
-import { jwtService } from "../../src/adapters/jwt/jwt.service";
 
 describe("/security/devices", () => {
   let mongoServer: MongoMemoryServer;

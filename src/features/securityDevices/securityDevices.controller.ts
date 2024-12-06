@@ -3,9 +3,11 @@ import { AdditionalQueryInputModel } from "../auth/models/auth.models";
 import { ApiError } from "../../exeptions/api-error";
 import { DeviceViewModel, URIParamsDeviceModel } from "./models/securityDevices.model";
 import { HTTP_STATUSES, ResultStatus } from "../../types/common-types";
-import { securityDeviceQueryRepository, SecurityDeviceQueryRepository } from "./repositories/securityDevices.query-repository";
-import { securityDeviceService, SecurityDeviceService } from "./securityDevices.service";
+import { SecurityDeviceQueryRepository } from "./repositories/securityDevices.query-repository";
+import { SecurityDeviceService } from "./securityDevices.service";
+import { injectable } from "inversify";
 
+@injectable()
 export class SecurityDeviceController {
   constructor(public securityDeviceQueryRepository: SecurityDeviceQueryRepository, public securityDeviceService: SecurityDeviceService) {}
 
@@ -48,5 +50,3 @@ export class SecurityDeviceController {
     }
   }
 }
-
-export const securityDeviceController = new SecurityDeviceController(securityDeviceQueryRepository, securityDeviceService);

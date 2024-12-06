@@ -1,9 +1,11 @@
+import { injectable } from "inversify";
 import { LikeModel } from "../../../db/models/Like.model";
 import { PostModel } from "../../../db/models/Post.model";
 import { OutputDataWithPagination } from "../../../types/common-types";
 import { PostValidQueryModel, PostViewModel } from "../models/posts.models";
 import { PostViewDto } from "./dto";
 
+@injectable()
 export class PostQueryRepository {
   async findAllPosts(query: PostValidQueryModel, userId: string | null, blog_id?: string): Promise<OutputDataWithPagination<PostViewModel>> {
     const { pageSize, pageNumber, sortBy, sortDirection } = query;
@@ -72,7 +74,10 @@ export class PostQueryRepository {
     }
     const postLikes = await LikeModel.find({ parent_id: postFromDb.id }).sort({ updatedAt: "desc" }).lean();
 
-    const newestLikes = postLikes.filter(like => like.status === "Like").slice(0, 3).map((like) => ({ addedAt: like.updatedAt, userId: like.user_id, login: like.user_login }));
+    const newestLikes = postLikes
+      .filter((like) => like.status === "Like")
+      .slice(0, 3)
+      .map((like) => ({ addedAt: like.updatedAt, userId: like.user_id, login: like.user_login }));
     const currentUserLike = postLikes.find((like) => like.user_id === userId);
     const myStatus = currentUserLike ? currentUserLike.status : "None";
     return PostViewDto.mapToView(postFromDb, myStatus, newestLikes);
@@ -83,5 +88,3 @@ export class PostQueryRepository {
     return PostModel.countDocuments(filter);
   }
 }
-
-export const postQueryRepository = new PostQueryRepository();

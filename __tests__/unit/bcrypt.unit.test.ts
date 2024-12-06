@@ -1,4 +1,7 @@
-import { bcryptService } from "../../src/adapters/bcrypt.service";
+import { BcryptService } from "../../src/adapters/bcrypt.service";
+import { container } from "../../src/composition.root";
+
+const bcryptService = container.get(BcryptService);
 
 describe("bcrypt", () => {
   it("password should be correct", async () => {

@@ -1,8 +1,10 @@
+import { injectable } from "inversify";
 import { LikeModel } from "../../db/models/Like.model";
-import { userRepository, UserRepository } from "../users/infrastructure/users.repository";
-import { likeRepository, LikeRepository } from "./like.repository";
+import { UserRepository } from "../users/infrastructure/users.repository";
+import { LikeRepository } from "./like.repository";
 import { LikeDocument, LikeStatusType } from "./models/like.model";
 
+@injectable()
 export class LikeService {
   constructor(private likeRepository: LikeRepository, private userRepository: UserRepository) {}
 
@@ -13,7 +15,6 @@ export class LikeService {
   }
 
   async createLike(userId: string, parent_id: string, likeStatus: LikeStatusType): Promise<boolean> {
-    
     const user = await this.userRepository.findUserById(userId);
 
     const newLike = {
@@ -39,5 +40,3 @@ export class LikeService {
     return !!likeId;
   }
 }
-
-export const likeService = new LikeService(likeRepository, userRepository);

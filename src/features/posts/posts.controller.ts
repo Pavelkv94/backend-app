@@ -1,18 +1,20 @@
 import { NextFunction, Request, Response } from "express";
 import { PostInputModel, PostInputQueryModel, PostViewModel, URIParamsPostModel } from "./models/posts.models";
-import { PostService, postService } from "./posts.service";
+import { PostService } from "./posts.service";
 import { HTTP_STATUSES, OutputDataWithPagination } from "../../types/common-types";
 import { SortDirection } from "mongodb";
-import { PostQueryRepository, postQueryRepository } from "./repositories/posts.query-repository";
+import { PostQueryRepository } from "./repositories/posts.query-repository";
 import { CommentInputModel, CommentInputQueryModel, CommentViewModel } from "../comments/models/comments.models";
 import { IdType } from "../auth/models/auth.models";
 import { ApiError } from "../../exeptions/api-error";
-import { commentQueryRepository, CommentQueryRepository } from "../comments/repositories/comments.query-repository";
-import { commentService, CommentService } from "../comments/comments.service";
-import { jwtService, JwtService } from "../../adapters/jwt/jwt.service";
+import {  CommentQueryRepository } from "../comments/repositories/comments.query-repository";
+import {  CommentService } from "../comments/comments.service";
+import {  JwtService } from "../../adapters/jwt/jwt.service";
 import { LikeInputModel } from "../likes/models/like.model";
-import { userQueryRepository, UserQueryRepository } from "../users/infrastructure/users.query-repository";
+import {  UserQueryRepository } from "../users/infrastructure/users.query-repository";
+import { injectable } from "inversify";
 
+@injectable()
 export class PostController {
   constructor(
     public postQueryRepository: PostQueryRepository,
@@ -192,7 +194,7 @@ export class PostController {
       const postId = req.params.id;
       const newStatus = req.body.likeStatus;
 
-      await postService.changeLikeStatus(userId, postId, newStatus);
+      await this.postService.changeLikeStatus(userId, postId, newStatus);
 
       res.sendStatus(204);
     } catch (error) {
@@ -200,5 +202,3 @@ export class PostController {
     }
   }
 }
-
-export const postController = new PostController(postQueryRepository, postService, commentQueryRepository, commentService, userQueryRepository, jwtService);

@@ -1,19 +1,21 @@
 import { NextFunction, Request, Response } from "express";
 import { BlogInputModel, BlogInputQueryModel, BlogViewModel, URIParamsBlogModel } from "./models/blogs.models";
-import { blogService, IBlogService } from "./blogs.service";
+import { BlogService } from "./blogs.service";
 import { SortDirection } from "mongodb";
 import { HTTP_STATUSES, OutputDataWithPagination } from "../../types/common-types";
 import { PostForBlogInputModel, PostInputQueryModel, PostViewModel } from "../posts/models/posts.models";
-import { blogQueryRepository, IBlogQueryRepository } from "./repositories/blogs.query-repository";
+import { BlogQueryRepository } from "./repositories/blogs.query-repository";
 import { ApiError } from "../../exeptions/api-error";
-import { postService, PostService } from "../posts/posts.service";
-import { postQueryRepository, PostQueryRepository } from "../posts/repositories/posts.query-repository";
-import { jwtService, JwtService } from "../../adapters/jwt/jwt.service";
+import { PostService } from "../posts/posts.service";
+import { PostQueryRepository } from "../posts/repositories/posts.query-repository";
+import { JwtService } from "../../adapters/jwt/jwt.service";
+import { injectable } from "inversify";
 
+@injectable()
 export class BlogController {
   constructor(
-    public blogService: IBlogService,
-    public blogQueryRepository: IBlogQueryRepository,
+    public blogService: BlogService,
+    public blogQueryRepository: BlogQueryRepository,
     public postService: PostService,
     public postQueryRepository: PostQueryRepository,
     public jwtService: JwtService
@@ -156,5 +158,3 @@ export class BlogController {
     }
   }
 }
-
-export const blogController = new BlogController(blogService, blogQueryRepository, postService, postQueryRepository, jwtService);

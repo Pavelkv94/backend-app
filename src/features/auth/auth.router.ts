@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { authController } from "./auth.controller";
 import { authLoginBodyValidators } from "./middlewares/auth-login-body.validator";
 import { authAccessTokenMiddleware } from "./middlewares/auth-accessToken.middleware";
 import { authRegistrationBodyValidators } from "./middlewares/auth-registration-body.validator";
@@ -10,8 +9,12 @@ import { authLoginMiddleware } from "./middlewares/auth-login.middleware";
 import { rateLimiterMiddleware } from "./middlewares/auth-rateLimiter.middleware";
 import { authEmailValidators } from "./middlewares/auth-email.validator";
 import { authRecoveryBodyValidators } from "./middlewares/auth-recovery.validator";
+import { container } from "../../composition.root";
+import { AuthController } from "./auth.controller";
 
 export const authRouter = Router();
+
+const authController = container.resolve(AuthController)
 
 authRouter.post("/login", rateLimiterMiddleware, authLoginBodyValidators, authLoginMiddleware, authController.login.bind(authController));
 authRouter.post("/refresh-token", authRefreshTokenMiddleware, authController.refresh.bind(authController));

@@ -1,9 +1,11 @@
 import { body } from "express-validator";
 import { hasDateExpired } from "../../../utils/date/hasDateExpired";
 import { inputCheckErrorsMiddleware } from "../../../global-middlewares/inputCheckErrors.middleware";
-import { userQueryRepository } from "../../users/infrastructure/users.query-repository";
+import { UserQueryRepository } from "../../users/infrastructure/users.query-repository";
+import { container } from "../../../composition.root";
 
 const code = body("recoveryCode").custom(async (code) => {
+  const userQueryRepository = container.resolve(UserQueryRepository);
   const recoveryConfirmation = await userQueryRepository.findRecoveryByCode(code);
 
   if (!recoveryConfirmation) {

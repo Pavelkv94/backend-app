@@ -1,17 +1,10 @@
-import { jwtService } from "../../src/adapters/jwt/jwt.service";
 import jwt from "jsonwebtoken";
+import { JwtService } from "../../src/adapters/jwt/jwt.service";
+import { container } from "../../src/composition.root";
+
+const jwtService = container.get(JwtService);
 
 describe("/test", () => {
-  // it("should add token to black list", async () => {
-  //   const token = "token";
-
-  //   await jwtRepository.addToBlackList(token);
-
-  //   const tokenFromBlackList = await jwtRepository.findInBlackList(token);
-
-  //   expect(token).toEqual(tokenFromBlackList!.token);
-  // });
-
   it("should generate tokens", async () => {
     const payload = { user_id: "1", deviceId: "12" };
     const { refreshToken, accessToken } = await jwtService.generateTokens(payload);

@@ -1,6 +1,7 @@
+import { injectable } from "inversify";
 import { SecurityDeviceModel } from "../../../db/models/SecurityDevice.model";
 import { DeviceEntityModel } from "../models/securityDevices.model";
-
+@injectable()
 export class SecurityDeviceRepository {
   async findDevice(deviceId: string): Promise<string | null> {
     const device = await SecurityDeviceModel.findOne({ deviceId }).lean();
@@ -45,4 +46,3 @@ export class SecurityDeviceRepository {
     return result.deletedCount > 0;
   }
 }
-export const securityDeviceRepository = new SecurityDeviceRepository();

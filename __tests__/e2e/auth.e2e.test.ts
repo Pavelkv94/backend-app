@@ -3,10 +3,15 @@ import { db } from "../../src/db/db";
 import { usersManager } from "../helpers/usersManager";
 import { createString, newUser } from "../helpers/datasets";
 import { LoginInputModel } from "../../src/features/auth/models/auth.models";
-import { nodemailerService } from "../../src/adapters/mail.service";
+import { NodemailerService } from "../../src/adapters/mail.service";
 import { authManager } from "../helpers/authManager";
-import { userQueryRepository } from "../../src/features/users/infrastructure/users.query-repository";
-import { userRepository } from "../../src/features/users/infrastructure/users.repository";
+import { UserQueryRepository } from "../../src/features/users/infrastructure/users.query-repository";
+import { UserRepository } from "../../src/features/users/infrastructure/users.repository";
+import { container } from "../../src/composition.root";
+
+const nodemailerService = container.resolve(NodemailerService);
+const userQueryRepository = container.resolve(UserQueryRepository);
+const userRepository = container.resolve(UserRepository);
 
 describe("/test", () => {
   let mongoServer: MongoMemoryServer;
@@ -174,7 +179,7 @@ describe("/test", () => {
 
     const confirmResponse = await authManager.confirmation(newEmailConfirmation!);
     expect(confirmResponse.status).toBe(204);
-    
+
     expect(confirmationCode).not.toBe(newEmailConfirmation);
   });
 
@@ -203,7 +208,7 @@ describe("/test", () => {
 
     expect(confirmResponse.status).toBe(400);
     console.log(confirmResponse.body.errorsMessages);
-    
+
     expect(confirmResponse.body.errorsMessages.length).toBe(1);
   });
 

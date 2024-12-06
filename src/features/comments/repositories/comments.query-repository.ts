@@ -1,9 +1,11 @@
+import { injectable } from "inversify";
 import { CommentModel } from "../../../db/models/Comment.model";
 import { LikeModel } from "../../../db/models/Like.model";
 import { OutputDataWithPagination } from "../../../types/common-types";
 import { CommentValidQueryModel, CommentViewModel } from "../models/comments.models";
 import { CommentViewDto } from "./dto";
 
+@injectable()
 export class CommentQueryRepository {
     async findAllComments(id: string, query: CommentValidQueryModel, userId: string | null): Promise<OutputDataWithPagination<CommentViewModel>> {
         const { pageSize, pageNumber, sortBy, sortDirection } = query;
@@ -65,4 +67,4 @@ export class CommentQueryRepository {
     }
 }
 
-export const commentQueryRepository = new CommentQueryRepository();
+// export const commentQueryRepository = new CommentQueryRepository();

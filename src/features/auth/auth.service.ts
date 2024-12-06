@@ -1,17 +1,19 @@
 import { JwtTokensType, LoginInputModel } from "./models/auth.models";
-import { JwtService, jwtService } from "../../adapters/jwt/jwt.service";
+import { JwtService } from "../../adapters/jwt/jwt.service";
 import { randomUUID } from "crypto";
 import { getExpirationDate } from "../../utils/date/getExpirationDate";
-import { BcryptService, bcryptService } from "../../adapters/bcrypt.service";
-import { securityDeviceService } from "../securityDevices/securityDevices.service";
+import { BcryptService } from "../../adapters/bcrypt.service";
 import { JWTPayloadModel } from "../../adapters/jwt/models/jwt.models";
-import { UserService, userService } from "../users/application/users.service";
+import { UserService } from "../users/application/users.service";
 import { SecurityDeviceModel } from "../../db/models/SecurityDevice.model";
 import { UserInputModel } from "../users/domain/users.models";
-import { userRepository, UserRepository } from "../users/infrastructure/users.repository";
+import { UserRepository } from "../users/infrastructure/users.repository";
+import { injectable } from "inversify";
+import { SecurityDeviceService } from "../securityDevices/securityDevices.service";
 
+@injectable()
 export class AuthService {
-  constructor(private userService: UserService, private userRepository: UserRepository, private jwtService: JwtService, private bcryptService: BcryptService) {}
+  constructor(private userService: UserService, private userRepository: UserRepository, private jwtService: JwtService, private bcryptService: BcryptService, private securityDeviceService: SecurityDeviceService) {}
 
   async registration(payload: UserInputModel): Promise<string | null> {
     const newUserId = await this.userService.create(payload);
@@ -23,14 +25,14 @@ export class AuthService {
   async login(user_id: string, ip: string = "", userAgent: string = ""): Promise<JwtTokensType> {
     const tokens = await this.jwtService.generateTokens({ user_id, deviceId: randomUUID() });
     const refreshToken: JWTPayloadModel = await this.jwtService.decodeToken(tokens.refreshToken);
-    await securityDeviceService.addDevice(refreshToken, ip, userAgent);
+    await this.securityDeviceService.addDevice(refreshToken, ip, userAgent);
 
     return tokens;
   }
   async refresh(ip: string = "", userAgent: string = "", user_id: string, deviceId: string): Promise<JwtTokensType> {
     const tokens = await this.jwtService.generateTokens({ user_id, deviceId });
     const refreshToken: JWTPayloadModel = await this.jwtService.decodeToken(tokens.refreshToken);
-    await securityDeviceService.updateDevice(refreshToken, ip, userAgent);
+    await this.securityDeviceService.updateDevice(refreshToken, ip, userAgent);
 
     return tokens;
   }
@@ -126,4 +128,3 @@ export class AuthService {
     return isUpdated;
   }
 }
-export const authService = new AuthService(userService, userRepository, jwtService, bcryptService);

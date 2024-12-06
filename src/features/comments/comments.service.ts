@@ -1,13 +1,15 @@
+import { inject, injectable } from "inversify";
 import { CommentModel } from "../../db/models/Comment.model";
 import { ResultObject, ResultStatus } from "../../types/common-types";
 import { MeViewModel } from "../auth/models/auth.models";
-import { likeService, LikeService } from "../likes/like.service";
+import { LikeService } from "../likes/like.service";
 import { LikeDocument, LikeStatusType } from "../likes/models/like.model";
 import { CommentDocument, CommentEntityModel, CommentInputModel } from "./models/comments.models";
-import { commentRepository, CommentRepository } from "./repositories/comments.repository";
+import { CommentRepository } from "./repositories/comments.repository";
 
+@injectable()
 export class CommentService {
-  constructor(private commentRepository: CommentRepository, private likeService: LikeService) {}
+  constructor(@inject(CommentRepository) private commentRepository: CommentRepository, @inject(LikeService) private likeService: LikeService) {}
 
   async createComment(post_id: string, payload: CommentInputModel, user: MeViewModel): Promise<string> {
     const commentDto: CommentEntityModel = {
@@ -128,5 +130,3 @@ export class CommentService {
     if (newStatus === "Dislike") comment.likesInfo.dislikesCount += 1;
   }
 }
-
-export const commentService = new CommentService(commentRepository, likeService);

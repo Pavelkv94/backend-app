@@ -1,6 +1,7 @@
+import { injectable } from "inversify";
 import { PostModel } from "../../../db/models/Post.model";
 import { PostDocument } from "../models/posts.models";
-
+@injectable()
 export class PostRepository {
   async save(post: PostDocument): Promise<string> {
     const result = await post.save();
@@ -23,5 +24,3 @@ export class PostRepository {
     return result.deletedCount > 0;
   }
 }
-
-export const postRepository = new PostRepository();

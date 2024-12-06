@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
-
+import { injectable } from "inversify";
+@injectable()
 export class BcryptService {
   async generateHash(password: string) {
     const salt = await bcrypt.genSalt(10);
@@ -10,5 +11,3 @@ export class BcryptService {
     return bcrypt.compare(password, hash);
   }
 };
-
-export const bcryptService = new BcryptService()

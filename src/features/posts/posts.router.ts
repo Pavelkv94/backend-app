@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { postController } from "./posts.controller";
+import { PostController } from "./posts.controller";
 import { adminMiddleware } from "../../global-middlewares/admin.middleware";
 import { sortQueryMiddleware } from "../../global-middlewares/sort-query.middleware";
 import { paginationQueryMiddleware } from "../../global-middlewares/pagination-query.middleware";
@@ -9,8 +9,11 @@ import { findPostMiddleware } from "./middlewares/findPost.middleware";
 import { authAccessTokenMiddleware } from "../auth/middlewares/auth-accessToken.middleware";
 import { commentBodyValidator } from "../comments/middlewares/comment.body.validator";
 import { likeBodyValidator } from "../likes/middlewares/like-body.validator";
+import { container } from "../../composition.root";
 
 export const postsRouter = Router();
+
+const postController = container.resolve(PostController);
 
 postsRouter.get("/", paginationQueryMiddleware, sortQueryMiddleware, inputCheckErrorsMiddleware, postController.getPosts.bind(postController));
 postsRouter.get("/:id", findPostMiddleware, postController.getPost.bind(postController));

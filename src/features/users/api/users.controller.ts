@@ -1,16 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import { HTTP_STATUSES, OutputDataWithPagination } from "../../../types/common-types";
-import { userService, UserService } from "../application/users.service";
+import { UserService } from "../application/users.service";
 import { SortDirection } from "mongodb";
 import { ApiError } from "../../../exeptions/api-error";
-import { authService } from "../../auth/auth.service";
 import { URIParamsUserModel, UserInputModel, UsersInputQueryModel, UsersValidInputQueryModel, UserViewModel } from "../domain/users.models";
-import { userQueryRepository, UserQueryRepository } from "../infrastructure/users.query-repository";
-
+import { UserQueryRepository } from "../infrastructure/users.query-repository";
+import { injectable } from "inversify";
+import { AuthService } from "../../auth/auth.service";
+@injectable()
 export class UserController {
-  constructor(public userService: UserService, public userQueryRepository: UserQueryRepository) {
-
-  }
+  constructor(public userService: UserService, public userQueryRepository: UserQueryRepository, public authService: AuthService) {}
   async getUsers(req: Request<{}, {}, {}, UsersInputQueryModel>, res: Response<OutputDataWithPagination<UserViewModel>>, next: NextFunction) {
     try {
       const queryData: UsersValidInputQueryModel = {
@@ -25,7 +24,6 @@ export class UserController {
 
       res.status(HTTP_STATUSES.SUCCESS).json(users);
     } catch (error) {
-
       return next(ApiError.UnexpectedError(error as Error));
     }
   }
@@ -38,7 +36,7 @@ export class UserController {
         return next(ApiError.NotFound("The requested user was not found"));
       }
 
-      await authService.setConfirmEmailStatus(newUser.id, true);
+      await this.authService.setConfirmEmailStatus(newUser.id, true);
 
       res.status(201).json(newUser);
     } catch (error) {
@@ -58,6 +56,4 @@ export class UserController {
       return next(ApiError.UnexpectedError(error as Error));
     }
   }
-};
-
-export const userController = new UserController(userService, userQueryRepository);
+}

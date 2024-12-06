@@ -8,16 +8,23 @@ import {
   MeViewModel,
   RecoveryPasswordInputModel,
 } from "./models/auth.models";
-import { AuthService, authService } from "./auth.service";
+import { AuthService } from "./auth.service";
 import { ApiError } from "../../exeptions/api-error";
-import { NodemailerService, nodemailerService } from "../../adapters/mail.service";
+import { NodemailerService } from "../../adapters/mail.service";
 import { HTTP_STATUSES } from "../../types/common-types";
-import { SecurityDeviceService, securityDeviceService } from "../securityDevices/securityDevices.service";
-import { userQueryRepository, UserQueryRepository } from "../users/infrastructure/users.query-repository";
+import { SecurityDeviceService } from "../securityDevices/securityDevices.service";
+import { UserQueryRepository } from "../users/infrastructure/users.query-repository";
 import { UserInputModel } from "../users/domain/users.models";
+import { injectable } from "inversify";
 
+@injectable()
 export class AuthController {
-  constructor(private userQueryRepository: UserQueryRepository, public authService: AuthService, public securityDevicesService: SecurityDeviceService, private nodemailerService: NodemailerService) {}
+  constructor(
+    private userQueryRepository: UserQueryRepository,
+    public authService: AuthService,
+    public securityDevicesService: SecurityDeviceService,
+    private nodemailerService: NodemailerService
+  ) {}
 
   async login(req: Request<{}, {}, LoginInputModel, AdditionalQueryInputModel>, res: Response<LoginOutputModel>, next: NextFunction) {
     try {
@@ -112,7 +119,7 @@ export class AuthController {
         return;
       }
 
-      const newConfirmationCode = await authService.setNewRecoveryCode(user.id);
+      const newConfirmationCode = await this.authService.setNewRecoveryCode(user.id);
 
       this.nodemailerService.sendLetter(req.body.email, newConfirmationCode, "recoveryPass").catch((e) => console.log(e)); //долгий запрос с await
 
@@ -134,5 +141,3 @@ export class AuthController {
     }
   }
 }
-
-export const authController = new AuthController(userQueryRepository, authService, securityDeviceService, nodemailerService);

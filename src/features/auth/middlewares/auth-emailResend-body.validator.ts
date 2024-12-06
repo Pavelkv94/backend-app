@@ -1,6 +1,9 @@
 import { body } from "express-validator";
 import { inputCheckErrorsMiddleware } from "../../../global-middlewares/inputCheckErrors.middleware";
-import { userQueryRepository } from "../../users/infrastructure/users.query-repository";
+import { UserQueryRepository } from "../../users/infrastructure/users.query-repository";
+import { container } from "../../../composition.root";
+
+const userQueryRepository = container.resolve(UserQueryRepository);
 
 const userEmailInputValidator = body("email")
   .isString()

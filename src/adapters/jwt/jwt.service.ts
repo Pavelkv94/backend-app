@@ -2,12 +2,14 @@ import jwt from "jsonwebtoken";
 import { SETTINGS } from "../../settings";
 import { JwtTokensType } from "../../features/auth/models/auth.models";
 import { JWTPayloadModel } from "./models/jwt.models";
+import { injectable } from "inversify";
 
 type JwtPayload = {
   user_id: string;
   deviceId: string;
 };
 
+@injectable()
 export class JwtService {
   async generateTokens(payload: JwtPayload): Promise<JwtTokensType> {
     const accessToken = jwt.sign(payload, SETTINGS.JWT_ACCESS_SECRET, { expiresIn: "5m" });
@@ -42,5 +44,3 @@ export class JwtService {
     }
   }
 };
-
-export const jwtService = new JwtService();

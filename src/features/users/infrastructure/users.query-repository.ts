@@ -3,7 +3,9 @@ import { MeViewModel } from "../../auth/models/auth.models";
 import { MeViewDto, UserViewDto } from "./dto";
 import { EmailConfirmationEntityType, RecoveryPasswordEntityType, UsersValidInputQueryModel, UserViewModel } from "../domain/users.models";
 import { UserModel } from "../domain/User.entity";
+import { injectable } from "inversify";
 
+@injectable()
 export class UserQueryRepository {
   async findAllUsers(query: UsersValidInputQueryModel): Promise<OutputDataWithPagination<UserViewModel>> {
     const { pageSize, pageNumber, sortBy, sortDirection, searchLoginTerm, searchEmailTerm } = query;
@@ -77,7 +79,7 @@ export class UserQueryRepository {
     return UserViewDto.mapToView(userFromDb);
   }
   async findUserByConfirmationCode(code: string): Promise<UserViewModel | null> {
-    const userFromDb = await UserModel.findOne({ 'emailConfirmation.confirmationCode': code });
+    const userFromDb = await UserModel.findOne({ "emailConfirmation.confirmationCode": code });
 
     if (!userFromDb) {
       return null;
@@ -86,7 +88,7 @@ export class UserQueryRepository {
     return UserViewDto.mapToView(userFromDb);
   }
   async findEmailConfirmationByCode(code: string): Promise<EmailConfirmationEntityType | null> {
-    const userFromDb = await UserModel.findOne({ 'emailConfirmation.confirmationCode': code }).lean();
+    const userFromDb = await UserModel.findOne({ "emailConfirmation.confirmationCode": code }).lean();
 
     if (!userFromDb) {
       return null;
@@ -124,5 +126,3 @@ export class UserQueryRepository {
     return meDto;
   }
 }
-
-export const userQueryRepository = new UserQueryRepository();

@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { ApiError } from "../../../exeptions/api-error";
-import { authService } from "../auth.service";
+import { container } from "../../../composition.root";
+import { AuthService } from "../auth.service";
 
 export const authRefreshTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+  const authService = container.resolve(AuthService)
   const token = req.cookies.refreshToken;
 
   if (!token) {

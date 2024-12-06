@@ -2,8 +2,9 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import { db } from "../../src/db/db";
 import { usersManager } from "../helpers/usersManager";
 import { createString, fakeId, newUser } from "../helpers/datasets";
-import { userRepository } from "../../src/features/users/infrastructure/users.repository";
-import { userQueryRepository } from "../../src/features/users/infrastructure/users.query-repository";
+import { UserRepository } from "../../src/features/users/infrastructure/users.repository";
+import { UserQueryRepository } from "../../src/features/users/infrastructure/users.query-repository";
+import { container } from "../../src/composition.root";
 
 describe("/users", () => {
   let mongoServer: MongoMemoryServer;
@@ -104,6 +105,7 @@ describe("/users", () => {
   it("shouldn't delete user with DB error", async () => {
     const createUserResponse = await usersManager.createUser(newUser);
     expect(createUserResponse.status).toBe(201);
+    const userRepository = container.get(UserRepository);
 
     userRepository.deleteUser = jest.fn().mockRejectedValue(new Error("DB Error"));
 
@@ -113,6 +115,7 @@ describe("/users", () => {
   it("shouldn't delete user with DB error in the second case", async () => {
     const createUserResponse = await usersManager.createUser(newUser);
     expect(createUserResponse.status).toBe(201);
+    const userRepository = container.get(UserRepository);
 
     userRepository.findUserById = jest.fn().mockReturnValue(null);
 
@@ -122,6 +125,7 @@ describe("/users", () => {
   it("shouldn't get users with db error", async () => {
     const createUserResponse = await usersManager.createUser(newUser);
     expect(createUserResponse.status).toBe(201);
+    const userQueryRepository = container.get(UserQueryRepository);
 
     userQueryRepository.findAllUsers = jest.fn().mockRejectedValue(new Error("DB Error"));
 
@@ -132,24 +136,11 @@ describe("/users", () => {
   it("shouldn't create user with db error", async () => {
     const createUserResponse = await usersManager.createUser(newUser);
     expect(createUserResponse.status).toBe(201);
+    const userQueryRepository = container.get(UserQueryRepository);
 
     userQueryRepository.findAllUsers = jest.fn().mockRejectedValue(new Error("DB Error"));
 
     const getUsersResponse = await usersManager.getUsersWithAuth();
     expect(getUsersResponse.status).toBe(500);
   });
-
-  // it("shouldn't create user with db error the second case", async () => {
-  //   usersQueryRepository.findUser = jest.fn().mockRejectedValue(new Error("DB Error")); //usersQueryRepository not used
-
-  //   const createUserResponse = await usersManager.createUser(newUser);
-  //   expect(createUserResponse.status).toBe(500);
-  // });
-
-  // it("shouldn't create user with db error the third case", async () => {
-  //   usersQueryRepository.findUser = jest.fn().mockResolvedValue(null); //usersQueryRepository not used
-
-  //   const createUserResponse = await usersManager.createUser(newUser);
-  //   expect(createUserResponse.status).toBe(404);
-  // });
 });

@@ -1,9 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import { jwtService } from "../../../adapters/jwt/jwt.service";
 import { ApiError } from "../../../exeptions/api-error";
-import { userQueryRepository } from "../../users/infrastructure/users.query-repository";
+import { container } from "../../../composition.root";
+import { UserQueryRepository } from "../../users/infrastructure/users.query-repository";
+import { JwtService } from "../../../adapters/jwt/jwt.service";
 
 export const authAccessTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+  const jwtService = container.resolve(JwtService);
+  const userQueryRepository = container.resolve(UserQueryRepository);
+
   if (!req.headers.authorization) {
     return next(ApiError.Unauthorized("Unauthorized"));
   }

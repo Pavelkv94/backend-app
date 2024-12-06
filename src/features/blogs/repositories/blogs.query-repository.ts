@@ -2,14 +2,10 @@ import { BlogValidQueryModel, BlogViewModel } from "../models/blogs.models";
 import { OutputDataWithPagination } from "../../../types/common-types";
 import { BlogModel } from "../../../db/models/Blog.model";
 import { BlogViewDto } from "./dto";
+import { injectable } from "inversify";
 
-export interface IBlogQueryRepository {
-  findAllBlogs(query: BlogValidQueryModel): Promise<OutputDataWithPagination<BlogViewModel>>;
-  getBlogsCount(searchNameTerm: string | null): Promise<number>;
-  findBlog(id: string): Promise<BlogViewModel | null>;
-}
-
-class BlogQueryRepository implements IBlogQueryRepository {
+@injectable()
+export class BlogQueryRepository {
   async findAllBlogs(query: BlogValidQueryModel): Promise<OutputDataWithPagination<BlogViewModel>> {
     const { pageSize, pageNumber, searchNameTerm, sortBy, sortDirection } = query;
 

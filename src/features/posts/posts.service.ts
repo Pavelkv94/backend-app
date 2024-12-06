@@ -1,12 +1,14 @@
-import { PostDocument, PostEntityModel, PostForBlogInputModel, PostInputModel, PostValidQueryModel, PostViewModel } from "./models/posts.models";
-import { blogRepository, IBlogRepository } from "../blogs/repositories/blogs.repository";
-import { postRepository, PostRepository } from "./repositories/posts.repository";
+import { PostDocument, PostEntityModel, PostForBlogInputModel, PostInputModel } from "./models/posts.models";
+import { BlogRepository } from "../blogs/repositories/blogs.repository";
+import { PostRepository } from "./repositories/posts.repository";
 import { PostModel } from "../../db/models/Post.model";
 import { LikeDocument, LikeStatusType } from "../likes/models/like.model";
-import { likeService, LikeService } from "../likes/like.service";
+import {  LikeService } from "../likes/like.service";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class PostService {
-  constructor(private blogRepository: IBlogRepository, private postRepository: PostRepository, private likeService: LikeService) {}
+  constructor(@inject(BlogRepository) private blogRepository: BlogRepository, @inject(PostRepository) private postRepository: PostRepository, @inject(LikeService) private likeService: LikeService) {}
 
   async createPost(payload: PostInputModel): Promise<string> {
     const blog = await this.blogRepository.findBlog(payload.blogId);
@@ -120,5 +122,3 @@ export class PostService {
     if (newStatus === "Dislike") post.extendedLikesInfo.dislikesCount += 1;
   }
 }
-
-export const postService = new PostService(blogRepository, postRepository, likeService);

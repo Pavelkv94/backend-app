@@ -1,7 +1,8 @@
+import { injectable } from "inversify";
 import { JWTPayloadModel } from "../../adapters/jwt/models/jwt.models";
 import { ResultObject, ResultStatus } from "../../types/common-types";
-import { securityDeviceRepository, SecurityDeviceRepository } from "./repositories/securityDevices.repository";
-
+import { SecurityDeviceRepository } from "./repositories/securityDevices.repository";
+@injectable()
 export class SecurityDeviceService {
   constructor(private securityDeviceRepository: SecurityDeviceRepository) {}
   async addDevice(refreshToken: JWTPayloadModel, ip: string, userAgent: string): Promise<string> {
@@ -55,5 +56,3 @@ export class SecurityDeviceService {
     };
   }
 }
-
-export const securityDeviceService = new SecurityDeviceService(securityDeviceRepository);

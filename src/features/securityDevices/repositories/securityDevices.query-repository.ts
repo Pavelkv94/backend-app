@@ -1,7 +1,9 @@
 import { SecurityDeviceModel } from "../../../db/models/SecurityDevice.model";
 import { DeviceViewDto } from "./dto";
 import { DeviceViewModel } from "../models/securityDevices.model";
+import { injectable } from "inversify";
 
+@injectable()
 export class SecurityDeviceQueryRepository {
   async findDevice(device_id: string): Promise<boolean> {
     const deviceFromDb = await SecurityDeviceModel.findOne({ deviceId: device_id });
@@ -14,4 +16,3 @@ export class SecurityDeviceQueryRepository {
   }
 }
 
-export const securityDeviceQueryRepository = new SecurityDeviceQueryRepository();

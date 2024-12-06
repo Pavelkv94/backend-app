@@ -1,13 +1,11 @@
 import { BlogEntityModel, BlogInputModel, BlogValidQueryModel, BlogViewModel } from "./models/blogs.models";
-import { blogRepository, IBlogRepository } from "./repositories/blogs.repository";
+import { blogRepository, BlogRepository } from "./repositories/blogs.repository";
 import { BlogModel } from "../../db/models/Blog.model";
-export interface IBlogService {
-  createBlog(payload: BlogInputModel): Promise<string>;
-  updateBlog(id: string, payload: BlogInputModel): Promise<string | null>;
-  deleteBlog(id: string): Promise<boolean>;
-}
-class BlogService implements IBlogService {
-  constructor(private blogRepository: IBlogRepository) {}
+import { injectable } from "inversify";
+
+@injectable()
+export class BlogService {
+  constructor(private blogRepository: BlogRepository) {}
 
   async createBlog(payload: BlogInputModel): Promise<string> {
     const newBlog: BlogEntityModel = {

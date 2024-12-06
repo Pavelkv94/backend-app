@@ -9,8 +9,9 @@ import { commentsManager } from "../helpers/commentsManager";
 import { usersManager } from "../helpers/usersManager";
 import { LoginInputModel } from "../../src/features/auth/models/auth.models";
 import { authManager } from "../helpers/authManager";
-import { commentQueryRepository } from "../../src/features/comments/repositories/comments.query-repository";
 import { CommentModel } from "../../src/db/models/Comment.model";
+import { CommentQueryRepository } from "../../src/features/comments/repositories/comments.query-repository";
+import { container } from "../../src/composition.root";
 
 describe("/posts", () => {
   let mongoServer: MongoMemoryServer;
@@ -148,6 +149,7 @@ describe("/posts", () => {
     const createCommentResponse = await commentsManager.createCommentWithAuthJWT(postFromDb.id, userToken, newComment);
     expect(createCommentResponse.status).toBe(201);
 
+    const commentQueryRepository = container.resolve(CommentQueryRepository)
     commentQueryRepository.findComment = jest.fn().mockReturnValue(null);
     const getCommentsResponse = await commentsManager.getComment(createCommentResponse.body.id);
     expect(getCommentsResponse.status).toBe(404);

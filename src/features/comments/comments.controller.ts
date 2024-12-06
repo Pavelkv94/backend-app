@@ -1,19 +1,19 @@
 import { NextFunction, Request, Response } from "express";
 import { CommentInputModel, CommentViewModel, URIParamsCommentModel } from "./models/comments.models";
-import { CommentService, commentService } from "./comments.service";
+import { CommentService } from "./comments.service";
 import { HTTP_STATUSES, ResultStatus } from "../../types/common-types";
 import { ApiError } from "../../exeptions/api-error";
-import { commentQueryRepository, CommentQueryRepository } from "./repositories/comments.query-repository";
+import { CommentQueryRepository } from "./repositories/comments.query-repository";
 import { LikeInputModel } from "../likes/models/like.model";
-import { LikeService, likeService } from "../likes/like.service";
-import { commentRepository } from "./repositories/comments.repository";
-import { jwtService, JwtService } from "../../adapters/jwt/jwt.service";
+import { LikeService } from "../likes/like.service";
+import { JwtService } from "../../adapters/jwt/jwt.service";
+import { injectable } from "inversify";
 
+@injectable()
 export class CommentController {
   constructor(
     private commentQueryRepository: CommentQueryRepository,
     private commentService: CommentService,
-    private likeService: LikeService,
     private jwtService: JwtService
   ) {}
 
@@ -83,7 +83,7 @@ export class CommentController {
       const commentId = req.params.id;
       const newStatus = req.body.likeStatus;
 
-      await commentService.changeLikeStatus(userId, commentId, newStatus);
+      await this.commentService.changeLikeStatus(userId, commentId, newStatus);
 
       res.sendStatus(204);
     } catch (error) {
@@ -92,4 +92,4 @@ export class CommentController {
   }
 }
 
-export const commentController = new CommentController(commentQueryRepository, commentService, likeService, jwtService);
+// export const commentController = new CommentController(commentQueryRepository, commentService, likeService, jwtService);

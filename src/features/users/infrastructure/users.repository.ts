@@ -1,6 +1,8 @@
+import { injectable } from "inversify";
 import { UserModel } from "../domain/User.entity";
 import { UserPasswordModel, UserDocument } from "../domain/users.models";
 
+@injectable()
 export class UserRepository {
   async findUserById(id: string): Promise<UserDocument | null> {
     const userDocument = await UserModel.findOne({ _id: id });
@@ -49,5 +51,3 @@ export class UserRepository {
     return result.deletedCount > 0;
   }
 }
-
-export const userRepository = new UserRepository();

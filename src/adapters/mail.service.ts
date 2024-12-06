@@ -1,7 +1,9 @@
+import { injectable } from "inversify";
 import nodemailer from "nodemailer";
 
 type MailPurposeType = "activationAcc" | "recoveryPass";
 
+@injectable()
 export class NodemailerService {
   async sendLetter(email: string, confirmationCode: string, purpose: MailPurposeType): Promise<void> {
     const isActivation = purpose === "activationAcc";
@@ -41,5 +43,3 @@ export class NodemailerService {
     await transporter.sendMail(mailOptions);
   }
 }
-
-export const nodemailerService = new NodemailerService();

@@ -1,8 +1,10 @@
-import { BcryptService, bcryptService } from "../../../adapters/bcrypt.service";
-import { userRepository, UserRepository } from "../infrastructure/users.repository";
-import {  UserInputModel } from "../domain/users.models";
+import { BcryptService } from "../../../adapters/bcrypt.service";
+import { UserRepository } from "../infrastructure/users.repository";
+import { UserInputModel } from "../domain/users.models";
 import { UserModel } from "../domain/User.entity";
+import { injectable } from "inversify";
 
+@injectable()
 export class UserService {
   constructor(private userRepository: UserRepository, private bcryptService: BcryptService) {}
 
@@ -39,5 +41,3 @@ export class UserService {
     return isDeleted;
   }
 }
-
-export const userService = new UserService(userRepository, bcryptService);

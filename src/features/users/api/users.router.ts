@@ -6,9 +6,12 @@ import { inputCheckErrorsMiddleware } from "../../../global-middlewares/inputChe
 import { findUserMiddleware } from "../middlewares/findUser.middleware";
 import { usersQueryMiddleware } from "../middlewares/users-query.middleware";
 import { userBodyValidators } from "../middlewares/user-body.validator";
-import { userController } from "./users.controller";
+import { UserController } from "./users.controller";
+import { container } from "../../../composition.root";
 
 export const usersRouter = Router();
+
+const userController = container.resolve(UserController);
 
 usersRouter.get(
   "/",

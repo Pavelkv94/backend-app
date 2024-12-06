@@ -1,6 +1,9 @@
+import { injectable } from "inversify";
 import { CommentModel } from "../../../db/models/Comment.model";
 import { CommentDocument } from "../models/comments.models";
 
+
+@injectable()
 export class CommentRepository {
   async findComment(id: string): Promise<CommentDocument | null> {
     const commentDocument = await CommentModel.findOne({ _id: id });
@@ -21,4 +24,4 @@ export class CommentRepository {
   }
 }
 
-export const commentRepository = new CommentRepository();
+// export const commentRepository = new CommentRepository();
