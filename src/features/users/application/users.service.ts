@@ -17,8 +17,8 @@ export class UserService {
     const passwordhash = await this.bcryptService.generateHash(payload.password);
     const newUser = UserModel.buildInstance(payload.login, payload.email, passwordhash);
 
-    const user = new UserModel(newUser);
-    const userId = await this.userRepository.save(user);
+    // const user = new UserModel(newUser);
+    const userId = await this.userRepository.save(newUser);
 
     return userId;
   }
